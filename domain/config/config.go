@@ -3,12 +3,12 @@ package config
 import "github.com/kelseyhightower/envconfig"
 
 type Config struct {
-	App       App       `required:"true" envconfig:"APP"`
-	DB        DB        `required:"true" envconfig:"DB"`
-	Firebase  Firebase  `required:"true" envconfig:"FIREBASE"`
-	Sendgrid  Sendgrid  `required:"true" envconfig:"SENDGRID"`
-	Slack     Slack     `required:"true" envconfig:"SLACK"`
-	OneSignal OneSignal `required:"true" envconfig:"ONESIGNAL"`
+	App      App      `required:"true" envconfig:"APP"`
+	DB       DB       `required:"true" envconfig:"DB"`
+	Firebase Firebase `required:"true" envconfig:"FIREBASE"`
+	Sendgrid Sendgrid `required:"true" envconfig:"SENDGRID"`
+	Slack    Slack    `required:"true" envconfig:"SLACK"`
+	// OneSignal OneSignal `required:"true" envconfig:"ONESIGNAL"`
 	RPA       RPA       `required:"false" envconfig:"RPA"`
 	GoogleAPI GoogleAPI `required:"false" envconfig:"GOOGLEAPI"`
 }

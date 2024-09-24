@@ -25,7 +25,7 @@ services:
   #   networks:
   #     - autoscout-local-network
   #   volumes:
-  #     - $PWD:/go/src/github.com/Motoyui-inc/autoscout-server
+  #     - $PWD:/go/src/github.com/spaceaiinc/autoscout-server
   #   env_file:
   #     - .env
   #   environment:
