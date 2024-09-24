@@ -1,0 +1,15 @@
+*.DS_Store
+
+*.env
+
+*vendor
+
+*tmp
+
+*.idea
+
+*.vscode
+
+*bin/
+
+# mock

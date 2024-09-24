@@ -1,0 +1,19 @@
+version: '3'
+networks:
+  autoscout-test-network:
+    driver: bridge
+services:
+  db:
+    container_name: autoscout_test_db
+    image: mysql:5.7.30
+    platform: linux/amd64
+    restart: always
+    networks:
+      - autoscout-test-network
+    ports:
+      - 3306:3306
+    volumes:
+      - .conf/conf.d:/etc/mysql/conf.d
+    environment:
+      MYSQL_DATABASE: autoscout_test
+      MYSQL_ROOT_PASSWORD: password

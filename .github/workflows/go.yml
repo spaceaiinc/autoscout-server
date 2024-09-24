@@ -1,0 +1,42 @@
+name: Go Test
+on:
+  push:
+    branches:
+      - "issues/*"
+      - "feature/*"
+      - "fix/*"
+jobs:
+  build:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mirromutth/mysql-action@v1.1
+        with:
+          character set server: "utf8mb4"
+          collation server: "utf8mb4_general_ci"
+          mysql version: "5.7.30"
+          mysql database: "autoscout_test"
+          mysql root password: "password"
+
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        id: setup-go
+        with:
+          go-version-file: "go.mod"
+      - name: Download Go modules
+        shell: bash
+        if: ${{ steps.setup-go.outputs.cache-hit != 'true' }}
+        run: go mod download
+
+      - name: Download modules
+        # キャッシュが保存されていればそれを使う
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: go mod download
+
+    # - name: Test
+    #   run: |
+    #     echo ${{ secrets.ENV_FILE }} | base64 --decode > .env
+    #     GOBIN=$(pwd)/bin go install github.com/joho/godotenv/cmd/godotenv
+    #     export PATH=$PATH:$(go env GOPATH)/bin
+    #     go install github.com/golang/mock/mockgen
+    #     bin/godotenv -f ./.env make test-all

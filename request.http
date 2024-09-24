@@ -1,0 +1,3824 @@
+## BASE URL
+#
+@baseURL = http://localhost:9090
+
+## Firebase ID Token
+#
+@firebaseIDToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjUyZmEwZjE2NmJmZjZiODU5N2FjMGFlMDRlNTllZmYxOTk1N2MyYmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVjaHViLXNlYXJjaC10bXAiLCJhdWQiOiJyZWNodWItc2VhcmNoLXRtcCIsImF1dGhfdGltZSI6MTY2MjIxMTQzNSwidXNlcl9pZCI6IjI0NjZiY2NiLTk3NzgtNDcyOC1hZWM2LWMxZWQxMjZkOGE0MyIsInN1YiI6IjI0NjZiY2NiLTk3NzgtNDcyOC1hZWM2LWMxZWQxMjZkOGE0MyIsImlhdCI6MTY2MjIxMTQzNSwiZXhwIjoxNjYyMjE1MDM1LCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7fSwic2lnbl9pbl9wcm92aWRlciI6ImN1c3RvbSJ9fQ.TYBxaeCdMEUXsHbah0zf8jkB6dcCfielHoWjwij4K8Ar5LYkAGsCWDo4A0m-ByE57_uxuc5Q4GjV_p5Sb_Us6n5odj4O6w8RTFLxowjzMcUN3Mhu0wbSBdmSs9hIClldbFLoHm00xgKjbgoAfEZiYWTS5zvHp79ccg_Fd6fmN8PgX0ybB38uEqyzJPkPYVbYhDQfV2SQa0FF_IatNEAzaWV6BJgsP76MJgbSrUA-h__oA-EpGV8Yug14Dquq0sJOpMFewnt-3t-15j2tJPR3KXgGKx6_3i8v-Rj0CG_8IkBEDIkOy-JBhn-8H2FJUWhfWg0soTeT578T1fDRNaCjwg"
+## JWT TOKEN from our server.
+#
+@token = eyJhbGciOiJSUzI1NiIsImtpZCI6IjhkMDNhZTdmNDczZjJjNmIyNTI3NmMwNjM2MGViOTk4ODdlMjNhYTkiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vcmVjaHViLXNlYXJjaC10bXAiLCJhdWQiOiJyZWNodWItc2VhcmNoLXRtcCIsImF1dGhfdGltZSI6MTY4NzMyMjUxOCwidXNlcl9pZCI6Ijg2ZjJjMzk2LTg2MTAtNGYyZC1hNjI0LTdlNWYzYTE4NjZmMSIsInN1YiI6Ijg2ZjJjMzk2LTg2MTAtNGYyZC1hNjI0LTdlNWYzYTE4NjZmMSIsImlhdCI6MTY4NzMyMjUxOCwiZXhwIjoxNjg3MzI2MTE4LCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7fSwic2lnbl9pbl9wcm92aWRlciI6ImN1c3RvbSJ9fQ.JTFM15oi692sK_UbaHr6ly8zcq-KV7XeBlBoEDgDFsxy8ahCD0KzDGnSfZ5nvkTsPdG4HJdNQ_pcAVu6_1jFVgbFOQc7eCyvN_3EuZX-Y-V1-jq6yLTvNW2NV1Bm2nlb2mPURwlDcAHJ4qgNC8ZqsNOzR7x8aKmrbS8LfySYZ9INtkOoQseris1ER8Pyz8DORqFKr9g7B9DVYjLs0wsq-SXD1skPnmrfFRR1A-hzxguzrIYANhLPehcPP6xU8DbYkm7D9Kyed1BbU7Qpp3EEn20Cx7-y7gKGcldWLHzZLeCjirEfaZxtprWBjqwuTu1G-Y87cuX9tKs8qIwNV1VAMw
+
+################################### 管理者サイト ###############################################
+
+
+#### Admin
+### 管理者サイトのログイン
+#
+PUT {{baseURL}}/admin/authorize HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Passw0rd"
+}
+
+###################################### POSTメソッド #####################################
+### Sign Up エージェント情報の登録
+#
+POST {{baseURL}}/api/agent/agent_and_agent_staff HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_name": "motoyui",
+  "permission_code": "26-3-300567",
+  "post_code": "100-0005",
+  "office_location": "Tokyo-1-1",
+  "phone_number": "09012341232",
+  "email": "fdssa@fdssass.com",
+  "representative": "CEO",
+  "establish": "2021-01",
+  "corporate_site_url": "https://www.testtest.com",
+  "permission_year": "2021-01",
+  "recruiting_alliance": 0,
+  "contact_information": "contact",
+  "open_job_to_applicant": 0,
+  "job_to_applicant": 0,
+  "yearly_registrant": 500,
+  "monthly_registrant": 30,
+  "yearly_employed": 200,
+  "pr_point": "PR",
+  "specialty_overseas_area": "USA",
+  "authority": 6,
+  "staff_name": "yamada",
+  "furigana": "yamada",
+  "password": "staff1234",
+  "staff_phone_number": "00011112222",
+  "department": "proguram",
+  "position": "fajsdkl",
+  "remarks": "fjas",
+  "usage_status": 3,
+  "notification": 53,
+  "is_trial": true
+}
+
+### Sign Up エージェント担当者情報の登録
+#
+POST {{baseURL}}/api/agent/1/staff/signup HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "authority": 1,
+  "staff_name": "12",
+  "furigana": "hfias",
+  "email": "12@fdfdsaas.com",
+  "password": "staff1234",
+  "staff_phone_number": "0901834343",
+  "department": "proguram",
+  "position": "fajsdkl",
+  "remarks": "fjas",
+  "usage_status": 3,
+  "notification": 53
+}
+
+###################################### PUTメソッド #####################################
+
+### エージェント情報の編集
+#
+PUT {{baseURL}}/api/agent/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_name": "株式会社エージェントテスト",
+  "permission_code": "26-ユ-300567",
+  "post_code": "100-0005",
+  "office_location": "東京都千代田区丸の内1-1-1",
+  "phone_number": "09088887777",
+  "representative": "代表取男",
+  "establish": "2000-01",
+  "corporate_site_url": "https://www.teststest.com",
+  "permission_year": 2,
+  "recruiting_alliance": 0,
+  "contact_information": "コンタクト情報",
+  "open_job_to_applicant": 0,
+  "job_to_applicant": 0,
+  "yearly_registrant": 1500,
+  "monthly_registrant": 130,
+  "yearly_employed": 1200,
+  "pr_point": "PRポイントkousinn",
+  "specialty_overseas_area": "アメリカ更新",
+  "specialty_enterprise_types":[
+ {
+      "specialty_enterprise_type": 1
+    },
+ {
+      "specialty_enterprise_type": 2
+    }
+  
+  ],
+  "specialty_industries":[
+    {
+      "specialty_industry": 1
+    },
+    {
+      "specialty_industry": 2
+    
+  }
+  ],
+  // occupation
+  "specialty_occupations":[
+     {
+      "specialty_occupation": 1
+    },
+    {
+      "specialty_occupation": 2
+    }
+  
+  ],
+  // area
+  "specialty_areas":[
+   {
+      "specialty_area": 1
+    },
+   {
+      "specialty_area": 2
+    }
+  
+  ],
+  // age_group
+  "specialty_age_groups":[
+    
+   {
+        "specialty_age_group": 1
+      },
+    {
+        "specialty_age_group": 2
+      }
+    
+  ],
+  // job_seeker_type
+  "specialty_job_seeker_types":[
+    
+      {
+        "specialty_job_seeker_type": 1
+      },
+{
+        "specialty_job_seeker_type": 2
+      }
+    
+  ],
+  // alliance_need
+  "alliance_needs":[
+  {
+        "alliance_need": 1
+      },
+     {
+        "alliance_need": 2
+      }
+    
+  ]
+}
+
+### エージェント担当者情報の編集
+#
+PUT {{baseURL}}/api/agent/staff/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "authority": 4,
+  "staff_name": "AgentStaff",
+  "furigana": "agentStaff",
+  "firebase_id": "gZfuF2PQe1RuDhJiJGzuVQXMXir2",
+  "staff_phone_number": "09099991111",
+  "department": "sales",
+  "position": "manager",
+  "remarks": "If you have remarks you fill in",
+  "usage_status": 0,
+  "notification": 0
+}
+
+### エージェント担当者のメールアドレス編集
+#
+PUT {{baseURL}}/api/agent/staff/1/email HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "email": "test@yamada11111.com"
+}
+
+###################################### GETメソッド #####################################
+
+### エージェント情報の取得
+#
+GET {{baseURL}}/api/agent/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### 全てのエージェント一覧の取得
+#
+GET {{baseURL}}/api/agent/all HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェント担当者情報の取得
+#
+GET {{baseURL}}/api/agent/19/staff_list HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェント情報の取得
+#
+GET {{baseURL}}/api/agent/claim/list/page?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェント担当者情報の取得
+#
+GET {{baseURL}}/api/agent_staff/me HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+###################################### 登録企業情報 #####################################
+
+###################################### POST メソッド #####################################
+
+### 企業情報の登録
+POST {{baseURL}}/api/enterprise/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "company_name": "fads",
+  "agent_staff_id": 2,
+  "post_code": "100-0005",
+  "office_location": "Kyoto-1-1",
+  "industries": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+  "corporate_site_url": "http://test.inc",
+  "representative": "test",
+  "employee_number_single": 100,
+  "establishment": "2001Y01M1D",
+  "employee_number_group": 2000,
+  "capital": "Billion",
+  "phone_number": "09099998888",
+  "earnings_year": 2021,
+  "earnings": "1000000dollar"
+}
+
+### 企業資料の登録
+POST {{baseURL}}/api/enterprise/reference_material HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "enterprise_id": 1,
+  "reference1_pdf_url": "https://www.google.com",
+  "reference2_pdf_url": "https://www.amazon.com"
+}
+
+###################################### PUTメソッド #####################################
+
+### 企業情報の更新
+PUT {{baseURL}}/api/enterprise/update/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "company_name": "株式会社テーブルフリーワード",
+  "post_code": "10020005",
+  "agent_staff_id": 1,
+  "office_location": "東京都千代田区丸の内1-1-1",
+  "corporate_site_url": "http://test.inc",
+  "representative": "テスト一郎",
+  "employee_number_single": 100,
+  "employee_number_group": 2000,
+  "capital": "10億円",
+  "earnings_year": 2021,
+  "earnings": "1000000円",
+  "phone_number": "09099999988",
+  "industries": [1, 2, 3],
+    "reference_material":{
+    "reference1_pdf_url": "https://www.google.com",
+    "reference2_pdf_url": "https://www.amazon.com"
+  }
+}
+
+### 企業資料の更新
+PUT {{baseURL}}/api/enterprise/reference_material/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "reference1_pdf_url": "https://www.rakuten.com",
+  "reference2_pdf_url": "https://www.apple.com"
+}
+
+###################################### GETメソッド #####################################
+
+### 企業IDで企業情報の取得
+GET {{baseURL}}/api/enterprise/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 企業資料の取得
+GET {{baseURL}}/api/enterprise/reference_material/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDで企業一覧を取得
+GET {{baseURL}}/api/enterprise/list/agent/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/enterprise/list/agent/page/1?page_number=0 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントスタッフIDで企業一覧を取得
+GET {{baseURL}}/api/enterprise/list/agent_staff/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 企業の絞り込み検索
+GET {{baseURL}}/api/enterprise/list/search/1?free_word=23&page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求人の絞り込み検索
+GET {{baseURL}}/api/job_information/list/search/1?page_number=1&required_experience_industries[]=2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求人の絞り込み検索
+GET {{baseURL}}/api/job_information/select_list/3 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求職者の絞り込み検索
+GET {{baseURL}}/api/job_seeker/active/list/search/1?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求職者の絞り込み検索
+GET {{baseURL}}/api/job_seeker/list/search/1?free_word=オカロ HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### すべての企業一覧を取得
+GET {{baseURL}}/api/enterprise/all?page_number=2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 企業情報のcsv読み込み
+GET {{baseURL}}/api/enterprise/import_csv/1 HTTP/1.1
+Content-Type: multipart/form-data
+FirebaseAuthorization: {{token}}
+
+### 求人のcsv読み込み
+POST {{baseURL}}/api/enterprise/import_csv/job_info/1 HTTP/1.1
+Content-Type: multipart/form-data; boundary=MfnBoundry
+FirebaseAuthorization: {{token}}
+
+--MfnBoundry
+Content-Disposition: form-data; name="file"; filename="job.csv"
+Content-Type: application/json
+
+< ./job.csv
+--MfnBoundry--
+
+
+### 企業情報をcsvで出力
+GET {{baseURL}}/api/enterprise/export_csv/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求職者情報のcsv出力
+GET {{baseURL}}/api/job_seeker/export_csv/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### ヨミのcsv出力
+GET {{baseURL}}/api/dashboard/export_csv/accuracy/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### DELETEメソッド #####################################
+### 指定IDの企業を削除
+DELETE {{baseURL}}/api/enterprise/delete HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "id": 3
+}
+
+###################################### 登録請求先情報 #####################################
+
+###################################### POST メソッド #####################################
+
+### 請求先情報の登録
+POST {{baseURL}}/api/billing_address/create/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "enterprise_id": 14,
+  "agent_staff_id": 11,
+  "title": "ABCdef",
+  "contract_phase": 1,
+  "contract_date": "2020-01-01",
+  "address": "Tokyo1-1-1",
+  "payment_policy": "Payment at the end of the month and the following month",
+  "hr_staffs":[
+    {
+      "hr_staff_name": "testtest",
+      "hr_staff_email": "testtest.com",
+      "hr_staff_phone_number": "09099991111"
+    }
+  ],
+  "ra_staffs":[
+    {
+      "billing_address_staff_name": "test",
+      "billing_address_staff_email": "testtest.com",
+      "billing_address_staff_phone_number": "09099991111"
+    }
+  ]
+}
+
+###################################### PUTメソッド #####################################
+
+### 請求先情報の更新
+PUT {{baseURL}}/api/billing_address/update/198 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "enterprise_id": 1,
+  "title": "testTitleUPDtae",
+  "agent_staff_id": 1,
+  "contract_phase": 3,
+  "contract_date": "2020-10-01",
+    "address": "大阪府大阪市中央区難波1-1-1",
+  "payment_policy": "月末じめ翌月払い",
+  "how_to_recommend": "HRMOSから推薦",
+    "hr_staffs":[
+    {
+      "hr_staff_name": "テストテスト",
+      "hr_staff_email": "testtest.com",
+      "hr_staff_phone_number": "09099991111"
+    }
+  ],
+  "ra_staffs":[
+    {
+      "billing_address_staff_name": "長友佑都",
+            "billing_address_staff_email": "testtest2.com",
+      "billing_address_staff_phone_number": "22222222222"
+    }
+  ]
+}
+
+###################################### GETメソッド #####################################
+
+### 請求先IDで請求先情報の取得
+GET {{baseURL}}/api/billing_address/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 企業IDで請求先一覧を取得
+GET {{baseURL}}/api/billing_address/list/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### DELETEメソッド #####################################
+### 指定IDの請求先を削除
+DELETE {{baseURL}}/api/billing_address/delete HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "id": 3
+}
+
+###################################### 登録求人情報 #####################################
+
+###################################### POST メソッド #####################################
+
+### 求人情報の登録
+POST {{baseURL}}/api/job_information/create/18 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "expiration_date": "2020-01-01",
+   "enterprise_id": 10,
+   "recruitment_state": 0,
+     "register_phase": 0,
+     "agent_staff_id": 1,
+    "occupation": 1000,
+    "title": "I share fd",
+    "background": 2,
+    "work_time": "10:00-18:00",
+    "overtime": 0,
+    "overtime_average": "10:00-18:00",
+    "nationality": 99,
+    "fixed_overtime_payment": 0,
+    "fixed_overtime_detail": "A special allowance will be paid for over 30 hours",
+    "commission": 100,
+    "commission_rate":30,
+    "refund_policy": "80% per month",
+    "public_offering": 3,
+    "work_location": "12-32-31 Shibuya Ward",
+    "transfer": 1,
+    "transfer_detail": "Possibility from 2nd year",
+    "under_income": 400,
+    "over_income": 600,
+    "salary": "with bonus",
+    "insurance": "Full social insurance",
+    "fixed_overtime": 0,
+    "trial_period": 0, 
+    "trial_period_detail": "3 month",
+    "employment_period": 1,
+    "employment_period_detail": "3 year",
+    "holiday_type": 1,
+    "holiday_detail": "New Year holiday",
+    "passive_smoking": 1,
+    "selection_flow": "Document screening → 1st interview → final interview → unofficial offer",
+    "gender": 1,
+    "nationality": 1,
+    "final_education": 1,
+    "school_level": 1,
+    "medical_history": 1,
+    "age_under": 20,
+    "age_over": 35,
+    "job_change": 2,
+    "short_resignation": 0,
+    "short_resignation_remarks": "If you quit within one month, you cannot be rehired.",
+    "social_experience_year": 1,
+    "social_experience_month": 1,
+    "publish_to_alliance": 0,
+    "other_required": "Other qualifications will also be taken into consideration",
+    "required_management": 1,
+    "required_management_detail": "Management experience preferred",
+    "required_documents_detail": "Resume, photo, etc.",
+    "secret_memo": "This is a secret memo",
+    "employment_insurance": true,
+    "accident_insurance": false,
+    "health_insurance": true,
+    "pension_insurance": false,
+    "commission_detail":"string",
+    "hide_to_agent/creates":[
+      {
+        "agent_id": 2
+      }
+    ],
+    "prefectures":[
+      {
+      "prefecture": 2
+      },
+      {
+        "prefecture": 32
+      }
+    ],
+    "occupations":[
+      {
+        "occupation": 1
+      }
+    ],
+    "employment_statuses":[
+      {
+        "employment_status": 1
+      },
+      {
+        "employment_status": 2
+      }
+    ],
+    "work_charm_points":[
+      {
+        "title": "In-house work environment",
+        "contents": "You can work from all over the country with full remote"
+      },
+      {
+        "title": "Earn money!",
+        "contents": "Incentives will be provided according to the results"
+      }
+    ],
+    "required_conditions":[
+      {
+        "is_common": true,
+        "required_management": 1,
+    "required_licenses":[
+      {
+        "license": 1001
+      },
+      {
+        "license": 1002
+      }
+    ],
+    "required_languages":
+      {
+        "language_type": 4,
+        "writing_skill": 1,
+        "reading_skill": 2,
+        "talking_skill": 3,
+        "toeic": 600,
+        "toefl_pbt": 100,
+        "toefl_ibt": 100
+      },
+    "required_experience_developments":[
+      {
+        "development_category": 1,
+        "development_type": 1,
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "development_category": 0,
+        "development_type": 3,
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+    "required_experience_jobs":
+      {
+        "experience_industries": [
+          {
+            "experience_industry": 1
+          },
+          {
+            "experience_industry": 2
+      }],
+        "experience_occupations":[
+          {
+            "experience_occupation": 1
+          },
+          {
+            "experience_occupation": 2
+          }
+        ],
+        "experience_year": 1
+      },
+    "required_pc_tools":[
+    {
+      "tool": 1
+    },
+    {
+      "tool": 2
+    }
+  ]
+      }
+    ],
+    "required_social_experiences":[
+      {
+        "social_experience_type": 2
+      }
+    ],
+      "selection_flow_patterns":[
+    {
+      "flow_pattern": 1,
+      "selection_informations":[
+        {
+          "selection_type": 1,
+          "selection_point": "test",
+          "passed_example": "test",
+          "fail_example": "test",
+          "passing_rate": 1
+        }
+      ]
+    },
+    {
+      "flow_pattern": 2,
+      "selection_informations":[
+        {
+          "selection_type": 4,
+          "selection_point": "test",
+          "passed_example": "test",
+          "fail_example": "test",
+          "passing_rate": 1,
+          "is_questionnairy": true
+        }
+      ]
+    }
+  ]
+}
+### 求人情報の登録
+POST {{baseURL}}/api/job_information/create/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "expiration_date": "2020-01-01",
+  "register_phase": 9,
+    "occupation": 1000,
+    "title": "Abcd",
+    "background": 4,
+    "work_time": "10:00-18:00",
+    "overtime": 0,
+    "overtime_average": "10:00-18:00",
+    "nationality": 1,
+    "fixed_overtime_payment": 0,
+    "fixed_overtime_detail": "30hours",
+    "commission": 100,
+    "commission_rate":30,
+    "refund_policy": "80%",
+    "public_offering": 3,
+    "work_location": "渋谷区12-32-31",
+    "transfer": 1,
+    "transfer_detail": "2years",
+    "under_income": 400,
+    "over_income": 600,
+    "salary": "promote",
+    "insurance": "Full social insurance",
+    "fixed_overtime": 0,
+    "trial_period": 0, 
+    "trial_period_detail": "3month",
+    "employment_period": 1,
+    "employment_period_detail": "3years",
+    "holiday_type": 1,
+    "holiday_detail": "New Year holiday",
+    "passive_smoking": 1,
+    "selection_flow": "Document screening → 1st interview → final interview → unofficial offer",
+    "gender": 1,
+    "nationality": 1,
+    "final_education": 1,
+    "school_level": 1,
+    "medical_history": 1,
+    "age_under": 20,
+    "age_over": 35,
+    "job_change": 2,
+    "short_resignation": 0,
+    "short_resignation_remarks": "If you quit within one month, you cannot be rehired.",
+    "social_experience_year": 1,
+    "social_experience_month": 1,
+    "publish_to_alliance": 1,
+    "study_category": 1,
+    "other_required": "Other qualifications will also be taken into consideration",
+        "hide_to_agents":[
+      {
+        "agent_id": 1
+      },
+      {
+        "agent_id": 1
+      }
+    ],
+    "targets":[
+      {
+        "target": 1
+      },
+      {
+        "target": 2
+      }
+    ],
+    "prefectures":[
+      {
+      "prefecture": 2
+      },
+      {
+        "prefecture": 32
+      }
+    ],
+    "occupations":[
+      {
+        "occupation": 1
+      }
+    ],
+    "employment_statuses":[
+      {
+        "employment_status": 1
+      },
+      {
+        "employment_status": 2
+      }
+    ],
+    "work_charm_points":[
+      {
+        "title": "In-house work environment",
+        "contents": "You can work from all over the country with full remote"
+      },
+      {
+        "title": "Earn money!",
+        "contents": "Incentives will be provided according to the results"
+      }
+    ],
+     "required_conditions":[
+      {
+        "is_common": true,
+        "required_management": 1,
+    "required_licenses":[
+      {
+        "license": 1001
+      },
+      {
+        "license": 1002
+      }
+    ],
+    "required_languages":
+      {
+        "language_type": 4,
+        "writing_skill": 1,
+        "reading_skill": 2,
+        "talking_skill": 3,
+        "toeic": 600,
+        "toefl_pbt": 100,
+        "toefl_ibt": 100
+      },
+    "required_experience_developments":[
+      {
+        "development_category": 1,
+        "development_type": 1,
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "development_category": 0,
+        "development_type": 3,
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+    "required_experience_jobs":
+      {
+        "experience_industries": [{
+          "experience_industry": 1
+        }],
+        "experience_occupations":[
+          {
+            "experience_occupation": 1
+          },
+          {
+            "experience_occupation": 2
+          }
+        ],
+        "experience_year": 1
+      },
+    "required_pc_tools":[
+    {
+      "tool": 1
+    },
+    {
+      "tool": 2
+    }
+  ]
+      }
+    ],
+    "required_social_experiences":[
+      {
+        "social_experience_type": 2
+      }
+    ],
+    "required_positions":[
+      {
+        "position": 1,
+        "position_detail": "test",
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "position": 2,
+        "position_detail": "test2",
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+      "selection_flow_patterns":[
+    {
+      "flow_pattern": 1,
+      "selection_informations":[
+        {
+          "selection_type": 1,
+          "selection_point": "test",
+          "passed_example": "test",
+          "fail_example": "test",
+          "passing_rate": 1
+        }
+      ]
+    },
+    {
+      "flow_pattern": 2,
+      "selection_informations":[
+        {
+          "selection_type": 4,
+          "selection_point": "test",
+          "passed_example": "test",
+          "fail_example": "test",
+          "passing_rate": 1
+        }
+      ]
+    }
+  ],
+  "occupations":[
+    {
+      "occupation": 1
+    },
+    {
+      "occupation": 2
+    }
+  ],
+    "required_pc_tools":[
+    {
+      "tool": 3
+    },
+    {
+      "tool": 4
+    }
+  ]
+}
+
+### 求人情報の登録
+POST {{baseURL}}/api/job_information/create/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "occupation": 1000
+}
+
+### 求人診断
+GET {{baseURL}}/api/lp/job_information/list/for_diagnosis HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}
+
+### 求人診断
+POST {{baseURL}}/api/lp/job_information/search/diagnosis HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "gender": 1,
+  "birthyear": "1996",
+  "birthmonth": "07",
+  "birthday": "04",
+  "company_num": 0,
+  "income": 300,
+  "school_category": 6,
+  "first_language": 1,
+  "driver_licence": true,
+  "licenses": [1001, 1002],
+  "job_information_list": [
+    {
+      "id": 399,
+      "uuid": "64e72e5a-47e8-11ef-ae7f-a683e7e4666c",
+      "enterprise_id": 0,
+      "billing_address_id": 251,
+      "under_income": 400,
+      "over_income": 400,
+      "gender": 99,
+      "nationality": null,
+      "final_education": null,
+      "age_under": 20,
+      "age_over": 29,
+      "job_change": 1,
+      "driver_licence": 99,
+      "is_guaranteed_interview": true,
+      "features": [
+        {
+          "job_information_id": 399,
+          "feature": 2
+        },
+        {
+          "job_information_id": 399,
+          "feature": 19
+        }
+      ],
+      "prefectures": [
+        {
+          "id": 0,
+          "job_information_id": 399,
+          "prefecture": 12
+        }
+      ],
+      "required_conditions": null,
+      "required_licenses": null,
+      "required_languages": null
+    },
+    {
+      "id": 354,
+      "uuid": "0e504c14-47e0-11ef-b239-a683e7e4666c",
+      "enterprise_id": 0,
+      "billing_address_id": 215,
+      "under_income": 300,
+      "over_income": 800,
+      "gender": 99,
+      "nationality": null,
+      "final_education": 1,
+      "age_under": 23,
+      "age_over": 32,
+      "job_change": 1,
+      "driver_licence": 99,
+      "is_guaranteed_interview": true,
+      "features": [
+        {
+          "job_information_id": 354,
+          "feature": 0
+        },
+        {
+          "job_information_id": 354,
+          "feature": 6
+        },
+        {
+          "job_information_id": 354,
+          "feature": 19
+        }
+      ],
+      "prefectures": [
+        {
+          "id": 0,
+          "job_information_id": 354,
+          "prefecture": 12
+        }
+      ],
+      "required_conditions": null,
+      "required_licenses": null,
+      "required_languages": null
+    }
+  ]
+}
+
+###################################### PUTメソッド #####################################
+
+### 求人情報の更新
+PUT {{baseURL}}/api/job_information/update/63 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "billing_address_id": 1,
+      "study_category": 99,
+  "register_phase": 0,
+  "expiration_date": "2020-01-01", 
+    "occupation": 3,
+    "title": "テスト株式会社の営業職",
+    "background": 2,
+    "work_time": "10:00-18:00",
+    "overtime": 3,
+    "overtime_average": "10時間",
+    "fixed_overtime_payment": 3,
+    "fixed_overtime_detail": "３０時間以上の場合は特別手当支給",
+    "commission": 100,
+    "commission_rate":30,
+    "refund_policy": "１ヶ月80%",
+    "nationality": 3,
+        "contact_manner": 1,
+    "publish_to_alliance": 1,
+     "required_management": 1,
+    "required_management_detail": "更新！管理職経験者優遇",
+    "required_documents_detail": "Updated Resume, photo, etc.",
+    "secret_memo": "Updated This is a secret memo",
+    "employment_insurance": false,
+    "accident_insurance": true,
+    "health_insurance": true,
+    "pension_insurance": true,
+      "occupations":[
+    {
+      "occupation": 1
+    },
+    {
+      "occupation": 2
+    }
+  ],
+    "prefectures":[
+      {
+      "prefecture": 2
+      },
+      {
+        "prefecture": 3
+      }
+    ],
+    "employment_statuses":[
+      {
+        "employment_status": 1
+      },
+      {
+        "employment_status": 2
+      },
+      {
+        "employment_status": 3
+      }
+    ],
+    "work_charm_points":[
+      {
+        "title": "自社での職場環境",
+        "contents": "フルリモートで全国から仕事を出来ます"
+      }
+    ],
+    "required_conditions":[
+      {
+        "is_common": true,
+        "required_management": 1,
+    "required_licenses":[
+      {
+        "license": 1001
+      },
+      {
+        "license": 1002
+      }
+    ],
+    "required_languages":
+      {
+        "language_type": 4,
+        "writing_skill": 1,
+        "reading_skill": 2,
+        "talking_skill": 3,
+        "toeic": 600,
+        "toefl_pbt": 100,
+        "toefl_ibt": 100
+      },
+    "required_experience_developments":[
+      {
+        "development_category": 1,
+        "development_type": 1,
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "development_category": 0,
+        "development_type": 3,
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+    "required_experience_jobs":
+      {
+        "experience_industries": [
+          {
+            "experience_industry": 1
+          },
+          {
+            "experience_industry": 2
+          },
+          {
+            "experience_industry": 3
+          }
+        ],
+        "experience_occupations":[
+          {
+            "experience_occupation": 1
+          },
+          {
+            "experience_occupation": 2
+          }
+        ],
+        "experience_year": 1
+      },
+    "required_pc_tools":[
+    {
+      "tool": 1
+    },
+    {
+      "tool": 2
+    }
+    ]
+      },
+      {
+        "is_common": true,
+        "required_management": 1,
+    "required_licenses":[
+      {
+        "license": 1001
+      },
+      {
+        "license": 1002
+      }
+    ],
+    "required_languages":
+      {
+        "language_type": 4,
+        "writing_skill": 1,
+        "reading_skill": 2,
+        "talking_skill": 3,
+        "toeic": 600,
+        "toefl_pbt": 100,
+        "toefl_ibt": 100
+      },
+    "required_experience_developments":[
+      {
+        "development_category": 1,
+        "development_type": 1,
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "development_category": 0,
+        "development_type": 3,
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+    "required_experience_jobs":
+      {
+        "experience_occupations":[
+          {
+            "experience_occupation": 1
+          },
+          {
+            "experience_occupation": 2
+          }
+        ],
+        "experience_year": 1
+      },
+    "required_pc_tools":[
+    {
+      "tool": 1
+    },
+    {
+      "tool": 2
+    }
+  ]
+      }
+    ],
+    "required_social_experiences":[
+      {
+        "social_experience_type": 1
+      },
+      {
+        "social_experience_type": 2,
+        "experience_year": 1,
+        "experience_month": 1
+      },
+      {
+        "social_experience_type": 3
+      }
+    ],
+      "selection_flow_patterns":[
+    {
+      "flow_pattern": 1,
+      "selection_informations":[
+        {
+          "selection_type": 1,
+          "selection_point": "テストu",
+          "passed_example": "テストu",
+          "fail_example": "テストu",
+          "passing_rate": 1
+        },
+        {
+          "selection_type": 1,
+          "selection_point": "テストu",
+          "passed_example": "テストu",
+          "fail_example": "テストu",
+          "passing_rate": 1
+        }
+      ]
+    },
+    {
+      "flow_pattern": 2,
+      "selection_informations":[
+        {
+          "selection_type": 3,
+          "selection_point": "テスト",
+          "passed_example": "テスト",
+          "fail_example": "テスト",
+          "passing_rate": 4,
+          "is_questionnairy": true
+        }
+      ]
+    }
+  ],
+      "required_positions":[
+      {
+        "position": 1,
+        "position_detail": "テスト更新",
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "position": 2,
+        "position_detail": "テスト更新2",
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+      "required_managements":[
+    {
+      "management": 1,
+      "management_detail": "テスト"
+    },
+    {
+      "management": 2,
+      "management_detail": "テスト"
+    }
+  ],
+      "required_pc_tools":[
+    {
+      "tool": 3
+    },
+    {
+      "tool": 4
+    }
+  ]
+}
+
+###################################### GETメソッド #####################################
+
+### 求人IDで求人情報の取得
+GET {{baseURL}}/api/job_information/63 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 請求先IDで求人一覧を取得
+GET {{baseURL}}/api/job_information/list/billing_address/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 企業IDで求人一覧を取得
+GET {{baseURL}}/api/job_information/list/enterprise/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDで求人一覧を取得
+GET {{baseURL}}/api/job_information/list/agent/2 HTTP/1.1
+Content-Type: application/json
+Authorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/list/agent/page/2?page_number=2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDから有効求人を取得
+GET {{baseURL}}/api/job_information/active/list/agent/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/active/list/agent/page/2?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/list/alliance/page/2?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/list/search/1?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 検索条件ごとにで50件取得
+GET {{baseURL}}/api/job_information/list/search/1?page_number=1&required_experience_industries[]=0&required_experience_occupations[]=0&required_languages[]=0&required_language_levels[]=0&required_language_levels[]=1&required_excel_skills[]=0&required_excel_skills[]=1&required_word_skills[]=1&required_power_point_skills[]=2&required_development_languages[]=0&required_development_languages[]=1&required_development_os[]=0 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 検索条件ごとにで50件取得
+GET {{baseURL}}/api/job_information/active/list/search/2?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 検索条件ごとにで50件取得
+GET {{baseURL}}/api/job_information/list/search/alliance/3?free_word=&page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 検索条件ごとにで50件取得 アライアンスを含む Public
+GET {{baseURL}}/api/job_information/public/list/search/2?free_word=&page_number=1&job_seeker_id_list[]=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求人IDで求人票PDFを取得
+GET {{baseURL}}/api/job_information/pdf/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### すべての求人一覧を取得
+GET {{baseURL}}/api/job_information/all?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### DELETEメソッド #####################################
+### 指定IDの求人を削除
+DELETE {{baseURL}}/api/job_information/delete HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "id": 6
+}
+
+
+###################################### 登録求職者情報 #####################################
+
+###################################### POST メソッド #####################################
+
+
+### 求職者情報の登録
+POST {{baseURL}}/api/job_seeker/create/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "agent_id": 2,
+  "agent_staff_id":2,
+  "user_status": 0,
+  "last_name": "64",
+  "first_name": "64",
+  "last_furigana": "64",
+  "first_furigana": "64",
+  "gender": 0,
+  "study_category": 0,
+  "phase":3,
+  "interview_date": "64086-08-04T15:04",
+   "work_histories": [
+    {
+      "company_name": "test",
+      "employee_number_single": 10,
+      "employee_number_group": 100,
+      "public_offering": 1,
+      "joining_year": "8010-01",
+      "employment_status": 1,
+      "retire_reason_of_truth": "test",
+      "retire_reason_of_public": "test",
+      "retire_year": "8014-06",
+      "experience_industries":[
+        {
+        "industry": 1
+        },
+        {
+        "industry": 8
+        }
+      ],
+      "department_histories":[
+        {
+          "position": 1,
+          "position_detail": "Responsible for the test department",
+          "job_description": "Test in the test business",
+          "start_year": "8010-01",
+          "end_year": "8014-08",
+          "experience_occupations":[
+            {
+              "occupation": 1
+            },
+            {
+              "occupation": 8
+            }
+          ]
+        },
+        {
+          "occupation": 27,
+          "position": 2,
+          "start_year": "2010-02",
+          "end_year": "2014-12"
+        }
+      ]
+    }
+  ],
+  "hide_to_agents":[
+    {
+      "agent_id": 1
+    },
+    {
+      "agent_id": 1
+    }
+  ]
+  }
+
+
+### 求職者情報の登録
+POST {{baseURL}}/api/job_seeker/create/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 2,
+  "agent_staff_id": 1,
+  "user_status": 0,
+  "last_name": "田植",
+  "first_name": "太郎",
+  "last_furigana": "タウエ",
+  "first_furigana": "タロウ",
+  "gender": 0,
+  "gender_remarks": "テスト",
+  "birthday": "1998-01-01",
+  "spouse": 1,
+  "spouse_obligation": 0,
+  "dependents": 1,
+  "phone_number": "09099991111",
+  "email": "test@example.com",
+  "emergency_phone_number": "09099991111",
+  "post_code": "100-0005",
+  "prefecture": 1,
+  "address": "東京都千代田区丸の内1-1-1",
+  "address_furigana": "テストfurigana",
+	"state_of_employment": 1,
+  "job_summary": "テスト",
+  "research_content": "テスト",
+  "pc_skill": 1,
+  "join_company_period": 2,
+  "job_change": 1,
+  "annual_income": 1,
+  "desired_annual_income": 1,
+  "desired_company_scale": 1,
+  "transfer": 1,
+  "transfer_requirement": "テスト",
+  "short_resignation": 1,
+  "short_resignation_remarks": "テスト",
+  "medical_history": 1,
+  "nationality": 1,
+  "appearance": 1,
+  "appearance_detail": "アピアランス詳細テスト",
+  "communication": 1,
+  "communication_detail": "コミュニケーション詳細テスト",
+  "thinking": 1,
+  "secret_memo": "テスト",
+  "job_hunting_state": 1,
+  "contact_manner": 1,
+  "publish_to_alliance": 0,
+  "recommend_reason": "テスト",
+  "phase": 1,
+  "interview_date": "2020-01-01-12:00:00",
+  "register_phase": 1,
+    "desired_holiday_types": [
+    {
+      "holiday_type": 1
+    },
+    {
+      "holiday_type": 2
+    }
+  ],
+  "student_histories": [
+    {
+      "school_category": 4,
+      "school_name": "テスト大学",
+      "school_level": 1,
+      "subject": "テスト",
+      "entrance_year": "2010年",
+      "first_status": 1,
+      "graduation_year": "2014年",
+      "last_status": 1
+    },
+    {
+      "school_category": 3,
+      "school_name": "テスト高校",
+      "school_level": 1,
+      "subject": "テスト",
+      "entrance_year": "2007年",
+      "last_status": 1,
+      "graduation_year": "2010年"
+    }
+  ],
+  "work_histories": [
+    {
+      "company_name": "テスト株式会社",
+      "employee_number_single": 10,
+      "employee_number_group": 100,
+      "public_offering": 1,
+      "joining_year": "2010-01",
+      "employment_status": 1,
+      "retire_reason_of_truth": "テスト",
+      "retire_reason_of_public": "テスト",
+      "retire_year": "2014-06",
+      "first_status": 1,
+      "last_status": 1,
+      "experience_industries":[
+        {
+        "industry": 1
+        },
+        {
+        "industry": 2
+        }
+      ],
+"department_histories":[
+        {
+          "position": 7,
+          "position_detail": "Responsible for the test department",
+          "job_description": "Test in the test business",
+          "start_year": "2010-01",
+          "end_year": "2014-08",
+          "experience_occupations":[
+            {
+              "occupation": 5
+            },
+            {
+              "occupation": 6
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "desired_company_scales": [
+    {
+      "desiredcompany_scale": 1
+    },
+    {
+      "desired_company_scale": 2
+    }
+  ],
+  "licenses":[
+    {
+      "license_type": 1004,
+      "acquisition_time": "2010年"
+    },
+    {
+      "license_type": 1005,
+      "acquisition_time": "2019年"
+    }
+  ],
+  "self_promotions":[
+    {
+      "title": "テスト自己紹介",
+      "contents": "テストテスト"
+    }
+  ],
+  "documents":
+    {
+    "cv_origin_url": "dkjshhoaihiaoehf123",
+    "cv_pdf_url": "dosjicszlhkfhglkvh",
+    "resume_origin_url": "dskjfhgklsjfhgklsjfhg",
+    "resume_pdf_url": "dskjfhgklsjfhgklsjfhg",
+    "id_photo_url": "dskjfhgklsjfhgklsjfhg"
+    }
+    ,
+  "desired_industries": [
+    {
+      "desired_industry": 1,
+      "desired_rank": 1
+    },
+    {
+      "desired_industry": 2,
+      "desired_rank": 2
+    },
+    {
+      "desired_industry": 3,
+      "desired_rank": 1
+    },
+    {
+      "desired_industry": 4,
+      "desired_rank": 2
+    },
+    {
+      "desired_industry": 5,
+      "desired_rank": 3
+    },
+    {
+      "desired_industry": 6,
+      "desired_rank": 1
+    }
+  ],
+  "desired_occupations": [
+    {
+      "desired_occupation": 1,
+      "desired_rank": 1
+    },
+    {
+      "desired_occupation": 2,
+      "desired_rank": 1
+    }
+  ],
+  "desired_work_locations":[{
+    "desired_work_location": 1,
+    "desired_rank": 1
+  },
+  {
+    "desired_work_location": 2,
+    "desired_rank": 1
+  }],
+  "development_skills":[{
+      "development_category": 1,
+      "development_type": 2,
+      "experience_year": 3,
+      "experience_month": 4
+},{
+        "development_category": 1,
+      "development_type": 4,
+      "experience_year": 3,
+      "experience_month": 4
+},
+{
+          "development_category": 0,
+      "development_type": 4,
+      "experience_year": 3,
+      "experience_month": 4
+}
+
+],
+  "language_skills":[
+    {
+        "language_type": 1,
+        "writing_skill": 1,
+        "reading_skill": 1,
+        "talking_skill": 1,
+        "toeic": 600,
+        "toeic_examination_year": "2010-12",
+        "toefl_pbt": 100,
+        "toefl_pbt_examination_year": "2010-12",
+        "toefl_ibt": 100,
+        "toefl_ibt_examination_year": "2010-12"
+    }
+  ],
+  "pc_skills":[
+    {
+      "skill_category": 1, 
+      "skill_type": 1
+    },
+    {
+      "skill_category": 0, 
+      "skill_type": 1
+    },
+    {
+            "skill_category": 3, 
+      "skill_type": 2
+    }
+  ],
+  "pc_tools":[
+    {
+      "tool": 1
+    },
+    {
+      "tool": 2
+    },
+    {
+      "tool": 3
+    }
+  ]
+}
+
+### 求職者情報の登録
+POST {{baseURL}}/api/job_seeker/document HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_seeker_id": 2,
+    "cv_origin_url": "cv_origin_url.firebase.com",
+    "cv_pdf_url": "cv_pdf_url.firebase.com",
+    "resume_origin_url": "resume_origin_url.firebase.com",
+    "resume_pdf_url": "resume_pdf_url.firebase.com",
+    "recommendation_origin_url": "recommend_origin_url.firebase.com",
+    "recommendation_pdf_url": "recommend_pdf_url.firebase.com",
+    "id_photo_url": "id_photo_url.firebase.com"
+}
+
+###################################### PUTメソッド #####################################
+
+### 求職者情報の更新
+PUT {{baseURL}}/api/job_seeker/update/7/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 2,
+  "agent_staff_id": 1,
+  "user_status": 0,
+  "last_name": "山田",
+  "first_name": "太郎",
+  "last_furigana": "ヤマダ",
+  "first_furigana": "タロウ",
+  "gender": 0,
+  "gender_remarks": "",
+  "birthday": "2000-01-01",
+  "spouse": 1,
+  "spouse_obligation": 0,
+  "dependents": 1,
+  "phone_number": "09099991111",
+  "email": "test@example.com",
+  "emergency_phone_number": "09099991111",
+  "post_code": "100-0005",
+  "address": "東京都千代田区丸の内1-1-1",
+    "address_furigana": "テストfuriganaUpdate",
+    "secret_memo": "テスト",
+  "job_hunting_state": 1,
+  "contact_manner": 1,
+  "publish_to_alliance": 1,
+  "appearance_detail": "アピアランス詳細更新テスト",
+  "communication_detail": "コミュニケーション詳細更新テスト",
+    "phase": 1,
+  "interview_date": "2020-01-01-12:00:00",
+    "register_phase": 0,
+    "desired_company_scales": [
+    {
+      "desiredcompany_scale": 100
+    },
+    {
+      "desired_company_scale": 222
+    }
+  ],
+     "desired_holiday_types": [
+    {
+      "holiday_type": 1
+    },
+    {
+      "holiday_type": 2
+    }
+  ],
+  "student_histories": [
+    {
+      "school_name": "テストテスト大学",
+      "first_status": 3,
+      "last_status": 2
+    }
+  ],
+  "work_histories": [
+    {
+      "company_name": "テストテスト株式会社",
+      "first_status": 3,
+      "last_status": 2,
+      "experience_industries": [
+        {
+        "industry": 5
+        },
+        {
+        "industry": 6
+        }
+      ],
+      "department_histories":[
+        {
+          "occupation": 27,
+          "department": "テスト部",
+          "management_number": 7,
+          "management_detail": "Responsible for the test department",
+          "job_description": "Test in the test business",
+          "start_year": "2010-01",
+          "end_year": "2014-08",
+          "experience_occupations":[
+            {
+              "occupation": 5
+            },
+            {
+              "occupation": 6
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "licenses": [
+    {
+      "license_type": 3
+    }
+  ],
+  "self_promotions":[
+    {
+      "title": "テスト自己紹介"
+    }
+  ],
+  "documents":
+{
+    "cv_origin_url": "cv_origin_url.firebase.com",
+    "cv_pdf_url": "cv_pdf_url.firebase.com",
+    "resume_origin_url": "resume_origin_url.firebase.com",
+    "resume_pdf_url": "resume_pdf_url.firebase.com",
+    "recommendrion_origin_url": "recommend_origin_url.firebase.com",
+    "recommendation_pdf_url": "recommend_pdf_url.firebase.com",
+    "id_photo_url": "id_photo_url.firebase.com"
+},
+  "desired_industries": [
+    {
+      "desired_industry": 1,
+      "desired_rank": 1
+    },
+    {
+      "desired_industry": 2,
+      "desired_rank": 2
+    }
+  ],
+  "desired_occupations": [
+    {
+      "desired_occupation": 1,
+      "desired_rank": 1
+    },
+    {
+      "desired_occupation": 2,
+      "desired_rank": 1
+    }
+  ],
+  "desired_work_location":[{
+    "desired_work_location": 1,
+    "desired_rank": 1
+  },
+  {
+    "desired_work_location": 2,
+    "desired_rank": 1
+  }],
+  "development_skills":[{
+      "development_category": 1,
+      "development_type": 2,
+      "experience_year": 3,
+      "experience_month": 4
+}],
+  "language_skills":[
+    {
+      "language_type": 1,
+      "toefl_ibt": 100,
+      "toefl_pbt": 100
+    },
+    {
+      "language_type": 1,
+      "toefl_ibt": 100,
+      "toefl_pbt": 100
+    },
+    {
+      "language_type": 2,
+      "toefl_ibt": 100,
+      "toefl_pbt": 100
+    }
+  ],
+  "pc_skills":[
+    {
+      "skill_category": 1, 
+      "skill_type": 1
+    },
+    {
+      "skill_category": 1, 
+      "skill_type": 1
+    },
+    {
+      "skill_category": 1, 
+      "skill_type": 1
+    }
+  ],
+  "pc_tools":[
+    {
+      "tool": 1
+    },
+    {
+      "tool": 2
+    },
+    {
+      "tool": 7
+    }
+  ]
+}
+
+### 求職者資料の更新
+PUT {{baseURL}}/api/job_seeker/document/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+    "cv_origin_url": "update_cv_origin_url.firebase.com",
+    "cv_pdf_url": "update_cv_pdf_url.firebase.com",
+    "resume_origin_url": "update_resume_origin_url.firebase.com",
+    "resume_pdf_url": "update_resume_pdf_url.firebase.com",
+    "recommendation_origin_url": "update_recommend_origin_url.firebase.com",
+    "recommendation_pdf_url": "update_recommend_pdf_url.firebase.com",
+    "id_photo_url": "update_id_photo_url.firebase.com"
+}
+  
+### 求職者情報の更新
+PUT {{baseURL}}/api/job_seeker/update/activity_memo/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "activity_memo" :"String"
+}
+  
+### 求職者情報の更新
+PUT {{baseURL}}/api/job_seeker/update/phase HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_seeker_id":8,
+  "phase" :4
+}
+
+###################################### GETメソッド #####################################
+
+### 求職者IDで求職者情報の取得
+GET {{baseURL}}/api/job_seeker/233 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求職者IDで求職者資料の取得
+GET {{baseURL}}/api/job_seeker/document/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### エージェントIDで求職者一覧を取得
+GET {{baseURL}}/api/job_seeker/list/agent/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDで活動中の求職者一覧を取得
+GET {{baseURL}}/api/job_seeker/active/list/agent/2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_seeker/list/agent/page/2?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_seeker/active/list/agent/page/2?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/search_list/page/agent/alliance/1/type/all?page_number=1&free_word=te HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/search_list/page/agent/alliance/3/type/own?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/search_list/page/agent/alliance/3/type/alliance?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_information/search_list/page/agent/alliance/3/type/help?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得　アライアンス
+GET {{baseURL}}/api/job_seeker/list/alliance/page/3?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_seeker/list/search/2?page_number=1&language_levels[]=0&language_levels[]=1&excel_skills[]=0&excel_skills[]=1&word_skills[]=1&power_point_skills[]=2&another_pc_skills[]=3&another_pc_skills[]=7 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_seeker/list/search/1?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントIDとページ番号で50件取得
+GET {{baseURL}}/api/job_seeker/list/search/alliance/3?free_word=&page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### すべての求職者一覧を取得
+GET {{baseURL}}/api/job_seeker/all?page_number=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 求職者IDでマスクレジュメPDFを取得
+GET {{baseURL}}/api/job_seeker/mask_resume/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### DELETEメソッド #####################################
+### 指定IDの求職者を削除
+DELETE {{baseURL}}/api/job_seeker/delete HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "id": 1
+}
+
+### 指定IDの求職者を削除
+DELETE {{baseURL}}/api/job_seeker/28/document/id_photo_url/delete HTTP/1.1
+Content-Type: application/json
+
+
+###################################### メッセージテンプレートCRUD #####################################
+###################################### POSTメソッド #####################################
+
+### メッセージテンプレートを作成
+POST {{baseURL}}/api/template/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "agent_staff_id": 2,
+  "send_scene": 4,
+  "title": "test",
+  "subject": "テストサブジェクト",
+  "content": "test"
+}
+
+###################################### PUTメソッド #####################################
+### メッセージテンプレートを更新
+PUT {{baseURL}}/api/template/update/2 HTTP/1.1
+Content-Type: application/json
+
+{
+  "agent_staff_id": 1,
+  "send_scene": 1,
+  "title": "テスト",
+  "subject": "更新テストサブジェクト",
+  "content": "テストテストテスト12345"
+}
+
+###################################### GETメソッド #####################################
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/template/2 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/template/list/staff/2 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/template/list/staff/1/send_scene/2 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/template/list/agent/1 HTTP/1.1
+Content-Type: application/json
+
+
+
+###################################### DELETEメソッド #####################################
+### 指定IDの企業を削除
+DELETE {{baseURL}}/api/template/delete/2 HTTP/1.1
+Content-Type: application/json
+
+###################################### SaleCRUD #####################################
+###################################### POSTメソッド #####################################
+
+### メッセージテンプレートを作成
+POST {{baseURL}}/api/sales/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "agent_staff_id": 1,
+  "job_seeker_id": 11,
+  "job_information_id": 4,
+  "accuracy": 5,
+  "billing_amount": 5,
+  "cost": 4,
+  "gross_profit": 4,
+  "ra_staff_id": 1,
+  "billing_amount": 3,
+  "ra_sales_ratio": 2,
+  "ca_staff_id": 2,
+  "ra_staff_id": 3,
+  "ca_sales_ratio": 4,
+  "contract_signed_month": "test",
+  "billing_month": "12",
+  "content": "test"
+}
+
+###################################### PUTメソッド #####################################
+### メッセージテンプレートを更新
+PUT {{baseURL}}/api/sales/update/9 HTTP/1.1
+Content-Type: application/json
+
+{
+  "agent_staff_id": 1,
+  "job_seeker_id": 19,
+  "job_information_id": 4,
+  "accuracy": 6,
+  "billing_amount": 9,
+  "cost": 4,
+  "gross_profit": 4,
+  "ra_staff_id": 3,
+  "billing_amount": 3,
+  "ra_sales_ratio": 2,
+  "ca_staff_id": 2,
+  "ca_sales_ratio": 4,
+  "contract_signed_month": "fd",
+  "billing_month": "12",
+  "content": "fjkla;dsewaoipr"
+}
+
+###################################### GETメソッド #####################################
+
+### メッセージテンプレートを更新
+GET {{baseURL}}/api/sales/search/list/by/id_list?id_list[]=17 HTTP/1.1
+Content-Type: application/json
+
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/sales/2 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/sales/job_seeker/27 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/sales/agent/1 HTTP/1.1
+Content-Type: application/json
+
+
+###################################### タスクCRUD #####################################
+###################################### POSTメソッド #####################################
+
+### 1回目のタスクを作成
+POST {{baseURL}}/api/task/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_seeker_id":47,
+  "job_information_id":8,
+  "selection_information_id": 1,
+  "ra_staff_id": 35,
+  "ca_staff_id": 6,
+  "phase_category": 0,
+  "phase_sub_category": 4,
+  "prev_phase_category": 0,
+  "prev_phase_sub_category": 2,
+  "staff_type": 5,
+  "remarks": "test",
+  "deadline_day": "2022-12-01",
+  "deadline_time": 12,
+  "unofficial_offer_consent_url": "https://www.google.com"
+}
+
+### Nextタスクを作成
+POST {{baseURL}}/api/task/entry/create/4 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "task_group_id": 1,
+  "ca_staff_id": 2,
+  "ra_staff_id": 5,
+  "job_seeker_id":4,
+  "agent_staff_id": 1,
+  "job_information_id":3,
+  "selection_flow_pattern_id":10,
+  "selection_information_id": 1,
+  "ra_staff_id": 35,
+  "ca_staff_id": 6,
+  "phase_category": 0,
+  "phase_sub_category": 4,
+  "prev_phase_category": 0,
+  "prev_phase_sub_category": 2,
+  "remarks": "testtask",
+  "deadline_day": "2022-12-01",
+  "deadline_time": 12,
+  "talk_about_in_interview":"test",
+  "intention_to_job_offer":12,
+  "intention_detail":"or",
+  "good_point": "良い点",
+  "ng_point": "NG点",
+  "is_passed": true,
+  "interview_date": "2023-02-01T18:00",
+  "conditions_notice_url": "https://www.condition.com",
+  "job_offer_notice_url": "https://www.job_offer.com",
+  "accept_job_offer_consent_url": "https://www.accept_job_offer.com"
+}
+
+
+### タスクを作成
+POST {{baseURL}}/api/task/document HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "task_group_id": 29,
+  "document_type":3,
+  "document_url":"reodaf"
+}
+
+### タスクを作成
+POST {{baseURL}}/api/task/hold_job_offer/create/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "task_group_id": 17,
+  "job_seeker_id": 2,
+  "selection_flow_pattern_id": 3,
+  "ra_staff_id": 23,
+  "ca_staff_id": 10,
+  "job_information_id": 6,
+  "staff_type": 6,
+  "deadline_day": "test",
+  "deadline_time": 6,
+  "document1_url":"test",
+  "document2_url":"test",
+  "document3_url":"change",
+  "document4_url":"test",
+  "prev_phase_category": 8,
+  "prev_phase_sub_category": 4,
+  "phase_category": 9,
+  "phase_sub_category": 0
+}
+
+###################################### PUTメソッド #####################################
+### タスクを更新
+PUT {{baseURL}}/api/task/update/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "phase_category": 3,
+  "phase_sub_category": 4,
+  "remarks": "test",
+  "deadline_day": "2020-01-01",
+  "deadline_time": 1,
+  "conditions_notice_url": "https://www.condition.com",
+  "unofficial_offer_consent_url": "https://www.google.com"
+}
+
+###################################### GETメソッド #####################################
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/after_entry_selection/list/job_seeker/17 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/1 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/list/job_seeker/2 HTTP/1.1
+Content-Type: application/json
+
+### AgentIDからタスクを取得
+GET {{baseURL}}/api/task/list/agent/page/1?page_number=1 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/list/search/1?page_number=1&enterprise_freeWord=M HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/latest_list/agent/1/agent_staff/2?dead_line=2&staff_type=0&partner_type=0&task_type=0&phase=0 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/ra/latest_list/2?phase=2 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/ca/latest_list/2?phase=2 HTTP/1.1
+Content-Type: application/json
+
+### タスクIDからタスクを取得
+GET {{baseURL}}/api/task/group/1 HTTP/1.1
+Content-Type: application/json
+
+###################################### DELETEメソッド #####################################
+### タスクIDからタスクを取得
+DELETE {{baseURL}}/api/task/delete/11 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "id": 4
+}
+
+### タスクIDからタスクを取得
+DELETE {{baseURL}}/api/enterprise/1/material/3/delete HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+###################################### DELETEメソッド #####################################
+### 指定IDの企業を削除
+DELETE {{baseURL}}/api/job_seeker/delete HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "id": 4
+}
+
+###################################### GoogleカレンダーCRUD #####################################
+### リダイレクトURLの作成
+GET {{baseURL}}/api/task/google_oauth/redirect_url/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###  GoogleOAuth認証用のトークンを取得する関数
+POST {{baseURL}}/api/task/google_oauth/token HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "code": "",
+  "state":""
+}
+
+### GoogleCalendarにタスクを作成する関数
+POST  {{baseURL}}/api/task/google_calendar/create/1/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###  GoogleCalendarからタスクを取得する関数
+GET {{baseURL}}/api/task/google_calendar/list/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### 求人票CRUD #####################################
+###################################### POSTメソッド #####################################
+### 求人票を作成
+POST {{baseURL}}/api/job_listing_request/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_information_id": 2,
+  "agent_staff_id": 1,
+  "request_status": 2,
+  "company_name": "テスト企業",
+  "corporate_site_url": "https://www.google.com",
+  "post_code": "123-4567",
+    "office_location": "大阪府大阪市",
+    "employee_number_single": 10,
+    "employee_number_group": 100,
+    "establish": "2019-01",
+    "public_offering": 1,
+    "earnings": "1000000",
+    "earnings_year": 2019,
+    "business_detail": "事業内容テストテストテスト",
+    "title": "タイトルテスト",
+    "occupation": 1,
+    "background": 1,
+    "work_detail": "仕事内容テストテストテスト",
+    "work_location_detail": "勤務地（雇入れ直後）テストテストテスト",
+    "transfer": 1,
+    "transfer_detail": "交通手段詳細テストテストテスト",
+    "under_income": 200,
+    "over_income": 300,
+    "salary": "給与テストテストテスト",
+    "insurance": "保険テストテストテスト",
+    "work_time": "勤務時間テストテストテスト",
+    "overtime": 1,
+    "overtime_average": "残業平均テストテストテスト",
+    "fixed_overtime": 1,
+    "fixed_overtime_payment": 1,
+    "fixed_overtime_detail": "固定残業手当詳細テストテストテスト",
+    "trial_period": 1,
+    "trial_period_detail": "試用期間詳細テストテストテスト",
+    "employment_period": 1,
+    "employment_period_detail": "雇用期間詳細テストテストテスト",
+    "holiday_detail": "休日詳細テストテストテスト",
+    "passive_smoking": 1,
+    "selection_flow": "選考フローテストテストテスト",
+    "other_required": "その他必要事項テストテストテスト",
+    "required_management": 1,
+    "required_management_detail": "必要管理職詳細テストテストテスト",
+        "employment_insurance": true,
+    "accident_insurance": false,
+    "health_insurance": true,
+    "pension_insurance": false,
+    "required_pc_tools": [
+        {
+            "tool": 1
+        },
+        {
+            "tool": 2
+        }
+    ],
+    "occupations": [
+        {
+            "occupation": 1
+        },
+        {
+            "occupation": 2
+        }
+    ],
+     "industries": [
+        {
+            "industry": 1
+        },
+        {
+            "industry": 2
+        }
+    ],
+    "prefectures": [
+        {
+            "prefecture": 1
+        },
+        {
+            "prefecture": 2
+        }
+    ],
+    "employment_statuses": [
+        {
+            "employment_status": 1
+        },
+        {
+            "employment_status": 2
+        }
+    ],
+    "work_charm_points": [
+        {
+            "title": "テストテストテスト",
+            "contents": "テストテストテストsss"
+        },
+        {
+            "title": "テストテストテスト",
+            "contents": "テストテストテストsss"
+        }
+    ],
+    "required_licenses": [
+        {
+            "license": 1
+        },
+        {
+            "license": 2
+        }
+    ],
+    "required_pc_skills": [
+        {
+            "category": 1,
+            "skill_type": 1
+        },
+        {
+            "category": 1,
+            "skill_type": 1
+        }
+    ],
+    "required_languages": [  
+       {
+        "language_type": 4,
+        "writing_skill": 1,
+        "reading_skill": 2,
+        "talking_skill": 3,
+        "toeic": 600,
+        "toefl_pbt": 100,
+        "toefl_ibt": 100
+      }
+    ],
+    "required_developments":[
+      {
+        "development_category": 1,
+        "development_type": 1,
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "development_category": 0,
+        "development_type": 3,
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+    "required_experience_jobs": [
+            {
+        "experience_industry": 1,
+        "experience_year": 1
+      },
+      {
+        "experience_industry": 2,
+        "experience_occupation": 1,
+        "experience_year": 2
+      }
+    ],
+      "required_managements":[
+    {
+      "management": 1,
+      "management_detail": "テスト"
+    },
+    {
+      "management": 2,
+      "management_detail": "テスト"
+    }
+  ]
+}
+
+###################################### PUTメソッド #####################################
+### 求人票を更新
+
+PUT {{baseURL}}/api/job_listing_request/update/5 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "request_status": 0,
+  "company_name": "テストnn企業",
+  "corporate_site_url": "https://www.google.com",
+  "post_code": "123-4567",
+     "office_location": "大阪府大阪市",
+    "employee_number_single": 10,
+    "employee_number_group": 100,
+    "establish": "2019-01",
+    "public_offering": 1,
+    "earnings": "1000000",
+    "earnings_year": 2019,
+    "business_detail": "事業内容テストテストテスト更新",
+    "title": "タイトルテスト",
+    "occupation": 1,
+    "background": 1,
+    "work_detail": "仕事内容テストテストテスト",
+    "work_location_detail": "勤務地（雇入れ直後）テストテストテスト",
+    "transfer": 1,
+    "transfer_detail": "交通手段詳細テストテストテスト",
+    "under_income": 200,
+    "over_income": 300,
+    "salary": "給与テストテストテスト",
+    "insurance": "保険テストテストテスト",
+    "work_time": "勤務時間テストテストテスト",
+    "overtime": 1,
+    "overtime_average": "残業平均テストテストテスト更新",
+    "fixed_overtime": 1,
+    "fixed_overtime_payment": 1,
+    "fixed_overtime_detail": "固定残業手当詳細テストテストテスト",
+    "trial_period": 1,
+    "trial_period_detail": "試用期間詳細テストテストテスト",
+    "employment_period": 1,
+    "employment_period_detail": "雇用期間詳細テストテストテスト",
+    "holiday_detail": "休日詳細テストテストテスト",
+    "passive_smoking": 1,
+    "selection_flow": "選考フローテストテストテスト",
+    "other_required": "その他必要事項テストテストテスト",
+      "required_management": 1,
+    "required_management_detail": "必要管理職詳細テストテストテスト",
+            "employment_insurance": true,
+    "accident_insurance": true,
+    "health_insurance": true,
+    "pension_insurance": true,
+        "required_pc_tools": [
+        {
+            "tool": 1
+        },
+        {
+            "tool": 2
+        }
+    ],
+        "occupations": [
+        {
+            "occupation": 1
+        },
+        {
+            "occupation": 2
+        }
+    ],
+        "industries": [
+        {
+            "industry": 1
+        },
+        {
+            "industry": 2
+        }
+    ],
+    "prefectures": [
+        {
+            "prefecture": 1
+        },
+        {
+            "prefecture": 2
+        }
+    ],
+    "employment_statuses": [
+        {
+            "employment_status": 1
+        },
+        {
+            "employment_status": 2
+        }
+    ],
+    "work_charm_points": [
+        {
+            "title": "テストテストテスト",
+            "contents": "テストテストテストsss"
+        },
+        {
+            "title": "テストテストテスト",
+            "contents": "テストテストテストsss"
+        }
+    ],
+    "required_licenses": [
+        {
+            "license": 1
+        },
+        {
+            "license": 2
+        }
+    ],
+    "required_pc_skills": [
+        {
+            "category": 1,
+            "skill_type": 1
+        },
+        {
+            "category": 1,
+            "skill_type": 1
+        }
+    ],
+    "required_languages": [  
+       {
+        "language_type": 4,
+        "writing_skill": 1,
+        "reading_skill": 2,
+        "talking_skill": 3,
+        "toeic": 600,
+        "toefl_pbt": 100,
+        "toefl_ibt": 100
+      }
+    ],
+    "required_developments":[
+      {
+        "development_category": 1,
+        "development_type": 1,
+        "experience_year": 1,
+        "experience_month": 6
+      },
+      {
+        "development_category": 0,
+        "development_type": 3,
+        "experience_year": 1,
+        "experience_month": 6
+      }
+    ],
+    "required_experience_jobs": [
+            {
+        "experience_industry": 1,
+        "experience_year": 1
+      },
+      {
+        "experience_industry": 2,
+        "experience_occupation": 1,
+        "experience_year": 2
+      }
+    ],
+      "required_managements":[
+    {
+      "management": 1,
+      "management_detail": "テスト"
+    },
+    {
+      "management": 2,
+      "management_detail": "テスト"
+    }
+  ]
+
+}
+
+###################################### GETメソッド #####################################
+### 求人票を取得
+GET {{baseURL}}/api/job_listing_request/4 HTTP/1.1
+
+### uuidを指定して求人票を取得
+GET {{baseURL}}/api/job_listing_request/uuid/aa0a72d8-b349-11ed-8538-a683e7e4666c HTTP/1.1
+
+###　担当者IDから求人票を取得
+GET {{baseURL}}/api/job_listing_request/list/staff/1 HTTP/1.1
+
+###　担当者IDから求人票を取得
+GET {{baseURL}}/api/job_listing_request/list/staff/status/1?request_status=1&page_number=1 HTTP/1.1
+
+###　求人UUIDから求人票を取得
+GET {{baseURL}}/api/job_listing_request/job_information_uuid/210d16a0-b33c-11ed-92ba-a683e7e4666c HTTP/1.1
+
+###　求人UUIDから求人を取得
+GET {{baseURL}}/api/job_information/document/210d16a0-b33c-11ed-92ba-a683e7e4666c HTTP/1.1
+
+###################################### エージェントと求職者のチャット #####################################
+###　チャットグループを作成
+POST {{baseURL}}/api/chat_group_with_job_seeker/create HTTP/1.1
+Content-Type: application/json
+
+{
+    "job_seeker_id": 6,
+    "agent_id": 1
+}
+
+###　チャットグループを取得
+GET {{baseURL}}/api/chat_group_with_job_seeker/3 HTTP/1.1
+
+###　チャットグループを取得
+GET {{baseURL}}/api/chat_group_with_job_seeker/list/agent/1 HTTP/1.1
+
+###　チャットメッセージを作成
+POST {{baseURL}}/api/chat_message_with_job_seeker/create HTTP/1.1
+Content-Type: application/json
+
+{
+    "group_id": 1,
+    "user_type": 0,
+    "original_content_url": "https://example.com/original.jpg"
+}
+
+###　groupIDでチャットメッセージを取得
+GET {{baseURL}}/api/chat_message_with_job_seeker/list/group/1 HTTP/1.1
+Content-Type: application/json
+
+
+### エージェントのLINE情報編集
+#
+PUT {{baseURL}}/api/agent/line_channel HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 1,
+  "line_channel_secret": "04d8b608df87f4395245942d1be81a56",
+  "line_channel_access_token": "DS2kyiLdT+4mYE7OOOGB2rPxt4wgsQLpG/aSmbT3fZ2Pz0DGljYGo6ksc5b13U1EioF9biWvUa9/bi0IlPcRQ7Q6aIcg9THI3MoRrUVDvEUdEMvP89Xy+7AvXkNkFYTsS1TxMaxjAWGVkqor20Vt4wdB04t89/1O/w1cDnyilFU="
+}
+
+### エージェントのwebhook情報取得
+#
+GET {{baseURL}}/api/agent/web_hook/1 HTTP/1.1
+
+
+###################################### エージェントとエージェントのチャット #####################################
+###　チャットグループを作成
+POST {{baseURL}}/api/chat_group_with_agent/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "agent1_id": 1,
+  "agent2_id": 1
+}
+
+###　チャットグループを更新
+PUT {{baseURL}}/api/chat_group_with_agent/update/agent/last_watched/2/1 HTTP/1.1
+Content-Type: application/json
+
+### IDからエージェントとエージェントのチャットグループを取得
+GET {{baseURL}}/api/chat_group_with_agent/2/agent/3 HTTP/1.1
+Content-Type: application/json
+
+### エージェントIDからエージェントとエージェントのチャットグループを取得
+GET {{baseURL}}/api/chat_group_with_agent/list/agent/4 HTTP/1.1
+Content-Type: application/json
+
+### エージェントIDからエージェントとエージェントのチャットグループを取得
+GET {{baseURL}}/api/chat_group_with_agent/thread/4/2 HTTP/1.1
+Content-Type: application/json
+
+### エージェントIDからエージェントとエージェントのチャットグループを取得
+GET {{baseURL}}/api/chat_group_with_agent/agent/1/2 HTTP/1.1
+Content-Type: application/json
+
+
+###################################### エージェントとエージェントのチャットスレッド#####################################
+###　チャットスレッドを作成
+POST {{baseURL}}/api/chat_thread_with_agent/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+    "group_id": 2,
+    "agent_staff_id": 2,
+    "title":"タイトルテスト"
+}
+
+
+###　groupIDでチャットメッセージを取得
+GET {{baseURL}}/api/chat_thread_with_agent/2 HTTP/1.1
+Content-Type: application/json
+
+###################################### エージェントとエージェントのチャットメッセージ #####################################
+###　チャットグループを作成
+POST {{baseURL}}/api/chat_message_with_agent/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+    "thread_id": 2,
+    "agent_staff_id": 2,
+    "message":"test",
+    "file_url": "https",
+    "to_agent_staff_ids": [
+        2
+    ]
+}
+
+###　チャットグループを更新
+PUT {{baseURL}}/api/chat_message_with_agent/update/watched_at?thread_id=5&agent_staff_id=2 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+###　groupIDでチャットメッセージを取得
+GET {{baseURL}}/api/chat_message_with_agent/list/group/2 HTTP/1.1
+Content-Type: application/json
+
+
+#＃＃＃＃＃＃＃＃ エージェントアライアンス情報　＃＃＃＃＃＃
+
+### エージェントアライアンス情報作成
+#
+POST {{baseURL}}/api/agent_alliance/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent1_id": 1,
+  "agent2_id": 5
+}
+
+### エージェントアライアンス情報更新
+#
+POST {{baseURL}}/api/agent_alliance/request HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent1_id": 7,
+  "agent2_id": 4  
+}
+
+### エージェントアライアンス情報取得
+#
+GET {{baseURL}}/api/agent_alliance/2 HTTP/1.1
+
+### エージェントアライアンス情報取得
+#
+GET {{baseURL}}/api/agent_alliance/list/agent/1 HTTP/1.1
+
+### エージェントアライアンス情報取得
+#
+https://api.excelapi.org/post/kana?zipcode=5720018 HTTP/1.1
+
+############# 求職者の面談前アンケート #############
+### 求職者の面談前アンケート作成
+#
+POST {{baseURL}}/api/job_seeker/create/initial_questionnaire HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_seeker_id": 4,
+  "question": "テスト質問テスト質問",
+  "agreement": true,
+  "documents":
+    {
+    "cv_origin_url": "csouchbkjdckskd",
+    "resume_origin_url": "csouchbkjdckskd"
+    },
+  "desired_industries": [
+    {
+      "desired_industry": 1,
+      "desired_rank": 1
+    },
+    {
+      "desired_industry": 2,
+      "desired_rank": 2
+    }
+  ],
+  "desired_occupations": [
+    {
+      "desired_occupation": 1,
+      "desired_rank": 1
+    },
+    {
+      "desired_occupation": 2,
+      "desired_rank": 1
+    }
+  ],
+  "desired_work_locations":[{
+    "desired_work_location": 1,
+    "desired_rank": 1
+  },
+  {
+    "desired_work_location": 2,
+    "desired_rank": 1
+  }]
+}
+
+
+############# 求人取得 #############
+### 検索条件にマッチする求人一覧を取得
+#
+GET {{baseURL}}/api/job_information/public/list/search/1?page_number=3&free_word=1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### 検索条件にマッチする求人一覧を取得
+#
+GET {{baseURL}}/api/job_information/open/selection_flow/list/9 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+############# 求人取得 #############
+### 検索条件にマッチする求人一覧を取得
+#
+GET {{baseURL}}/api/job_seeker/public/list/search/1?page_number=1  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### エージェントとエージェントのチャット #####################################
+
+###################################### 移植テスト #####################################
+### 検索条件にマッチする求人一覧を取得
+#
+GET {{baseURL}}/api/job_information/fix/required_condition  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 検索条件にマッチするAgentStaff一覧を取得
+#
+GET {{baseURL}}/api/agent_staff/agent/alliance/other_staff_list?agent_id=1&alliance_agent_id=2&agent_staff_id=1  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 検索条件にマッチするAgentStaff一覧を取得
+#
+PUT {{baseURL}}/api/agent_staff/update/usage_end/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 検索条件にマッチするAgentStaff一覧を取得
+#
+GET {{baseURL}}/api/agent_staff/list/agent/1/not_created_sale/5  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 選考フローの削除
+PUT {{baseURL}}/api/job_information/delete/selection_flow/4 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### 選考フローの登録
+POST {{baseURL}}/api/job_information/selection_flow/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_information_id": 37,
+  "public_status": 6,
+  "flow_title": "rucfsdkljhifasfasudaivj",
+  "flow_pattern": 4
+}
+
+### 選考フローの登録
+POST {{baseURL}}/api/agent_monthly_sale/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 3,
+  "fiscal_year": "2023-05-10T13:49:51+09:00",
+  "is_open": true,
+  "agent_monthly_sales": [
+ {
+    "agent_staff_id": 9,
+    "management_id": 3,
+    "order_sales_budget": 43,
+    "order_cost_budget": 1003,
+    "order_gross_profit_budget": 2222222,
+    "order_assumed_unit_price": 100,
+    "order_expected_offer_acceptance": 100,
+    "claim_sales_revenue_budget": 100,
+    "claim_cost_budget": 10043,
+    "claim_gross_margin_budget": 100,
+    "claim_assumed_unit_price": 100,
+    "claim_expected_new_employee_number": 100,
+    "seeker_offer_acceptance_target": 100,
+    "seeker_offer_target": 100,
+    "seeker_final_selection_target": 100,
+    "seeker_selection_target": 100,
+    "seeker_recommendation_completion_target": 100,
+    "seeker_job_introduction_target": 100,
+    "seeker_interview_target": 100,
+    "active_offer_target": 100,
+    "active_final_selection_target": 100,
+    "active_selection_target": 100,
+    "active_recommendation_completion_target": 100,
+    "interview_interview_target": 30,
+    "interview_job_introduction_target": 30,
+    "active_job_introduction_target": 100
+  }]
+}
+### 選考フローの登録
+POST {{baseURL}}/api/agent_staff_monthly_sale/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+    "create_or_update_agent_staff_monthly_sales": [
+        {
+            "agent_staff_id": 3,
+            "management_id": 3,
+            "order_sales_budget": 43,
+            "order_cost_budget": 43,
+            "order_gross_profit_budget": 32,
+            "order_assumed_unit_price": 100,
+            "order_expected_offer_acceptance": 100,
+            "claim_sales_revenue_budget": 54,
+            "claim_cost_budget": 321,
+            "claim_gross_margin_budget": 54,
+            "claim_assumed_unit_price": 54,
+            "claim_expected_new_employee_number": 54,
+            "seeker_offer_acceptance_target": 54,
+            "seeker_offer_target": 432,
+            "seeker_final_selection_target": 54,
+            "seeker_selection_target": 453,
+            "seeker_recommendation_completion_target": 453,
+            "seeker_job_introduction_target": 453,
+            "seeker_interview_target": 453,
+            "active_offer_target": 453,
+            "active_final_selection_target": 453,
+            "active_selection_target": 98,
+            "active_recommendation_completion_target": 98,
+            "interview_interview_target": 30,
+            "interview_job_introduction_target": 30,
+            "active_job_introduction_target": 98
+        },
+        {
+            "agent_staff_id": 3,
+            "management_id": 3,
+            "order_sales_budget": 43,
+            "order_cost_budget": 1003,
+            "order_gross_profit_budget": 2222222,
+            "order_assumed_unit_price": 100,
+            "order_expected_offer_acceptance": 423,
+            "claim_sales_revenue_budget": 423,
+            "claim_cost_budget": 42343,
+            "claim_gross_margin_budget": 423,
+            "claim_assumed_unit_price": 99,
+            "claim_expected_new_employee_number": 99,
+            "seeker_offer_acceptance_target": 99,
+            "seeker_offer_target": 99,
+            "seeker_final_selection_target": 99,
+            "seeker_selection_target": 42378,
+            "seeker_recommendation_completion_target": 42378,
+            "seeker_job_introduction_target": 42378,
+            "seeker_interview_target": 42378,
+            "active_offer_target": 100,
+            "active_final_selection_target": 12,
+            "active_selection_target": 12,
+            "active_recommendation_completion_target": 12,
+            "active_job_introduction_target": 100,
+            "interview_interview_target": 100
+        },
+        {
+            "agent_staff_id": 3,
+            "management_id": 3,
+            "order_sales_budget": 43,
+            "order_cost_budget": 1003,
+            "order_gross_profit_budget": 413278,
+            "order_assumed_unit_price": 100,
+            "order_expected_offer_acceptance": 423,
+            "claim_sales_revenue_budget": 423,
+            "claim_cost_budget": 42343,
+            "claim_gross_margin_budget": 423,
+            "claim_assumed_unit_price": 99,
+            "claim_expected_new_employee_number": 99,
+            "seeker_offer_acceptance_target": 99,
+            "seeker_offer_target": 99,
+            "seeker_final_selection_target": 99,
+            "seeker_selection_target": 42378,
+            "seeker_recommendation_completion_target": 42378,
+            "seeker_job_introduction_target": 42378,
+            "seeker_interview_target": 42378,
+            "active_offer_target": 100,
+            "active_final_selection_target": 12,
+            "active_selection_target": 12,
+            "active_recommendation_completion_target": 12,
+            "active_job_introduction_target": 100,
+            "interview_interview_target": 100
+        },
+        {
+            "agent_staff_id": 3,
+            "management_id": 3,
+            "order_sales_budget": 43,
+            "order_cost_budget": 1003,
+            "order_gross_profit_budget": 413278,
+            "order_assumed_unit_price": 100,
+            "order_expected_offer_acceptance": 423,
+            "claim_sales_revenue_budget": 423,
+            "claim_cost_budget": 42343,
+            "claim_gross_margin_budget": 423,
+            "claim_assumed_unit_price": 99,
+            "claim_expected_new_employee_number": 99,
+            "seeker_offer_acceptance_target": 99,
+            "seeker_offer_target": 99,
+            "seeker_final_selection_target": 99,
+            "seeker_selection_target": 42378,
+            "seeker_recommendation_completion_target": 42378,
+            "seeker_job_introduction_target": 42378,
+            "seeker_interview_target": 42378,
+            "active_offer_target": 100,
+            "active_final_selection_target": 12,
+            "active_selection_target": 12,
+            "active_recommendation_completion_target": 12,
+            "active_job_introduction_target": 100,
+            "interview_interview_target": 100
+        },
+        {
+            "agent_staff_id": 3,
+            "management_id": 3,
+            "order_sales_budget": 43,
+            "order_cost_budget": 1003,
+            "order_gross_profit_budget": 413278,
+            "order_assumed_unit_price": 100,
+            "order_expected_offer_acceptance": 423,
+            "claim_sales_revenue_budget": 423,
+            "claim_cost_budget": 42343,
+            "claim_gross_margin_budget": 423,
+            "claim_assumed_unit_price": 99,
+            "claim_expected_new_employee_number": 99,
+            "seeker_offer_acceptance_target": 99,
+            "seeker_offer_target": 99,
+            "seeker_final_selection_target": 99,
+            "seeker_selection_target": 42378,
+            "seeker_recommendation_completion_target": 42378,
+            "seeker_job_introduction_target": 42378,
+            "seeker_interview_target": 42378,
+            "active_offer_target": 100,
+            "active_final_selection_target": 12,
+            "active_selection_target": 12,
+            "active_recommendation_completion_target": 12,
+            "active_job_introduction_target": 100,
+            "interview_interview_target": 100
+        },
+        {
+            "agent_staff_id": 3,
+            "management_id": 3,
+            "order_sales_budget": 43,
+            "order_cost_budget": 1003,
+            "order_gross_profit_budget": 413278,
+            "order_assumed_unit_price": 100,
+            "order_expected_offer_acceptance": 423,
+            "claim_sales_revenue_budget": 423,
+            "claim_cost_budget": 42343,
+            "claim_gross_margin_budget": 423,
+            "claim_assumed_unit_price": 99,
+            "claim_expected_new_employee_number": 99,
+            "seeker_offer_acceptance_target": 99,
+            "seeker_offer_target": 99,
+            "seeker_final_selection_target": 99,
+            "seeker_selection_target": 42378,
+            "seeker_recommendation_completion_target": 42378,
+            "seeker_job_introduction_target": 42378,
+            "seeker_interview_target": 42378,
+            "active_offer_target": 100,
+            "active_final_selection_target": 12,
+            "active_selection_target": 12,
+            "active_recommendation_completion_target": 12,
+            "active_job_introduction_target": 100,
+            "interview_interview_target": 100
+        },
+        {
+            "agent_staff_id": 3,
+            "management_id": 3,
+            "order_sales_budget": 43,
+            "order_cost_budget": 1003,
+            "order_gross_profit_budget": 2222222,
+            "order_assumed_unit_price": 100,
+            "order_expected_offer_acceptance": 423,
+            "claim_sales_revenue_budget": 423,
+            "claim_cost_budget": 42343,
+            "claim_gross_margin_budget": 423,
+            "claim_assumed_unit_price": 99,
+            "claim_expected_new_employee_number": 99,
+            "seeker_offer_acceptance_target": 99,
+            "seeker_offer_target": 99,
+            "seeker_final_selection_target": 99,
+            "seeker_selection_target": 42378,
+            "seeker_recommendation_completion_target": 42378,
+            "seeker_job_introduction_target": 42378,
+            "seeker_interview_target": 42378,
+            "active_offer_target": 100,
+            "active_final_selection_target": 12,
+            "active_selection_target": 12,
+            "active_recommendation_completion_target": 12,
+            "active_job_introduction_target": 100,
+            "interview_interview_target": 100
+        }
+    ]
+}
+
+
+
+### 選考フローの登録
+GET {{baseURL}}/api/agent_staff_monthly_sale/list/management/3/staff/3 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### 選考フローの登録
+GET {{baseURL}}/api/agent_monthly_sale/default/list/agent/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+### 選考フローの取得
+GET {{baseURL}}/api/job_information/selection_flow/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### 面談調整タスク #####################################
+###  面談調整タスク（phase_category = (0 or 1)）の取得
+GET {{baseURL}}/api/interview_task/adjustment/latest_list/1 HTTP/1.1
+
+###  参加確認（phase_category = (2 or 3)）タスクの取得
+GET {{baseURL}}/api/interview_task/confirmation/latest_list/1 HTTP/1.1
+
+### 最終閲覧時間を更新 
+PUT {{baseURL}}/api/interview_task/update/last_watched/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 面談調整タスクを作成
+PUT {{baseURL}}/api/interview_task/create1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_seeker_id": 1,
+  "agent_id": 1,
+  "agent_staff_id": 1,
+}
+
+###  
+PUT {{baseURL}}/api/enterprise/fix/enterprise_industry HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### 面談調整テンプレート #####################################
+### 面談調整テンプレート作成 
+POST {{baseURL}}/api/interview_template/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 1,
+  "send_scene": 1,
+  "title": "title test",
+  "subject": "subject test",
+  "content": "content test"
+}
+
+### 面談調整テンプレート更新
+PUT {{baseURL}}/api/interview_template/update/3 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 1,
+  "send_scene": 3,
+  "title": "update title test",
+  "subject": "update subject test",
+  "content": "update content test"
+}
+
+### 面談調整テンプレート削除
+DELETE {{baseURL}}/api/interview_template/delete/2 HTTP/1.1
+
+### 面談調整テンプレート取得
+GET {{baseURL}}/api/interview_template/3 HTTP/1.1
+
+### エージェントIDと送信シーンから面談調整テンプレート取得
+GET {{baseURL}}/api/interview_template/list/agent/1/send_scene/1 HTTP/1.1
+
+### エージェントIDから面談調整テンプレート取得
+GET {{baseURL}}/api/interview_template/list/agent/2 HTTP/1.1
+
+
+
+# あとで消す
+###  参加確認（phase_category = (2 or 3)）タスクの取得
+GET {{baseURL}}/api/interview_task/convert/interview_task HTTP/1.1
+
+
+###  参加確認（phase_category = (2 or 3)）タスクの取得
+POST {{baseURL}}/api/interview_task/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "interview_task_group_id": 10,
+  "agent_id": 1,
+  "phase_category": 1,
+  "phase_sub_category": 1,
+  "remarks": "1",
+  "agent_staff_id":1,
+  "job_seeker_id":252
+}
+
+###  メール送信タスク
+POST {{baseURL}}/api/interview_task/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "interview_task_group_id": 42,
+  "agent_id": 1,
+  "phase_category": 3,
+  "phase_sub_category": 1,
+  "remarks": "1",
+  "agent_staff_id":1,
+  "job_seeker_id":252,
+  "validation_type": "email",
+  "mail": {
+  "to": {
+    "name": "test to",
+    "email": "test@gmail.com"
+  },
+  "from": {
+    "name": "test",
+    "email": "info@test.com"
+  },
+  "subject": "test subject",
+  "content": "test content"
+  }
+}
+
+###################################### 面談調整テンプレート #####################################
+### 面談調整テンプレート作成 
+POST {{baseURL}}/api/interview_template/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 1,
+  "send_scene": 1,
+  "title": "title test",
+  "subject": "subject test",
+  "content": "content test"
+}
+
+### 面談調整テンプレート更新
+PUT {{baseURL}}/api/interview_template/update/3 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 1,
+  "send_scene": 3,
+  "title": "update title test",
+  "subject": "update subject test",
+  "content": "update content test"
+}
+
+### 面談調整テンプレート削除
+DELETE {{baseURL}}/api/interview_template/delete/2 HTTP/1.1
+
+### 面談調整テンプレート取得
+GET {{baseURL}}/api/interview_template/3 HTTP/1.1
+
+### エージェントIDと送信シーンから面談調整テンプレート取得
+GET {{baseURL}}/api/interview_template/list/agent/1/send_scene/1 HTTP/1.1
+
+### エージェントIDから面談調整テンプレート取得
+GET {{baseURL}}/api/interview_template/list/agent/2 HTTP/1.1
+
+### 検索条件にマッチする求人一覧を取得
+#
+GET {{baseURL}}/api/job_information/fix/required_condition  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+###################################### エージェントロボット #######################################
+### エージェントロボットの作成
+#
+POST {{baseURL}}/api/agent_robot/create  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 1,
+  "name": "テスト2",
+  "is_entry_active": true,
+  "is_scout_active": true
+}
+
+### エージェントロボットの更新
+#
+PUT {{baseURL}}/api/agent_robot/update/3  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "name": "テスト1",
+  "is_entry_active": true,
+  "is_scout_active": false
+}
+
+### エージェントロボットの削除
+#
+DELETE {{baseURL}}/api/agent_robot/delete/1  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### エージェントロボットの取得
+#
+GET {{baseURL}}/api/agent_robot/1  HTTP/1.1
+
+### エージェントロボットの一覧取得
+#
+GET {{baseURL}}/api/agent_robot/list/agent/1  HTTP/1.1
+
+###################################### スカウトサービス #######################################
+### スカウトサービスの作成
+#
+POST {{baseURL}}/api/scout_service/create  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_robot_id": 1,
+  "login_id": "testID",
+  "password": "testPass",
+  "service_type": 0,
+  "is_active": true,
+  "memo": "メモ",
+  "get_entry_times":[
+    {
+      "start_time": 1
+    },
+    {
+      "start_time": 0
+    }
+  ],
+  "templates":[
+    {
+      "scout_count": 10,
+      "message_title": "メッセージタイトル",
+      "message": "メッセージ本文",
+      "job_information_title": "求人タイトル",
+      "job_information_id_1": "1",
+      "job_information_id_2": "2",
+      "job_information_id_3": "3",
+      "select_all": true
+    }
+  ],
+  "get_entry_times":[
+    {
+      "start_hour": 1
+    },
+    {
+      "start_hour": 0
+    }
+  ]
+}
+
+### スカウトサービスの更新
+#
+PUT {{baseURL}}/api/scout_service/update/6  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_staff_id": 1,
+  "login_id": "testIDUpdated",
+  "password": "testPassUpdated",
+  "service_type": 1,
+  "memo": "メモ更新",
+  "is_active": false,
+    "templates":[
+    {
+      "scout_count": 10,
+      "message_title": "メッセージタイトル",
+      "message": "メッセージ本文",
+      "job_information_title": "求人タイトル",
+      "job_information_id_1": "1",
+      "job_information_id_2": "2",
+      "job_information_id_3": "3",
+      "select_all": true
+    }
+  ],
+  "get_entry_times":[
+    {
+      "start_time": 1
+    },
+    {
+      "start_time": 0
+    }
+  ]
+}
+
+### スカウトサービスの削除
+#
+PUT {{baseURL}}/api/scout_service/delete/2  HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### スカウトサービスの取得
+#
+GET {{baseURL}}/api/scout_service/6  HTTP/1.1
+
+### エージェントIDからスカウトサービスの取得
+#
+GET {{baseURL}}/api/scout_service/list/agent/1  HTTP/1.1
+
+### ambiのスカウト送信
+#
+POST {{baseURL}}/api/scout_service/scout/ambi/3  HTTP/1.1
+
+### mynaviの求職者取得
+#
+POST {{baseURL}}/api/scout_service/scout/mynavi/2  HTTP/1.1
+
+### ranの求職者取得
+#
+POST {{baseURL}}/api/scout_service/scout/ran/1  HTTP/1.1
+
+###################################### 他サービスから新規求人取得 #######################################
+### サーカスの求人一括取得
+#
+POST {{baseURL}}/api/enterprise/import_service/circus HTTP/1.1
+Content-Type: application/json
+
+{
+  "login_id": "info@spaceai.jp",
+  "password": "test"
+}
+
+### JSONファイルから求人一括登録
+#
+POST {{baseURL}}/api/enterprise/json/1 HTTP/1.1
+Content-Type: multipart/form-data; boundary=MfnBoundry
+
+--MfnBoundry
+Content-Disposition: form-data; name="file"; filename="agentbank-enterprise-2024-06-11-163727-10-2.json"
+Content-Type: application/json
+
+< ../memo/agentbank-enterprise-2024-06-11-163727-10-2.json
+--MfnBoundry--
+
+### 予約インポート情報の作成
+#
+POST {{baseURL}}/api/initial_enterprise_importer/create HTTP/1.1
+Content-Type: application/json
+
+{
+  "agent_staff_id": 1,
+  "service_type": 0,
+  "login_id": "info@spaceai.jp",
+  "password": "test",
+  "start_date": "2023-05-22",
+  "start_hour": 1,
+  "max_count": 100,
+  "offset": 0,
+  "search_url": "https://www.circus.ne.jp/agent/agent_login.php"
+}
+
+### 予約インポート情報の削除
+#
+DELETE {{baseURL}}/api/initial_enterprise_importer/delete/24 HTTP/1.1
+Content-Type: application/json
+
+### エージェントIDから予約インポート情報の取得
+#
+GET {{baseURL}}/api/initial_enterprise_importer/list/agent/2  HTTP/1.1
+Content-Type: application/json
+
+###################################### 面談調整テンプレート #######################################
+### 面談調整テンプレート作成 
+#
+PUT {{baseURL}}/api/job_seeker_schedule/update/10 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "job_seeker_id": 4,
+  "task_group_id": 26,
+  "schedule_type": 1,
+  "start_time": "1110-2222",
+  "end_time": "1110-2222",
+  "seeker_description": "subject test",
+  "staff_description": "content test"
+}
+
+###################################### Motoyuiからのお知らせ #######################################
+### Motoyuiからのお知らせを作成 
+POST {{baseURL}}/api/notification_for_user/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "title": "title test",
+  "body": "subject test"
+}
+
+### Motoyuiからのお知らせを確認したユーザーを作成 
+# notificationForUserAPI.POST("/create/view/:notification_id/:agent_staff_id", routes.CreateUserNotificationView(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal))
+#
+POST {{baseURL}}/api/notification_for_user/create/view/1/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+### 全てのMotoyuiからのお知らせを取得
+#
+GET {{baseURL}}/api/notification_for_user/all  HTTP/1.1
+Content-Type: application/json
+
+###################################### 送客 #######################################
+### 送客を作成 
+POST {{baseURL}}/api/sending_customer/create HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "agent_id": 1,
+  "last_name": "last_name",
+  "first_name": "first_name",
+  "last_furigana": "last_furigana",
+  "first_furigana": "first_furigana",
+  "phone_number": "phone_number",
+  "email": "email",
+  "sending_at": "2023-01-01T00:00:00Z"
+}
+
+### 送客を更新
+PUT {{baseURL}}/api/sending_customer/first_update/4 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+{
+  "agent_id": 1,
+  "last_name": "last_name update",
+  "first_name": "first_name update",
+  "last_furigana": "last_furigana update",
+  "first_furigana": "first_furigana update",
+  "phone_number": "000-0000-0000",
+  "email": "email update",
+  "resume_pdf_url": "resume_pdf_url update",
+  "cv_pdf_url": "cv_pdf_url update",
+  "interview_date": "interview_date update",
+  "interview_information": "interview_information update",
+  "remarks": "remarks",
+  "gender": 1,
+  "nationality": 1,
+  "nationality_remarks": "nationality_remakrs",
+  "birthday": "birthday",
+  "post_code": "111-2222",
+  "prefecture": 1,
+  "address": "address",
+  "address_furigana": "address_furigana",
+  "school_name": "school_name",
+  "subject": "subject",
+  "entrance_year": "2020-01",
+  "graduation_year": "2020-01",
+  "state_of_employment": 1,
+  "job_change": 1,
+  "job_summary": "job_summary",
+  "company_name": "company_name",
+  "joining_year": "2020-01",
+  "retire_year": "2020-01",
+  "first_status": 1,
+  "last_status": 1,
+  "job_description": "job_description",
+  "history_supplement": "history_supplement",
+  "phase": 1,
+  "sending_at": "2023-01-01T00:00:00Z"
+}
+
+### 送客を更新
+PUT {{baseURL}}/api/sending_customer/update/1 HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+
+{
+  "agent_id": 1,
+  "last_name": "last_name update",
+  "first_name": "first_name update",
+  "last_furigana": "last_furigana update",
+  "first_furigana": "first_furigana update",
+  "phone_number": "000-0000-0000",
+  "email": "email update",
+  "resume_pdf_url": "resume_pdf_url update",
+  "cv_pdf_url": "cv_pdf_url update",
+  "interview_date": "interview_date update",
+  "interview_information": "interview_information update",
+  "remarks": "remarks",
+  "gender": 1,
+  "nationality": 1,
+  "nationality_remarks": "nationality_remakrs",
+  "birthday": "birthday",
+  "post_code": "111-2222",
+  "prefecture": 1,
+  "address": "address",
+  "address_furigana": "address_furigana",
+  "school_name": "school_name",
+  "subject": "subject",
+  "entrance_year": "2020-01",
+  "graduation_year": "2020-01",
+  "state_of_employment": 1,
+  "job_change": 1,
+  "job_summary": "job_summary",
+  "company_name": "company_name",
+  "joining_year": "2020-01",
+  "retire_year": "2020-01",
+  "first_status": 1,
+  "last_status": 1,
+  "job_description": "job_description",
+  "history_supplement": "history_supplement",
+  "phase": 1,
+  "sending_at": "2023-01-01T00:00:00Z"
+}
+
+
+### 送客状況を更新
+PUT {{baseURL}}/api/sending_customer/update/phase HTTP/1.1
+Content-Type: application/json
+FirebaseAuthorization: {{token}}
+
+{
+  "phase": 3,
+  "sending_customer_id": 1
+}
+
+### 送客を取得
+#
+GET {{baseURL}}/api/sending_customer/1  HTTP/1.1
+Content-Type: application/json
+
+### 送客を取得
+#
+GET {{baseURL}}/api/sending_customer/list/agent/1  HTTP/1.1
+Content-Type: application/json
+
+### Gmail Hook
+#
+POST {{baseURL}}/api/rpa/gmail_hook HTTP/1.1
+Content-Type: application/json
+
+{
+  "subject": "subject test",
+  "message": {
+    "data": "eyJzdW",
+    "message_id": "1234567890"
+  }
+}
