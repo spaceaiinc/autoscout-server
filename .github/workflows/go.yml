@@ -14,7 +14,7 @@ jobs:
         with:
           character set server: "utf8mb4"
           collation server: "utf8mb4_general_ci"
-          mysql version: "5.7.30"
+          mysql version: "8.0"
           mysql database: "autoscout_test"
           mysql root password: "password"
 
