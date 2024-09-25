@@ -19,7 +19,7 @@ type ScoutServiceTemplate struct {
 	RunOnSaturday       bool      `db:"run_on_saturday" json:"run_on_saturday"`             // 土曜日に走らせるかどうか/false:走らせない true:走る(共通)
 	RunOnSunday         bool      `db:"run_on_sunday" json:"run_on_sunday"`                 // 日曜日に走らせるかどうか/false:走らせない true:走る(共通)
 	ScoutCount          null.Int  `db:"scout_count" json:"scout_count"`                     // スカウト件数(媒体共通)
-	SearchTitle         string    `db:"search_title" json:"search_title"`                   // スカウトに利用する検索条件のタイトル(媒体共通)
+	SearchTitle         string    `db:"search_title" json:"search_title"`                   // 保存検索条件のタイトル(媒体共通)
 	MessageTitle        string    `db:"message_title" json:"message_title"`                 // スカウトに利用するメッセージのタイトル(媒体共通)
 	JobInformationTitle string    `db:"job_information_title" json:"job_information_title"` // スカウトに利用する求人情報のタイトル
 	JobInformationID    string    `db:"job_information_id" json:"job_information_id"`       // スカウトに利用する求人情報ID(RAN)

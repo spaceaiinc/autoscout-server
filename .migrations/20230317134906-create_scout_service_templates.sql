@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS scout_service_templates (
     run_on_saturday BOOLEAN NOT NULL DEFAULT FALSE,	        -- 土曜日に走らせるかどうか/false:走らせない true:走る(共通)
     run_on_sunday BOOLEAN NOT NULL DEFAULT FALSE,	        -- 日曜日に走らせるかどうか/false:走らせない true:走る(共通)
     scout_count INT,	                                    -- スカウト件数(MYNAVI(50, 100, 300, 500), RAN(max100), AMBI(50, 200))
-    search_title VARCHAR(255) NOT NULL,	                    -- スカウトに利用する検索条件のタイトル(媒体共通)
+    search_title VARCHAR(255) NOT NULL,	                    -- 保存検索条件のタイトル(媒体共通)
     message_title VARCHAR(255) NOT NULL,	                -- スカウトに利用するメッセージのタイトル(媒体共通)
     job_information_title VARCHAR(255) NOT NULL,	        -- スカウトに利用する求人情報のタイトル(RAN)
     job_information_id VARCHAR(255) NOT NULL,	            -- スカウトに利用する求人情報のID(RAN)

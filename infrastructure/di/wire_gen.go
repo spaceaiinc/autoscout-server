@@ -7,13 +7,13 @@
 package di
 
 import (
+	"github.com/google/wire"
 	"github.com/spaceaiinc/autoscout-server/domain/config"
 	"github.com/spaceaiinc/autoscout-server/interfaces"
 	"github.com/spaceaiinc/autoscout-server/interfaces/handler"
 	"github.com/spaceaiinc/autoscout-server/interfaces/repository"
 	"github.com/spaceaiinc/autoscout-server/usecase"
 	"github.com/spaceaiinc/autoscout-server/usecase/interactor"
-	"github.com/google/wire"
 )
 
 // Injectors from wire.go:

@@ -31,7 +31,7 @@ func (repo *SelectionQuestionnaireMyRankingRepositoryImpl) Create(selectionQuest
 		repo.Name+".Create",
 		`INSERT INTO selection_questionnaire_my_rankings (
 			selection_questionnaire_id,	                    
-			rank,
+			ranking,
 			company_name,	                       
 			phase, 	                            
 			selection_date,

@@ -1848,5 +1848,5 @@ func (r *Router) SetUp() *Router {
 }
 
 func (r *Router) Start() {
-	r.Engine.Start(fmt.Sprintf(":%d", 9090))
+	r.Engine.Start(fmt.Sprintf(":%d", 8080))
 }

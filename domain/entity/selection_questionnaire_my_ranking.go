@@ -9,7 +9,7 @@ import (
 type SelectionQuestionnaireMyRanking struct {
 	ID                       uint      `db:"id" json:"id"`
 	SelectionQuestionnaireID uint      `db:"selection_questionnaire_id" json:"selection_questionnaire_id"`
-	Rank                     null.Int  `db:"rank" json:"rank"`
+	Rank                     null.Int  `db:"ranking" json:"rank"`
 	CompanyName              string    `db:"company_name" json:"company_name"`
 	Phase                    null.Int  `db:"phase" json:"phase"`
 	SelectionDate            string    `db:"selection_date" json:"selection_date"`

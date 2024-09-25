@@ -1,6 +1,6 @@
 ## BASE URL
 #
-@baseURL = http://localhost:9090
+@baseURL = http://localhost:8080
 
 ## Firebase ID Token
 #
@@ -31,12 +31,12 @@ Content-Type: application/json
 FirebaseAuthorization: {{token}}
 
 {
-  "agent_name": "motoyui",
+  "agent_name": "エージェント1",
   "permission_code": "26-3-300567",
   "post_code": "100-0005",
   "office_location": "Tokyo-1-1",
   "phone_number": "09012341232",
-  "email": "fdssa@fdssass.com",
+  "email": "hidenariyuda@gmail.com",
   "representative": "CEO",
   "establish": "2021-01",
   "corporate_site_url": "https://www.testtest.com",
@@ -53,7 +53,7 @@ FirebaseAuthorization: {{token}}
   "authority": 6,
   "staff_name": "yamada",
   "furigana": "yamada",
-  "password": "staff1234",
+  "password": "hidenariyuda",
   "staff_phone_number": "00011112222",
   "department": "proguram",
   "position": "fajsdkl",
