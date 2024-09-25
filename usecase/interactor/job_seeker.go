@@ -4357,19 +4357,6 @@ func (i *JobSeekerInteractorImpl) UpdateInterviewDateByJobSeekerID(input UpdateI
 		return output, err
 	}
 
-	switch param.StaffName {
-	case "株式会社Motoyui共通アドレス":
-		staffID = 1
-	case "濱田僚太":
-		staffID = 2
-	case "奥谷悠介":
-		staffID = 3
-	case "岡本未希":
-		staffID = 54
-	case "只重菜津子":
-		staffID = 55
-	}
-
 	// 当日（2020-02-01）
 	now := time.Now()
 	date := now.Format("2006-01-02")
@@ -4516,7 +4503,7 @@ func (i *JobSeekerInteractorImpl) CreateJobSeekerFromLP(input CreateJobSeekerFro
 		retireLastStatus  null.Int
 		nationality       null.Int
 		motoyuiAgentID    uint = 1
-		defaultCAStaffID  uint = 2 // 本番環境の濱田さんのIDをデフォルトCAとして設定
+		defaultCAStaffID  uint = 2 // 本番環境のIDをデフォルトCAとして設定
 	)
 
 	// すでに登録済みのアドレスかをチェック

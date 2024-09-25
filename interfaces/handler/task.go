@@ -12,7 +12,7 @@ import (
 
 type TaskHandler interface {
 	// タスクを始める関数（打診）
-	// Memo: 旧版の為、新しいapiの動作確認後に削除（東尾が対応）
+	// Memo: 旧版の為、新しいapiの動作確認後に削除（が対応）
 	SoundOutForJobInformation(param entity.SoundOutForJobInformationParam) (presenter.Presenter, error)
 	SoundOutForSendJobListing(param entity.SoundOutForJobInformationForSendMessageParam) (presenter.Presenter, error)
 	SoundOutForMaskResume(param entity.SoundOutForJobInformationParam) (presenter.Presenter, error)
@@ -80,7 +80,7 @@ func NewTaskHandlerImpl(tI interactor.TaskInteractor) TaskHandler {
 
 /****************************************************************************************/
 // タスク開始の関数（打診）
-// Memo: 旧版の為、新しいapiの動作確認後に削除（東尾が対応）
+// Memo: 旧版の為、新しいapiの動作確認後に削除（が対応）
 //
 func (h *TaskHandlerImpl) SoundOutForJobInformation(param entity.SoundOutForJobInformationParam) (presenter.Presenter, error) {
 	output, err := h.taskInteractor.SoundOutForJobInformation(interactor.SoundOutForJobInformationInput{
