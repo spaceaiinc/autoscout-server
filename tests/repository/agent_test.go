@@ -15,7 +15,7 @@ var agentEntity = &entity.Agent{
 	OfficeLocation:                  "110-1111 東京都千代田区9-9-9-",
 	Representative:                  "田中太郎",
 	Establish:                       "2023-01-01",
-	CorporateSiteURL:                "https://motoyui.com",
+	CorporateSiteURL:                "https://autoscouts.web.app",
 	PermissionCode:                  "",
 	PermissionYear:                  "",
 	WorkersCount:                    null.NewInt(10, true),
