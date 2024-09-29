@@ -70,8 +70,8 @@ func SendMailToMultiple(
 	// 本番以外は場合はinfo@spaceai.jpから送付
 	// https://support.sendgrid.kke.co.jp/hc/ja/articles/203574969
 	if appEnv != "prd" {
-		if !strings.Contains(from.Email, "motoyui.com") {
-			err := fmt.Errorf("送信元が「motoyui.com」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
+		if !strings.Contains(from.Email, "autoscouts.web.app") {
+			err := fmt.Errorf("送信元が「autoscouts.web.app」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
 			return err
 		}
 	}
@@ -177,8 +177,8 @@ func SendMailToSingle(
 	// 本番以外は場合はinfo@spaceai.jpから送付
 	// https://support.sendgrid.kke.co.jp/hc/ja/articles/203574969
 	if appEnv != "prd" {
-		if !strings.Contains(from.Email, "motoyui.com") {
-			err := fmt.Errorf("送信元が「motoyui.com」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
+		if !strings.Contains(from.Email, "autoscouts.web.app") {
+			err := fmt.Errorf("送信元が「autoscouts.web.app」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
 			return err
 		}
 	}
@@ -282,8 +282,8 @@ func SendMailToSingleWithoutCC(
 	// 本番以外は場合はinfo@spaceai.jpから送付
 	// https://support.sendgrid.kke.co.jp/hc/ja/articles/203574969
 	if appEnv != "prd" {
-		if !strings.Contains(from.Email, "motoyui.com") {
-			err := fmt.Errorf("送信元が「motoyui.com」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
+		if !strings.Contains(from.Email, "autoscouts.web.app") {
+			err := fmt.Errorf("送信元が「autoscouts.web.app」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
 			return err
 		}
 	}
@@ -389,8 +389,8 @@ func SendMailToMultipleFileName(
 	// 本番以外は場合はinfo@spaceai.jpから送付
 	// https://support.sendgrid.kke.co.jp/hc/ja/articles/203574969
 	if appEnv != "prd" {
-		if !strings.Contains(from.Email, "motoyui.com") {
-			err := fmt.Errorf("送信元が「motoyui.com」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
+		if !strings.Contains(from.Email, "autoscouts.web.app") {
+			err := fmt.Errorf("送信元が「autoscouts.web.app」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
 			return err
 		}
 	}
@@ -543,8 +543,8 @@ func SendMailList(
 	// 本番以外は場合はinfo@spaceai.jpから送付
 	// https://support.sendgrid.kke.co.jp/hc/ja/articles/203574969
 	if appEnv != "prd" {
-		if !strings.Contains(from.Email, "motoyui.com") {
-			err := fmt.Errorf("送信元が「motoyui.com」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
+		if !strings.Contains(from.Email, "autoscouts.web.app") {
+			err := fmt.Errorf("送信元が「autoscouts.web.app」ではありません。\nSendGridの「Domain Authentication」で設定したドメインをご確認ください。")
 			return err
 		}
 	}

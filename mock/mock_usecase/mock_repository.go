@@ -13,8 +13,8 @@ import (
 	reflect "reflect"
 	time "time"
 
-	entity "github.com/spaceaiinc/autoscout-server/domain/entity"
 	uuid "github.com/google/uuid"
+	entity "github.com/spaceaiinc/autoscout-server/domain/entity"
 	gomock "go.uber.org/mock/gomock"
 	null "gopkg.in/guregu/null.v4"
 )
@@ -1417,6 +1417,21 @@ func (mr *MockEnterpriseReferenceMaterialRepositoryMockRecorder) GetByAgentStaff
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentStaffID", reflect.TypeOf((*MockEnterpriseReferenceMaterialRepository)(nil).GetByAgentStaffID), agentStaffID)
 }
 
+// GetByEnterpriseIDList mocks base method.
+func (m *MockEnterpriseReferenceMaterialRepository) GetByEnterpriseIDList(enterpriseIDList []uint) ([]*entity.EnterpriseReferenceMaterial, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByEnterpriseIDList", enterpriseIDList)
+	ret0, _ := ret[0].([]*entity.EnterpriseReferenceMaterial)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByEnterpriseIDList indicates an expected call of GetByEnterpriseIDList.
+func (mr *MockEnterpriseReferenceMaterialRepositoryMockRecorder) GetByEnterpriseIDList(enterpriseIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEnterpriseIDList", reflect.TypeOf((*MockEnterpriseReferenceMaterialRepository)(nil).GetByEnterpriseIDList), enterpriseIDList)
+}
+
 // UpdateByEnterpriseID mocks base method.
 func (m *MockEnterpriseReferenceMaterialRepository) UpdateByEnterpriseID(enterpriseID uint, referenceMaterial *entity.EnterpriseReferenceMaterial) error {
 	m.ctrl.T.Helper()
@@ -1540,6 +1555,21 @@ func (m *MockEnterpriseActivityRepository) GetByEnterpriseID(enterpriseID uint) 
 func (mr *MockEnterpriseActivityRepositoryMockRecorder) GetByEnterpriseID(enterpriseID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEnterpriseID", reflect.TypeOf((*MockEnterpriseActivityRepository)(nil).GetByEnterpriseID), enterpriseID)
+}
+
+// GetByEnterpriseIDList mocks base method.
+func (m *MockEnterpriseActivityRepository) GetByEnterpriseIDList(enterpriseIDList []uint) ([]*entity.EnterpriseActivity, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByEnterpriseIDList", enterpriseIDList)
+	ret0, _ := ret[0].([]*entity.EnterpriseActivity)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByEnterpriseIDList indicates an expected call of GetByEnterpriseIDList.
+func (mr *MockEnterpriseActivityRepositoryMockRecorder) GetByEnterpriseIDList(enterpriseIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEnterpriseIDList", reflect.TypeOf((*MockEnterpriseActivityRepository)(nil).GetByEnterpriseIDList), enterpriseIDList)
 }
 
 // MockBillingAddressRepository is a mock of BillingAddressRepository interface.
@@ -2267,6 +2297,21 @@ func (mr *MockJobInformationRepositoryMockRecorder) GetByIDList(idList any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobInformationRepository)(nil).GetByIDList), idList)
 }
 
+// GetByIDListForTask mocks base method.
+func (m *MockJobInformationRepository) GetByIDListForTask(idList []uint) ([]*entity.JobInformation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByIDListForTask", idList)
+	ret0, _ := ret[0].([]*entity.JobInformation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByIDListForTask indicates an expected call of GetByIDListForTask.
+func (mr *MockJobInformationRepositoryMockRecorder) GetByIDListForTask(idList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDListForTask", reflect.TypeOf((*MockJobInformationRepository)(nil).GetByIDListForTask), idList)
+}
+
 // Update mocks base method.
 func (m *MockJobInformationRepository) Update(id uint, jobInformation *entity.JobInformation) error {
 	m.ctrl.T.Helper()
@@ -2670,21 +2715,6 @@ func (m *MockJobInformationFeatureRepository) GetByAgentID(agentID uint) ([]*ent
 func (mr *MockJobInformationFeatureRepositoryMockRecorder) GetByAgentID(agentID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobInformationFeatureRepository)(nil).GetByAgentID), agentID)
-}
-
-// GetByAgentIDForGuestJobSeeker mocks base method.
-func (m *MockJobInformationFeatureRepository) GetByAgentIDForGuestJobSeeker(agentID uint) ([]*entity.JobInformationFeature, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByAgentIDForGuestJobSeeker", agentID)
-	ret0, _ := ret[0].([]*entity.JobInformationFeature)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByAgentIDForGuestJobSeeker indicates an expected call of GetByAgentIDForGuestJobSeeker.
-func (mr *MockJobInformationFeatureRepositoryMockRecorder) GetByAgentIDForGuestJobSeeker(agentID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentIDForGuestJobSeeker", reflect.TypeOf((*MockJobInformationFeatureRepository)(nil).GetByAgentIDForGuestJobSeeker), agentID)
 }
 
 // GetByBillingAddressID mocks base method.
@@ -4796,6 +4826,21 @@ func (mr *MockJobInformationSelectionFlowPatternRepositoryMockRecorder) GetByEnt
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEnterpriseID", reflect.TypeOf((*MockJobInformationSelectionFlowPatternRepository)(nil).GetByEnterpriseID), enterpriseID)
 }
 
+// GetByIDList mocks base method.
+func (m *MockJobInformationSelectionFlowPatternRepository) GetByIDList(idList []uint) ([]*entity.JobInformationSelectionFlowPattern, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByIDList", idList)
+	ret0, _ := ret[0].([]*entity.JobInformationSelectionFlowPattern)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByIDList indicates an expected call of GetByIDList.
+func (mr *MockJobInformationSelectionFlowPatternRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobInformationSelectionFlowPatternRepository)(nil).GetByIDList), idList)
+}
+
 // GetByJobInformationID mocks base method.
 func (m *MockJobInformationSelectionFlowPatternRepository) GetByJobInformationID(jobInformationID uint) ([]*entity.JobInformationSelectionFlowPattern, error) {
 	m.ctrl.T.Helper()
@@ -5614,6 +5659,21 @@ func (mr *MockJobSeekerRepositoryMockRecorder) GetByIDList(idList any) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerRepository)(nil).GetByIDList), idList)
 }
 
+// GetByIDListForTask mocks base method.
+func (m *MockJobSeekerRepository) GetByIDListForTask(idList []uint) ([]*entity.JobSeeker, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByIDListForTask", idList)
+	ret0, _ := ret[0].([]*entity.JobSeeker)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByIDListForTask indicates an expected call of GetByIDListForTask.
+func (mr *MockJobSeekerRepositoryMockRecorder) GetByIDListForTask(idList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDListForTask", reflect.TypeOf((*MockJobSeekerRepository)(nil).GetByIDListForTask), idList)
+}
+
 // GetByOtherAgentIDAndFreeWord mocks base method.
 func (m *MockJobSeekerRepository) GetByOtherAgentIDAndFreeWord(agentID uint, freeWord string, agentAllianceList []*entity.AgentAlliance) ([]*entity.JobSeeker, error) {
 	m.ctrl.T.Helper()
@@ -5995,19 +6055,19 @@ func (mr *MockJobSeekerDocumentRepositoryMockRecorder) GetByAgentID(agentID any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDocumentRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDocumentRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDocument, error) {
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDocumentRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDocument, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
 	ret0, _ := ret[0].([]*entity.JobSeekerDocument)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDocumentRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDocumentRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDocumentRepository)(nil).GetByIDList), idList)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDocumentRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -6260,21 +6320,6 @@ func (mr *MockJobSeekerStudentHistoryRepositoryMockRecorder) GetByAgentID(agentI
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerStudentHistoryRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerStudentHistoryRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerStudentHistory, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerStudentHistory)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerStudentHistoryRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerStudentHistoryRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerStudentHistoryRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerStudentHistory, error) {
 	m.ctrl.T.Helper()
@@ -6288,6 +6333,21 @@ func (m *MockJobSeekerStudentHistoryRepository) GetByJobSeekerID(jobSeekerID uin
 func (mr *MockJobSeekerStudentHistoryRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerStudentHistoryRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerStudentHistoryRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerStudentHistory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerStudentHistory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerStudentHistoryRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerStudentHistoryRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -6386,21 +6446,6 @@ func (mr *MockJobSeekerWorkHistoryRepositoryMockRecorder) GetByAgentID(agentID a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerWorkHistoryRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerWorkHistoryRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerWorkHistory, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerWorkHistory)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerWorkHistoryRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerWorkHistoryRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerWorkHistoryRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerWorkHistory, error) {
 	m.ctrl.T.Helper()
@@ -6414,6 +6459,21 @@ func (m *MockJobSeekerWorkHistoryRepository) GetByJobSeekerID(jobSeekerID uint) 
 func (mr *MockJobSeekerWorkHistoryRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerWorkHistoryRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerWorkHistoryRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerWorkHistory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerWorkHistory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerWorkHistoryRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerWorkHistoryRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -6498,21 +6558,6 @@ func (mr *MockJobSeekerExperienceIndustryRepositoryMockRecorder) GetByAgentID(ag
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerExperienceIndustryRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerExperienceIndustryRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerExperienceIndustry, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerExperienceIndustry)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerExperienceIndustryRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerExperienceIndustryRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerExperienceIndustryRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerExperienceIndustry, error) {
 	m.ctrl.T.Helper()
@@ -6526,6 +6571,21 @@ func (m *MockJobSeekerExperienceIndustryRepository) GetByJobSeekerID(jobSeekerID
 func (mr *MockJobSeekerExperienceIndustryRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerExperienceIndustryRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerExperienceIndustryRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerExperienceIndustry, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerExperienceIndustry)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerExperienceIndustryRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerExperienceIndustryRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -6610,21 +6670,6 @@ func (mr *MockJobSeekerDepartmentHistoryRepositoryMockRecorder) GetByAgentID(age
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDepartmentHistoryRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDepartmentHistoryRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDepartmentHistory, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerDepartmentHistory)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDepartmentHistoryRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDepartmentHistoryRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerDepartmentHistoryRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerDepartmentHistory, error) {
 	m.ctrl.T.Helper()
@@ -6638,6 +6683,21 @@ func (m *MockJobSeekerDepartmentHistoryRepository) GetByJobSeekerID(jobSeekerID 
 func (mr *MockJobSeekerDepartmentHistoryRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerDepartmentHistoryRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDepartmentHistoryRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDepartmentHistory, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerDepartmentHistory)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDepartmentHistoryRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDepartmentHistoryRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -6722,21 +6782,6 @@ func (mr *MockJobSeekerExperienceOccupationRepositoryMockRecorder) GetByAgentID(
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerExperienceOccupationRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerExperienceOccupationRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerExperienceOccupation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerExperienceOccupation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerExperienceOccupationRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerExperienceOccupationRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerExperienceOccupationRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerExperienceOccupation, error) {
 	m.ctrl.T.Helper()
@@ -6750,6 +6795,21 @@ func (m *MockJobSeekerExperienceOccupationRepository) GetByJobSeekerID(jobSeeker
 func (mr *MockJobSeekerExperienceOccupationRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerExperienceOccupationRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerExperienceOccupationRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerExperienceOccupation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerExperienceOccupation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerExperienceOccupationRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerExperienceOccupationRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -6848,21 +6908,6 @@ func (mr *MockJobSeekerLicenseRepositoryMockRecorder) GetByAgentID(agentID any) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerLicenseRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerLicenseRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerLicense, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerLicense)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerLicenseRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerLicenseRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerLicenseRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerLicense, error) {
 	m.ctrl.T.Helper()
@@ -6876,6 +6921,21 @@ func (m *MockJobSeekerLicenseRepository) GetByJobSeekerID(jobSeekerID uint) ([]*
 func (mr *MockJobSeekerLicenseRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerLicenseRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerLicenseRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerLicense, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerLicense)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerLicenseRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerLicenseRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -6974,21 +7034,6 @@ func (mr *MockJobSeekerSelfPromotionRepositoryMockRecorder) GetByAgentID(agentID
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerSelfPromotionRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerSelfPromotionRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerSelfPromotion, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerSelfPromotion)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerSelfPromotionRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerSelfPromotionRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerSelfPromotionRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerSelfPromotion, error) {
 	m.ctrl.T.Helper()
@@ -7002,6 +7047,21 @@ func (m *MockJobSeekerSelfPromotionRepository) GetByJobSeekerID(jobSeekerID uint
 func (mr *MockJobSeekerSelfPromotionRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerSelfPromotionRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerSelfPromotionRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerSelfPromotion, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerSelfPromotion)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerSelfPromotionRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerSelfPromotionRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7100,21 +7160,6 @@ func (mr *MockJobSeekerDesiredIndustryRepositoryMockRecorder) GetByAgentID(agent
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDesiredIndustryRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDesiredIndustryRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDesiredIndustry, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerDesiredIndustry)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDesiredIndustryRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDesiredIndustryRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerDesiredIndustryRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerDesiredIndustry, error) {
 	m.ctrl.T.Helper()
@@ -7128,6 +7173,21 @@ func (m *MockJobSeekerDesiredIndustryRepository) GetByJobSeekerID(jobSeekerID ui
 func (mr *MockJobSeekerDesiredIndustryRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerDesiredIndustryRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDesiredIndustryRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDesiredIndustry, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerDesiredIndustry)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDesiredIndustryRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDesiredIndustryRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7226,21 +7286,6 @@ func (mr *MockJobSeekerDesiredOccupationRepositoryMockRecorder) GetByAgentID(age
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDesiredOccupationRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDesiredOccupationRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDesiredOccupation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerDesiredOccupation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDesiredOccupationRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDesiredOccupationRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerDesiredOccupationRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerDesiredOccupation, error) {
 	m.ctrl.T.Helper()
@@ -7254,6 +7299,21 @@ func (m *MockJobSeekerDesiredOccupationRepository) GetByJobSeekerID(jobSeekerID 
 func (mr *MockJobSeekerDesiredOccupationRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerDesiredOccupationRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDesiredOccupationRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDesiredOccupation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerDesiredOccupation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDesiredOccupationRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDesiredOccupationRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7352,21 +7412,6 @@ func (mr *MockJobSeekerDesiredWorkLocationRepositoryMockRecorder) GetByAgentID(a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDesiredWorkLocationRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDesiredWorkLocationRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDesiredWorkLocation, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerDesiredWorkLocation)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDesiredWorkLocationRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDesiredWorkLocationRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerDesiredWorkLocationRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerDesiredWorkLocation, error) {
 	m.ctrl.T.Helper()
@@ -7380,6 +7425,21 @@ func (m *MockJobSeekerDesiredWorkLocationRepository) GetByJobSeekerID(jobSeekerI
 func (mr *MockJobSeekerDesiredWorkLocationRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerDesiredWorkLocationRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDesiredWorkLocationRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDesiredWorkLocation, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerDesiredWorkLocation)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDesiredWorkLocationRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDesiredWorkLocationRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7478,21 +7538,6 @@ func (mr *MockJobSeekerDesiredHolidayTypeRepositoryMockRecorder) GetByAgentID(ag
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDesiredHolidayTypeRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDesiredHolidayTypeRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDesiredHolidayType, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerDesiredHolidayType)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDesiredHolidayTypeRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDesiredHolidayTypeRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerDesiredHolidayTypeRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerDesiredHolidayType, error) {
 	m.ctrl.T.Helper()
@@ -7506,6 +7551,21 @@ func (m *MockJobSeekerDesiredHolidayTypeRepository) GetByJobSeekerID(jobSeekerID
 func (mr *MockJobSeekerDesiredHolidayTypeRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerDesiredHolidayTypeRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDesiredHolidayTypeRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDesiredHolidayType, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerDesiredHolidayType)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDesiredHolidayTypeRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDesiredHolidayTypeRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7604,21 +7664,6 @@ func (mr *MockJobSeekerDevelopmentSkillRepositoryMockRecorder) GetByAgentID(agen
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDevelopmentSkillRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDevelopmentSkillRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDevelopmentSkill, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerDevelopmentSkill)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDevelopmentSkillRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDevelopmentSkillRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerDevelopmentSkillRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerDevelopmentSkill, error) {
 	m.ctrl.T.Helper()
@@ -7632,6 +7677,21 @@ func (m *MockJobSeekerDevelopmentSkillRepository) GetByJobSeekerID(jobSeekerID u
 func (mr *MockJobSeekerDevelopmentSkillRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerDevelopmentSkillRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDevelopmentSkillRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDevelopmentSkill, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerDevelopmentSkill)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDevelopmentSkillRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDevelopmentSkillRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7730,21 +7790,6 @@ func (mr *MockJobSeekerLanguageSkillRepositoryMockRecorder) GetByAgentID(agentID
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerLanguageSkillRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerLanguageSkillRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerLanguageSkill, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerLanguageSkill)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerLanguageSkillRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerLanguageSkillRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerLanguageSkillRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerLanguageSkill, error) {
 	m.ctrl.T.Helper()
@@ -7758,6 +7803,21 @@ func (m *MockJobSeekerLanguageSkillRepository) GetByJobSeekerID(jobSeekerID uint
 func (mr *MockJobSeekerLanguageSkillRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerLanguageSkillRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerLanguageSkillRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerLanguageSkill, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerLanguageSkill)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerLanguageSkillRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerLanguageSkillRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7856,21 +7916,6 @@ func (mr *MockJobSeekerPCToolRepositoryMockRecorder) GetByAgentID(agentID any) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerPCToolRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerPCToolRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerPCTool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerPCTool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerPCToolRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerPCToolRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerPCToolRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerPCTool, error) {
 	m.ctrl.T.Helper()
@@ -7884,6 +7929,21 @@ func (m *MockJobSeekerPCToolRepository) GetByJobSeekerID(jobSeekerID uint) ([]*e
 func (mr *MockJobSeekerPCToolRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerPCToolRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerPCToolRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerPCTool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerPCTool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerPCToolRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerPCToolRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -7997,21 +8057,6 @@ func (mr *MockJobSeekerHideToAgentRepositoryMockRecorder) GetByAgentIDList(agent
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentIDList", reflect.TypeOf((*MockJobSeekerHideToAgentRepository)(nil).GetByAgentIDList), agentIDList)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerHideToAgentRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerHideToAgent, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerHideToAgent)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerHideToAgentRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerHideToAgentRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerHideToAgentRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerHideToAgent, error) {
 	m.ctrl.T.Helper()
@@ -8025,6 +8070,21 @@ func (m *MockJobSeekerHideToAgentRepository) GetByJobSeekerID(jobSeekerID uint) 
 func (mr *MockJobSeekerHideToAgentRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerHideToAgentRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerHideToAgentRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerHideToAgent, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerHideToAgent)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerHideToAgentRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerHideToAgentRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -8138,21 +8198,6 @@ func (mr *MockJobSeekerDesiredCompanyScaleRepositoryMockRecorder) GetByAgentID(a
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerDesiredCompanyScaleRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerDesiredCompanyScaleRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerDesiredCompanyScale, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerDesiredCompanyScale)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerDesiredCompanyScaleRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerDesiredCompanyScaleRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerDesiredCompanyScaleRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerDesiredCompanyScale, error) {
 	m.ctrl.T.Helper()
@@ -8166,6 +8211,21 @@ func (m *MockJobSeekerDesiredCompanyScaleRepository) GetByJobSeekerID(jobSeekerI
 func (mr *MockJobSeekerDesiredCompanyScaleRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerDesiredCompanyScaleRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerDesiredCompanyScaleRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerDesiredCompanyScale, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerDesiredCompanyScale)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerDesiredCompanyScaleRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerDesiredCompanyScaleRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -8264,21 +8324,6 @@ func (mr *MockJobSeekerExperienceJobRepositoryMockRecorder) GetByAgentID(agentID
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockJobSeekerExperienceJobRepository)(nil).GetByAgentID), agentID)
 }
 
-// GetByIDList mocks base method.
-func (m *MockJobSeekerExperienceJobRepository) GetByIDList(idList []uint) ([]*entity.JobSeekerExperienceJob, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByIDList", idList)
-	ret0, _ := ret[0].([]*entity.JobSeekerExperienceJob)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByIDList indicates an expected call of GetByIDList.
-func (mr *MockJobSeekerExperienceJobRepositoryMockRecorder) GetByIDList(idList any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByIDList", reflect.TypeOf((*MockJobSeekerExperienceJobRepository)(nil).GetByIDList), idList)
-}
-
 // GetByJobSeekerID mocks base method.
 func (m *MockJobSeekerExperienceJobRepository) GetByJobSeekerID(jobSeekerID uint) ([]*entity.JobSeekerExperienceJob, error) {
 	m.ctrl.T.Helper()
@@ -8292,6 +8337,21 @@ func (m *MockJobSeekerExperienceJobRepository) GetByJobSeekerID(jobSeekerID uint
 func (mr *MockJobSeekerExperienceJobRepositoryMockRecorder) GetByJobSeekerID(jobSeekerID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerID", reflect.TypeOf((*MockJobSeekerExperienceJobRepository)(nil).GetByJobSeekerID), jobSeekerID)
+}
+
+// GetByJobSeekerIDList mocks base method.
+func (m *MockJobSeekerExperienceJobRepository) GetByJobSeekerIDList(jobSeekerIDList []uint) ([]*entity.JobSeekerExperienceJob, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByJobSeekerIDList", jobSeekerIDList)
+	ret0, _ := ret[0].([]*entity.JobSeekerExperienceJob)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByJobSeekerIDList indicates an expected call of GetByJobSeekerIDList.
+func (mr *MockJobSeekerExperienceJobRepositoryMockRecorder) GetByJobSeekerIDList(jobSeekerIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByJobSeekerIDList", reflect.TypeOf((*MockJobSeekerExperienceJobRepository)(nil).GetByJobSeekerIDList), jobSeekerIDList)
 }
 
 // GetByStaffID mocks base method.
@@ -8519,6 +8579,21 @@ func (m *MockTaskGroupRepository) FindByID(id uint) (*entity.TaskGroup, error) {
 func (mr *MockTaskGroupRepositoryMockRecorder) FindByID(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockTaskGroupRepository)(nil).FindByID), id)
+}
+
+// GetByAgentID mocks base method.
+func (m *MockTaskGroupRepository) GetByAgentID(agentID uint) ([]*entity.TaskGroup, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByAgentID", agentID)
+	ret0, _ := ret[0].([]*entity.TaskGroup)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetByAgentID indicates an expected call of GetByAgentID.
+func (mr *MockTaskGroupRepositoryMockRecorder) GetByAgentID(agentID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByAgentID", reflect.TypeOf((*MockTaskGroupRepository)(nil).GetByAgentID), agentID)
 }
 
 // GetByJobInformationIDList mocks base method.
@@ -9448,21 +9523,6 @@ func (mr *MockTaskRepositoryMockRecorder) GetLatestAfterSelectPhaseByJobSeekerID
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestAfterSelectPhaseByJobSeekerID", reflect.TypeOf((*MockTaskRepository)(nil).GetLatestAfterSelectPhaseByJobSeekerID), jobSeekerID, phase)
 }
 
-// GetLatestByAgentID mocks base method.
-func (m *MockTaskRepository) GetLatestByAgentID(agentID uint) ([]*entity.Task, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetLatestByAgentID", agentID)
-	ret0, _ := ret[0].([]*entity.Task)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetLatestByAgentID indicates an expected call of GetLatestByAgentID.
-func (mr *MockTaskRepositoryMockRecorder) GetLatestByAgentID(agentID any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestByAgentID", reflect.TypeOf((*MockTaskRepository)(nil).GetLatestByAgentID), agentID)
-}
-
 // GetLatestByAgentIDAndFreeWord mocks base method.
 func (m *MockTaskRepository) GetLatestByAgentIDAndFreeWord(agentID uint, jobSeekerFreeWord, enterpriseFreeWord string) ([]*entity.Task, error) {
 	m.ctrl.T.Helper()
@@ -9476,6 +9536,21 @@ func (m *MockTaskRepository) GetLatestByAgentIDAndFreeWord(agentID uint, jobSeek
 func (mr *MockTaskRepositoryMockRecorder) GetLatestByAgentIDAndFreeWord(agentID, jobSeekerFreeWord, enterpriseFreeWord any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestByAgentIDAndFreeWord", reflect.TypeOf((*MockTaskRepository)(nil).GetLatestByAgentIDAndFreeWord), agentID, jobSeekerFreeWord, enterpriseFreeWord)
+}
+
+// GetLatestByGroupIDList mocks base method.
+func (m *MockTaskRepository) GetLatestByGroupIDList(groupIDList []uint) ([]*entity.Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLatestByGroupIDList", groupIDList)
+	ret0, _ := ret[0].([]*entity.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLatestByGroupIDList indicates an expected call of GetLatestByGroupIDList.
+func (mr *MockTaskRepositoryMockRecorder) GetLatestByGroupIDList(groupIDList any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestByGroupIDList", reflect.TypeOf((*MockTaskRepository)(nil).GetLatestByGroupIDList), groupIDList)
 }
 
 // GetLatestByJobSeekerUUIDAndJobInformationIDList mocks base method.

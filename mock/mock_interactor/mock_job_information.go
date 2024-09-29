@@ -219,6 +219,21 @@ func (mr *MockJobInformationInteractorMockRecorder) GetJobInformationListByIDLis
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobInformationListByIDList", reflect.TypeOf((*MockJobInformationInteractor)(nil).GetJobInformationListByIDList), input)
 }
 
+// GetJobInformationListForDiagnosis mocks base method.
+func (m *MockJobInformationInteractor) GetJobInformationListForDiagnosis() (interactor.GetJobInformationListForDiagnosisOutput, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetJobInformationListForDiagnosis")
+	ret0, _ := ret[0].(interactor.GetJobInformationListForDiagnosisOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetJobInformationListForDiagnosis indicates an expected call of GetJobInformationListForDiagnosis.
+func (mr *MockJobInformationInteractorMockRecorder) GetJobInformationListForDiagnosis() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJobInformationListForDiagnosis", reflect.TypeOf((*MockJobInformationInteractor)(nil).GetJobInformationListForDiagnosis))
+}
+
 // GetJobListingByJobInformationUUID mocks base method.
 func (m *MockJobInformationInteractor) GetJobListingByJobInformationUUID(input interactor.GetJobListingByJobInformationUUIDInput) (interactor.GetJobListingByJobInformationUUIDOutput, error) {
 	m.ctrl.T.Helper()

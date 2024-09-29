@@ -16,7 +16,7 @@ import (
 
 /****************************************************************************************/
 // タスク開始の関数（打診）
-// Memo: 旧版の為、新しいapiの動作確認後に削除（東尾が対応）
+// Memo: 旧版の為、新しいapiの動作確認後に削除（が対応）
 
 // 求人打診
 func SoundOutForJobInformation(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal) func(c echo.Context) error {

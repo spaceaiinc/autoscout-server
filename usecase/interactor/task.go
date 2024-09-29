@@ -20,7 +20,7 @@ import (
 
 type TaskInteractor interface {
 	// 旧タスク開始
-	// Memo: 旧版の為、新しいapiの動作確認後に削除（東尾が対応）
+	// Memo: 旧版の為、新しいapiの動作確認後に削除（が対応）
 	SoundOutForJobInformation(input SoundOutForJobInformationInput) (SoundOutForJobInformationOutput, error)
 	SoundOutForSendJobListing(input SoundOutForSendJobListingInput) (SoundOutForSendJobListingOutput, error)
 	SoundOutForMaskResume(input SoundOutForMaskResumeInput) (SoundOutForMaskResumeOutput, error)
@@ -223,7 +223,7 @@ func NewTaskInteractorImpl(
 
 /****************************************************************************************/
 // 旧タスク開始の関数
-// Memo: 旧版の為、新しいapiの動作確認後に削除（東尾が対応）
+// Memo: 旧版の為、新しいapiの動作確認後に削除（が対応）
 //
 
 type SoundOutForJobInformationInput struct {
@@ -4616,7 +4616,7 @@ func (i *TaskInteractorImpl) CreateEntryTaskFromMatchingJob(input CreateEntryTas
 	var (
 		output           CreateEntryTaskFromMatchingJobOutput
 		err              error
-		defaultCAStaffID uint = 2 // 本番環境の濱田さんのIDをデフォルトCAとして設定
+		defaultCAStaffID uint = 2 // 本番環境のIDをデフォルトCAとして設定
 	)
 
 	jobInformation, err := i.jobInformationRepository.FindByUUID(input.Param.JobInformationUUID)

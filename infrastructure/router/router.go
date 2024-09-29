@@ -816,7 +816,7 @@ func (r *Router) SetUp() *Router {
 		/************************************** POSTメソッド **************************************/
 
 		/************* タスク開始 API *************/
-		// Memo: 旧版の為、新しいapiの動作確認後に削除（東尾が対応）
+		// Memo: 旧版の為、新しいapiの動作確認後に削除（が対応）
 
 		// 求人打診
 		taskAPI.POST("/sound_out/for/job_information", routes.SoundOutForJobInformation(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal))
