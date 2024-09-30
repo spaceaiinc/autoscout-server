@@ -118,6 +118,8 @@ type JobSeeker struct {
 	// ゲストページ用の認証
 	Password           string `db:"password" json:"-"`             // パスワード
 	ResetPasswordToken string `db:"reset_password_token" json:"-"` // パスワードリセット用のトークン メールごとに変更
+
+	ExternalID string `db:"external_id" json:"external_id"` // 外部ID
 }
 
 func NewJobSeeker(

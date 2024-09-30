@@ -43,6 +43,142 @@ type BatchEntryOutput struct {
 	OK bool
 }
 
+func (i *ScoutServiceInteractorImpl) BatchEntryWithoutGmail(input BatchEntryInput) (BatchEntryOutput, error) {
+	var (
+		output BatchEntryOutput
+		err    error
+	)
+	/********* 未実行のユーザー情報を取得 *********/
+
+	/**
+	 * エントリー取得処理
+	 */
+	var (
+		errMessage           string
+		selectedScoutService *entity.ScoutService
+		now                  time.Time = time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
+		agentRobotID         uint
+	)
+
+	agentRobotIDInt, err := strconv.Atoi(os.Getenv("AGENT_ROBOT_ID"))
+	if err != nil {
+		log.Println("エージェントロボットの変換に失敗しました", err)
+		return output, err
+	}
+	agentRobotID = uint(agentRobotIDInt)
+
+	agentRobot, err := i.agentRobotRepository.FindByID(agentRobotID)
+	if err != nil {
+		log.Println("エージェントロボットの取得に失敗しました", err)
+		return output, err
+	}
+
+	scoutServices, err := i.scoutServiceRepository.GetByAgentRobotID(agentRobotID)
+	if err != nil {
+		log.Println("スカウトサービスの取得に失敗しました", err)
+		return output, err
+	}
+	// AMBIの方がエラーが少ないため優先
+	sort.Slice(scoutServices, func(i, j int) bool {
+		return scoutServices[i].ServiceType.Int64 == entity.ScoutServiceTypeAmbi
+	})
+
+	// タイムアウトを設定
+	ctx, cancel := context.WithTimeout(context.Background(), 14*time.Minute)
+	defer cancel()
+
+	// panicが発生した場合にエラーを返すためにdeferでrecoverを実行して、エラーとして返す
+	defer func() {
+		if rec := recover(); rec != nil {
+			// interactor or repositoryを含む文字列を取得
+			stackStr := string(debug.Stack())
+			var errorLine string
+			for _, line := range strings.Split(stackStr, "\n") {
+				if strings.Contains(line, "interactor/") || strings.Contains(line, "repository/") {
+					errorLine += line + "\n"
+					log.Println("error line:", errorLine)
+				}
+			}
+			errMessage = fmt.Sprintf("エントリー取得処理でpanicエラーが発生しました。Recover: %v\nStack:\n%s", rec, errorLine)
+			log.Println(errMessage)
+			err = errors.New(errMessage)
+
+			// エラーメール送信
+			now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
+			errorIssue := "パニックエラー"
+			if strings.Contains(fmt.Sprint(rec), "deadline") {
+				errorIssue = "タイムアウト"
+			}
+			if selectedScoutService != nil {
+				i.sendErrorMail(
+					fmt.Sprintf(
+						"%vの新規エントリー取得で%vが発生しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\n・Recover: %v\n・Stack:\n%s",
+						entity.ScoutServiceTypeLabel[selectedScoutService.ServiceType.Int64], errorIssue, now, agentRobot.Name, agentRobot.ID, rec, errorLine,
+					),
+				)
+			}
+		}
+	}()
+
+	for _, scoutService := range scoutServices {
+
+		selectedScoutService = scoutService
+
+		// マイナビ転職スカウト
+		if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeMynaviScouting, true) {
+			log.Println("マイナビのエントリー取得を開始します\n現在:", now.Hour())
+
+			// スカウト処理中の場合はログアウトさせないように終わるまで処理しない。
+			serviceOutput, err := i.EntryOnMynaviScouting(EntryOnMynaviScoutingInput{
+				AgentID:      agentRobot.AgentID,
+				ScoutService: scoutService,
+				Context:      ctx,
+
+				// UserIDList: mynaviScoutingUserIDList,
+			})
+			if err != nil {
+				now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
+				errMessage = fmt.Sprintf("マイナビ転職スカウトの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
+				log.Println(errMessage)
+				i.sendErrorMail(errMessage)
+				return output, errors.New(errMessage)
+			}
+
+			log.Println("マイナビの取得に成功しました", serviceOutput.JobSeekerList)
+
+			output.OK = true
+			return output, err
+
+			// AMBI
+		} else if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeAmbi, true) {
+			log.Println("AMBIのエントリー取得を開始します\n現在:", now.Hour())
+
+			serviceOutput, err := i.EntryOnAmbi(EntryOnAmbiInput{
+				AgentID:      agentRobot.AgentID,
+				ScoutService: scoutService,
+				Context:      ctx,
+
+				// UserIDList: ambiUserIDList,
+			})
+			if err != nil {
+				now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
+				errMessage = fmt.Sprintf("AMBIの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
+				log.Println(errMessage)
+				i.sendErrorMail(errMessage)
+				return output, errors.New(errMessage)
+			}
+
+			log.Println("AMBIの取得に成功しました", serviceOutput.JobSeekerList)
+
+			output.OK = true
+			return output, err
+		}
+	}
+
+	output.OK = true
+	return output, err
+}
+
 func (i *ScoutServiceInteractorImpl) BatchEntry(input BatchEntryInput) (BatchEntryOutput, error) {
 	var (
 		output BatchEntryOutput
@@ -70,9 +206,16 @@ func (i *ScoutServiceInteractorImpl) BatchEntry(input BatchEntryInput) (BatchEnt
 		var (
 			errMessage           string
 			selectedScoutService *entity.ScoutService
-			agentRobotID         uint      = 1
 			now                  time.Time = time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
+			agentRobotID         uint
 		)
+
+		agentRobotIDInt, err := strconv.Atoi(os.Getenv("AGENT_ROBOT_ID"))
+		if err != nil {
+			log.Println("エージェントロボットの変換に失敗しました", err)
+			return output, err
+		}
+		agentRobotID = uint(agentRobotIDInt)
 
 		agentRobot, err := i.agentRobotRepository.FindByID(agentRobotID)
 		if err != nil {
@@ -206,7 +349,9 @@ func (i *ScoutServiceInteractorImpl) BatchEntry(input BatchEntryInput) (BatchEnt
 			}
 		}
 	} else {
-		fmt.Printf("---------------\nエントリーユーザーが存在しません。\n---------------\n")
+		fmt.Println("---------------\nエントリーユーザーが存在しません。\n---------------\n")
+
+		// 定期実行フラグ
 	}
 
 	// var (
@@ -1358,23 +1503,23 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 			log.Println("メッセージを作成するページに遷移しました")
 
 			// templateUser
-			templateUserSelect, err := page.Element("select[name=templateUser]")
-			if err != nil {
-				log.Println(err)
-				return output, err
-			}
+			// templateUserSelect, err := page.Element("select[name=templateUser]")
+			// if err != nil {
+			// 	log.Println(err)
+			// 	return output, err
+			// }
 
-			templateUser := "濱田　僚太"
-			err = templateUserSelect.Select(
-				[]string{templateUser},
-				true,
-				"text",
-			)
-			if err != nil {
-				log.Println(err)
-				return output, err
-			}
-			time.Sleep(5 * time.Second)
+			// templateUser := "濱田　僚太"
+			// err = templateUserSelect.Select(
+			// 	[]string{templateUser},
+			// 	true,
+			// 	"text",
+			// )
+			// if err != nil {
+			// 	log.Println(err)
+			// 	return output, err
+			// }
+			// time.Sleep(5 * time.Second)
 
 			// select-scout-templete　【面談調整】テンプレ
 			scoutTemplateSelect, err := page.Element("select.select-scout-templete")
@@ -1538,7 +1683,8 @@ recordLoop:
 				jobSeeker.SecretMemo += "進捗状況: " + column + "\n\n"
 			// 5:進捗状況_コード
 			// 6:応募メッセージ
-			// 7:会員ＮＯ
+			case 7: // 会員ＮＯ
+				jobSeeker.ExternalID = column
 			// 8:姓
 			case 8:
 				jobSeeker.LastName = column
@@ -2501,125 +2647,429 @@ recordLoop:
 		return output, nil
 	}
 
-	// 求職者をDBに保存
+	var (
+		records [][]string
+		record  []string
+	)
+
+	// csvの一行目を作成
+	records = append(
+		records,
+		[]string{
+			"candidate-externalId",
+			"candidate-firstName",
+			"candidate-Lastname",
+			"candidate-email",
+			"candidate-title",
+			"candidate-middleName",
+			"candidate-FirstNameKana",
+			"candidate-LastNameKana",
+			"candidate-workEmail",
+			"candidate-employmentType",
+			"candidate-jobTypes",
+			"candidate-gender",
+			"candidate-dob",
+			"candidate-address",
+			"candidate-citizenship",
+			"candidate-Country",
+			"candidate-city",
+			"candidate-linkedln",
+			"candidate-currentSalary",
+			"candidate-desiredSalary",
+			"candidate-company1",
+			"candidate-company2",
+			"candidate-company3",
+			"candidate-contractInterval",
+			"candidate-contractRate",
+			"candidate-currency",
+			"candidate-degreeName",
+			"candidate-education",
+			"candidate-educationLevel",
+			"candidate-employer1",
+			"candidate-employer2",
+			"candidate-employer3",
+			"candidate-gpa",
+			"candidate-grade",
+			"candidate-graduationDate",
+			"candidate-homePhone",
+			"candidate-phone",
+			"candidate-mobile",
+			"candidate-jobTitle1",
+			"candidate-jobTitle2",
+			"candidate-jobTitle3",
+			"candidate-keyword",
+			"candidate-note",
+			"candidate-numberOfEmployers",
+			"candidate-photo",
+			"candidate-resume",
+			"candidate-schoolName",
+			"candidate-skills",
+			"candidate-startDate1",
+			"candidate-startDate2",
+			"candidate-startDate3",
+			"candidate-endDate1",
+			"candidate-endDate2",
+			"candidate-endDate3",
+			"candidate-State",
+			"candidate-workHistory",
+			"candidate-workPhone",
+			"candidate-zipCode",
+			"candidate-owners",
+			"candidate-comments",
+		},
+	)
+
 	for _, jobSeeker := range jobSeekerList {
+		// 求人ごとにデータを格納
+		record =
+			[]string{
+				// 		"candidate-externalId",
+				jobSeeker.ExternalID,
+				// "candidate-firstName",
+				jobSeeker.FirstName,
+				// "candidate-Lastname",
+				jobSeeker.LastName,
+				// "candidate-email",
+				jobSeeker.Email,
+				// "candidate-title",
+				"",
+				// "candidate-middleName",
+				"",
+				// "candidate-FirstNameKana",
+				jobSeeker.FirstFurigana,
+				// "candidate-LastNameKana",
+				jobSeeker.LastFurigana,
+				// "candidate-workEmail",
+				"",
+				// "candidate-employmentType",
+				"FULL_TIME",
+				// "candidate-jobTypes",
+				"PERMANENT",
+				// "candidate-gender",
+				entity.ConvertGenderToVincere(jobSeeker.Gender),
+				// "candidate-dob",
+				"",
+				// "candidate-address",
+				jobSeeker.Address,
+				// "candidate-citizenship",
+				"",
+				// "candidate-Country",
+				"",
+				// "candidate-city",
+				"",
+				// "candidate-linkedln",
+				"",
+				// "candidate-currentSalary",
+				fmt.Sprint(jobSeeker.AnnualIncome),
+				// "candidate-desiredSalary",
+				fmt.Sprint(jobSeeker.DesiredAnnualIncome),
+				// "candidate-company1",
+				"",
+				// "candidate-company2",
+				"",
+				// "candidate-company3",
+				"",
+				// "candidate-contractInterval",
+				"",
+				// "candidate-contractRate",
+				"",
+				// "candidate-currency",
+				"",
+				// "candidate-degreeName",
+				"",
+				// "candidate-education",
+				"",
+				// "candidate-educationLevel",
+				"",
+				// "candidate-employer1",
+				"",
+				// "candidate-employer2",
+				"",
+				// "candidate-employer3",
+				"",
+				// "candidate-gpa",
+				"",
+				// "candidate-grade",
+				"",
+				// "candidate-graduationDate",
+				"",
+				// "candidate-homePhone",
+				"",
+				// "candidate-phone",
+				jobSeeker.PhoneNumber,
+				// "candidate-mobile",
+				jobSeeker.PhoneNumber,
+				// "candidate-jobTitle1",
+				"",
+				// "candidate-jobTitle2",
+				"",
+				// "candidate-jobTitle3",
+				"",
+				// "candidate-keyword",
+				"",
+				// "candidate-note",
+				"",
+				// "candidate-numberOfEmployers",
+				"",
+				// "candidate-photo",
+				"",
+				// "candidate-resume",
+				"",
+				// "candidate-schoolName",
+				"",
+				// "candidate-skills",
+				"",
+				// "candidate-startDate1",
+				"",
+				// "candidate-startDate2",
+				"",
+				// "candidate-startDate3",
+				"",
+				// "candidate-endDate1",
+				"",
+				// "candidate-endDate2",
+				"",
+				// "candidate-endDate3",
+				"",
+				// "candidate-State",
+				"",
+				// "candidate-workHistory",
+				"",
+				// "candidate-workPhone",
+				"",
+				// "candidate-zipCode",
+				"",
+				// "candidate-owners",
+				"",
+				// "candidate-comments",
+				"",
 
-		// 本番以外はメールアドレスに空白
-		if i.app.Env != "prd" {
-			jobSeeker.Email = ""
-		}
+				// jobSeeker.StaffName,
+				// getStrPhaseForJobSeeker(jobSeeker.Phase),
+				// jobSeeker.ChannelName,
+				// jobSeeker.CreatedAt.In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006-01-02 15:04:05"),
+				// jobSeeker.InterviewDate.In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006-01-02 15:04:05"),
+				// getStrUserStatus(jobSeeker.UserStatus),
+				// jobSeeker.LastName,
+				// jobSeeker.FirstName,
+				// jobSeeker.LastFurigana,
+				// jobSeeker.FirstFurigana,
+				// getStrGenderForJobSeeker(jobSeeker.Gender),
+				// jobSeeker.GenderRemarks,
+				// getStrNationalityForJobSeeker(jobSeeker.Nationality),
+				// jobSeeker.NationalityRemarks,
+				// getStrAvailable(jobSeeker.MedicalHistory),
+				// jobSeeker.MedicalHistoryRemarks,
+				// jobSeeker.Birthday,
+				// getStrAvailable(jobSeeker.Spouse),
+				// getStrAvailable(jobSeeker.SupportObligation),
+				// fmt.Sprint(jobSeeker.Dependents.Int64),
+				// jobSeeker.Email,
+				// jobSeeker.PhoneNumber,
+				// jobSeeker.EmergencyPhoneNumber,
+				// getStrPrefecture(jobSeeker.Prefecture),
+				// fmt.Sprint(jobSeeker.PostCode, "\n", getStrPrefecture(jobSeeker.Prefecture), jobSeeker.Address),
+				// jobSeeker.AddressFurigana,
+				// fmt.Sprint(jobSeeker.AnnualIncome.Int64) + "万円",
 
-		// 面談調整メールを送信
-		jobSeeker.Phase = null.NewInt(int64(entity.EntryInterview), true) // フェーズ： エントリー
-		jobSeeker.AgentID = input.AgentID
-		jobSeeker.AgentStaffID = null.NewInt(int64(input.ScoutService.AgentStaffID), true)
-		jobSeeker.RegisterPhase = null.NewInt(1, true) // 登録状況:下書き
-		jobSeeker.InterviewDate = time.Now().UTC()
-		jobSeeker.InflowChannelID = input.ScoutService.InflowChannelID
+				// // 学歴
+				// getStrStudyCategoryForJobSeeker(jobSeeker.StudyCategory),
+				// getStrStudentHistoryList(jobSeeker.StudentHistories),
 
-		err := i.jobSeekerRepository.Create(jobSeeker)
-		if err != nil {
-			log.Println(err)
-			return output, err
-		}
+				// // 職歴
+				// getStrStateOfEmployment(jobSeeker.StateOfEmployment),
+				// getStrJobChangeForJobSeeker(jobSeeker.JobChange),
+				// getStrAvailable(jobSeeker.ShortResignation),
+				// jobSeeker.ShortResignationRemarks,
+				// getStrWorkHistoryList(jobSeeker.WorkHistories),
 
-		// 開発環境の場合はユーザー名などを統一する
-		if os.Getenv("APP_ENV") != "prd" {
-			err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
-			if err != nil {
-				fmt.Println(err)
-				return output, err
+				// // PCスキル
+				// getStrExcelSkill(jobSeeker.ExcelSkill),
+				// getStrWordSkill(jobSeeker.WordSkill),
+				// getStrPowerPointSkill(jobSeeker.PowerPointSkill),
+
+				// // 活かせるスキル・資格
+				// getStrLicenseListForJobSeeker(jobSeeker.Licenses),
+				// getStrPCToolListForJobSeeker(jobSeeker.PCTools),
+				// getStrLanguageDevelopmentExperienceListForJobSeeker(jobSeeker.DevelopmentSkills),
+				// getStrOSDevelopmentExperienceListForJobSeeker(jobSeeker.DevelopmentSkills),
+				// getStrLanguageListForJobSeeker(jobSeeker.LanguageSkills),
+
+				// // 希望条件
+				// getStrDesiredHolidayTypeList(jobSeeker.DesiredHolidayTypes),
+				// getStrDesiredCompanyScaleList(jobSeeker.DesiredCompanyScales),
+				// getStrDesiredIndustryList(jobSeeker.DesiredIndustries),
+				// getStrDesiredOccupationList(jobSeeker.DesiredOccupations),
+				// getStrDesiredWorkLocationList(jobSeeker.DesiredWorkLocations),
+				// getStrTransfer(jobSeeker.Transfer),
+				// jobSeeker.TransferRequirement,
+				// fmt.Sprint(jobSeeker.DesiredAnnualIncome.Int64) + "万円",
+				// fmt.Sprint(getStrJoinCompanyPeriod(jobSeeker.JoinCompanyPeriod)),
+
+				// getStrAppearanceForJobSeeker(jobSeeker.Appearance),
+				// // jobSeeker.AppearanceDetailOfTruth,
+				// // jobSeeker.AppearanceDetail,
+				// getStrCommunicationForJobSeeker(jobSeeker.Communication),
+				// // jobSeeker.CommunicationDetailOfTruth,
+				// // jobSeeker.CommunicationDetail,
+				// getStrThinkingForJobSeeker(jobSeeker.Thinking),
+				// // jobSeeker.ThinkingDetailOfTruth,
+				// // jobSeeker.ThinkingDetail,
+				// getStrSelfPromotionList(jobSeeker.SelfPromotions),
+				// jobSeeker.ResearchContent,
+				// jobSeeker.AcceptancePoints,
+
+				// // メモ
+				// jobSeeker.SecretMemo,
+				// // jobSeeker.PublicMemo,
 			}
-		}
 
-		jobSeekerDocument := entity.NewJobSeekerDocument(
-			jobSeeker.ID,
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-		)
-
-		err = i.jobSeekerDocumentRepository.Create(jobSeekerDocument)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
-
-		// 求職者作成時にメッセージグループ作成
-		// エージェントと求職者のチャットグループを作成
-		chatGroup := entity.NewChatGroupWithJobSeeker(
-			jobSeeker.AgentID,
-			jobSeeker.ID,
-			false, // 初めはLINE連携してないから false
-		)
-
-		err = i.chatGroupWithJobSeekerRepository.Create(chatGroup)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
-
-		// 面談実施待ちより前のフェーズの場合は「面談調整タスク」を作成
-		var (
-			phaseSub null.Int
-			date     string
-		)
-
-		phaseSub = null.NewInt(0, true) //日程調整依頼
-
-		// タスクの期限は当日で登録
-		now := time.Now()
-		date = now.Format("2006-01-02")
-
-		// 面談調整タスクの作成
-		interviewTaskGroup := entity.NewInterviewTaskGroup(
-			jobSeeker.AgentID,
-			jobSeeker.ID,
-			jobSeeker.InterviewDate,
-			utility.EarliestTime(), // 初期値,
-		)
-
-		err = i.interviewTaskGroupRepository.Create(interviewTaskGroup)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
-
-		interviewTask := entity.NewInterviewTask(
-			interviewTaskGroup.ID,
-			null.NewInt(0, false),
-			null.NewInt(0, false),
-			jobSeeker.Phase,
-			phaseSub,
-			"",
-			date,
-			null.NewInt(99, true),
-			getStrPhaseForJobSeeker(jobSeeker.Phase),
-		)
-
-		err = i.interviewTaskRepository.Create(interviewTask)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
-
-		// 希望勤務地
-		for _, desiredWorkLocation := range jobSeeker.DesiredWorkLocations {
-			desiredWorkLocation.JobSeekerID = jobSeeker.ID
-			err := i.jobSeekerDesiredWorkLocationRepository.Create(&desiredWorkLocation)
-			if err != nil {
-				log.Println(err)
-				return output, err
-			}
-		}
+			// レコードを追加
+		records = append(records, record)
 	}
+
+	//CSVファイルを作成
+	filePath := ("./job-seeker-" + fmt.Sprint(utility.CreateUUID()) + ".csv")
+
+	exportedFile, err := os.Create(filePath)
+	if err != nil {
+		fmt.Println(err)
+		return output, err
+	}
+
+	cw := csv.NewWriter(exportedFile)
+
+	defer file.Close()
+	defer cw.Flush()
+
+	cw.WriteAll(records)
+
+	if err := cw.Error(); err != nil {
+		fmt.Println("error writing csv:", err)
+		return output, err
+	}
+
+	// output.FilePath = entity.NewFilePath(filePath)
+
+	// 求職者をDBに保存
+	// for _, jobSeeker := range jobSeekerList {
+
+	// 本番以外はメールアドレスに空白
+	// if i.app.Env != "prd" {
+	// 	jobSeeker.Email = ""
+	// }
+
+	// // 面談調整メールを送信
+	// jobSeeker.Phase = null.NewInt(int64(entity.EntryInterview), true) // フェーズ： エントリー
+	// jobSeeker.AgentID = input.AgentID
+	// jobSeeker.AgentStaffID = null.NewInt(int64(input.ScoutService.AgentStaffID), true)
+	// jobSeeker.RegisterPhase = null.NewInt(1, true) // 登録状況:下書き
+	// jobSeeker.InterviewDate = time.Now().UTC()
+	// jobSeeker.InflowChannelID = input.ScoutService.InflowChannelID
+
+	// err := i.jobSeekerRepository.Create(jobSeeker)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return output, err
+	// }
+
+	// // 開発環境の場合はユーザー名などを統一する
+	// if os.Getenv("APP_ENV") != "prd" {
+	// 	err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		return output, err
+	// 	}
+	// }
+
+	// jobSeekerDocument := entity.NewJobSeekerDocument(
+	// 	jobSeeker.ID,
+	// 	"",
+	// 	"",
+	// 	"",
+	// 	"",
+	// 	"",
+	// 	"",
+	// 	"",
+	// 	"",
+	// 	"",
+	// 	"",
+	// )
+
+	// err = i.jobSeekerDocumentRepository.Create(jobSeekerDocument)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return output, err
+	// }
+
+	// // 求職者作成時にメッセージグループ作成
+	// // エージェントと求職者のチャットグループを作成
+	// chatGroup := entity.NewChatGroupWithJobSeeker(
+	// 	jobSeeker.AgentID,
+	// 	jobSeeker.ID,
+	// 	false, // 初めはLINE連携してないから false
+	// )
+
+	// err = i.chatGroupWithJobSeekerRepository.Create(chatGroup)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return output, err
+	// }
+
+	// // 面談実施待ちより前のフェーズの場合は「面談調整タスク」を作成
+	// var (
+	// 	phaseSub null.Int
+	// 	date     string
+	// )
+
+	// phaseSub = null.NewInt(0, true) //日程調整依頼
+
+	// // タスクの期限は当日で登録
+	// now := time.Now()
+	// date = now.Format("2006-01-02")
+
+	// // 面談調整タスクの作成
+	// interviewTaskGroup := entity.NewInterviewTaskGroup(
+	// 	jobSeeker.AgentID,
+	// 	jobSeeker.ID,
+	// 	jobSeeker.InterviewDate,
+	// 	utility.EarliestTime(), // 初期値,
+	// )
+
+	// err = i.interviewTaskGroupRepository.Create(interviewTaskGroup)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return output, err
+	// }
+
+	// interviewTask := entity.NewInterviewTask(
+	// 	interviewTaskGroup.ID,
+	// 	null.NewInt(0, false),
+	// 	null.NewInt(0, false),
+	// 	jobSeeker.Phase,
+	// 	phaseSub,
+	// 	"",
+	// 	date,
+	// 	null.NewInt(99, true),
+	// 	getStrPhaseForJobSeeker(jobSeeker.Phase),
+	// )
+
+	// err = i.interviewTaskRepository.Create(interviewTask)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return output, err
+	// }
+
+	// // 希望勤務地
+	// for _, desiredWorkLocation := range jobSeeker.DesiredWorkLocations {
+	// 	desiredWorkLocation.JobSeekerID = jobSeeker.ID
+	// 	err := i.jobSeekerDesiredWorkLocationRepository.Create(&desiredWorkLocation)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 		return output, err
+	// 	}
+	// }
+	// }
 
 	log.Println("処理成功. jobSeekerList:", jobSeekerList)
 
