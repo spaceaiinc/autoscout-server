@@ -462,10 +462,10 @@ func (i *ScoutServiceInteractorImpl) GmailWebHook(input GmailWebHookInput) (Gmai
 	)
 
 	// local用
-	if i.app.Env != "prd" {
-		ambiEmail = "tonbi0521@gmail.com"
-		mynaviScoutingEmail = "sibuhiro81@gmail.com"
-	}
+	// if i.app.Env != "prd" {
+	// 	ambiEmail = "tonbi0521@gmail.com"
+	// 	mynaviScoutingEmail = "sibuhiro81@gmail.com"
+	// }
 
 	// Gmailの検索条件: https://support.google.com/mail/answer/7190?hl=ja
 	var searchParam = fmt.Sprintf(
@@ -1000,9 +1000,9 @@ userLoop:
 				log.Println("email:", email)
 				jobSeeker.Email = email
 				// テスト用メールアドレス
-				if i.app.Env != "prd" {
-					jobSeeker.Email = ""
-				}
+				// if i.app.Env != "prd" {
+				// 	jobSeeker.Email = ""
+				// }
 
 			} else if profileTh == "電話番号" {
 				phoneNumber := profileTr.MustElement("td").MustText()
@@ -1167,13 +1167,13 @@ userLoop:
 		}
 
 		// 開発環境の場合はユーザー名などを統一する
-		if os.Getenv("APP_ENV") != "prd" {
-			err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
-			if err != nil {
-				fmt.Println(err)
-				return output, err
-			}
-		}
+		// if os.Getenv("APP_ENV") != "prd" {
+		// 	err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
+		// 	if err != nil {
+		// 		fmt.Println(err)
+		// 		return output, err
+		// 	}
+		// }
 
 		jobSeekerDocument := entity.NewJobSeekerDocument(
 			jobSeeker.ID,
@@ -1476,7 +1476,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 		fmt.Println("メッセージ送信ページに遷移")
 
 		// ローカル環境ではメッセージ送信しない
-		if i.app.Env == "prd" {
+		if i.app.BatchType == "entry" {
 			// メッセージを作成する
 			messagePageLinks, err := page.Elements("a.btn.blue")
 			if err != nil {
@@ -1589,7 +1589,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 			for _, sendLink := range sendLinks {
 				if strings.Contains(sendLink.MustText(), "送信する") {
 					isMatchedWithSendLink = true
-					if i.app.Env == "prd" {
+					if i.app.BatchType == "entry" {
 						sendLink.MustClick()
 						time.Sleep(10 * time.Second)
 					}
@@ -3341,7 +3341,7 @@ userIDLoop:
 					}
 
 					// prd以外の場合は送信しないためここで終了
-					if i.app.Env != "prd" {
+					if i.app.BatchType != "entry" {
 						log.Println("テスト環境のため、メッセージ送信はスキップします")
 						jobSeeker := entity.JobSeeker{
 							SecretMemo: "・エントリー媒体：AMBI\n\n開発テスト用取り込み\n\n対象ID: " + fmt.Sprint(userID),
@@ -3797,9 +3797,9 @@ userIDLoop:
 	for _, jobSeeker := range jobSeekerList {
 
 		// 本番以外はメールアドレスに空白
-		if i.app.Env != "prd" {
-			jobSeeker.Email = ""
-		}
+		// if i.app.Env != "prd" {
+		// 	jobSeeker.Email = ""
+		// }
 
 		// 面談調整メールを送信
 		jobSeeker.Phase = null.NewInt(int64(entity.EntryInterview), true) // フェーズ： エントリー
@@ -3816,13 +3816,13 @@ userIDLoop:
 		}
 
 		// 開発環境の場合はユーザー名などを統一する
-		if os.Getenv("APP_ENV") != "prd" {
-			err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
-			if err != nil {
-				fmt.Println(err)
-				return output, err
-			}
-		}
+		// if os.Getenv("APP_ENV") != "prd" {
+		// 	err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
+		// 	if err != nil {
+		// 		fmt.Println(err)
+		// 		return output, err
+		// 	}
+		// }
 
 		jobSeekerDocument := entity.NewJobSeekerDocument(
 			jobSeeker.ID,
@@ -4471,9 +4471,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviAgentScout(input EntryOnMynavi
 		jobSeeker.RegisterPhase = null.NewInt(1, true) // 登録状況:下書き
 
 		// 本番以外はメールアドレスに空白
-		if i.app.Env != "prd" {
-			jobSeeker.Email = ""
-		}
+		// if i.app.Env != "prd" {
+		// 	jobSeeker.Email = ""
+		// }
 
 		err := i.jobSeekerRepository.Create(jobSeeker)
 		if err != nil {
@@ -4482,13 +4482,13 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviAgentScout(input EntryOnMynavi
 		}
 
 		// 開発環境の場合はユーザー名などを統一する
-		if os.Getenv("APP_ENV") != "prd" {
-			err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
-			if err != nil {
-				fmt.Println(err)
-				return output, err
-			}
-		}
+		// if os.Getenv("APP_ENV") != "prd" {
+		// 	err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
+		// 	if err != nil {
+		// 		fmt.Println(err)
+		// 		return output, err
+		// 	}
+		// }
 
 		jobSeekerDocument := entity.NewJobSeekerDocument(
 			jobSeeker.ID,
