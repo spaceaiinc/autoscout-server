@@ -13,6 +13,7 @@ type Config struct {
 	OneSignal OneSignal `required:"true" envconfig:"ONESIGNAL"`
 	RPA       RPA       `required:"false" envconfig:"RPA"`
 	GoogleAPI GoogleAPI `required:"false" envconfig:"GOOGLEAPI"`
+	Email     Email     `required:"false" envconfig:"EMAIL"`
 }
 
 func New() (Config, error) {
@@ -27,6 +28,7 @@ func New() (Config, error) {
 type App struct {
 	Env            string   `required:"true" split_words:"true"`
 	Service        string   `required:"true" split_words:"true"`
+	BatchType      string   `required:"true" split_words:"true"`
 	Port           int      `required:"true" split_words:"true"`
 	BasicUsers     []string `required:"true" split_words:"true"`
 	BasicPasswords []string `required:"true" split_words:"true"`
@@ -72,4 +74,9 @@ type RPA struct {
 type GoogleAPI struct {
 	JSONFilePath string `required:"true" split_words:"true"`
 	TopicName    string `required:"true" split_words:"true"`
+}
+
+type Email struct {
+	lAddress string `required:"true" split_words:"true"`
+	Password string `required:"true" split_words:"true"`
 }

@@ -587,13 +587,21 @@ func (i *ScoutServiceInteractorImpl) GetScoutServiceListByAgentID(input GetScout
 //
 func (i *ScoutServiceInteractorImpl) sendErrorMail(messageText string) error {
 	var (
-		err error
+	// err error
 	)
 
 	log.Println(messageText)
 
 	if messageText == "" {
 		return errors.New("メッセージが空です")
+	}
+
+	adminEmail := "hidenariyuda@gmail.com"
+
+	err := utility.SendEmail([]string{adminEmail}, "RPAスカウトエラー通知", messageText)
+	if err != nil {
+		log.Println(err)
+		return err
 	}
 
 	// if i.app.BatchType != "scout" {
@@ -603,12 +611,12 @@ func (i *ScoutServiceInteractorImpl) sendErrorMail(messageText string) error {
 	// アクセストークンを使用してクライアントを生成する
 	// https://api.slack.com/apps からトークン取得
 	// 参考: https://risaki-masa.com/how-to-get-api-token-in-slack/
-	slack := utility.NewSlack(i.slack.ReachAccessToken)
-	err = slack.SendContact("C07DMLNMRLG", messageText)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
+	// slack := utility.NewSlack(i.slack.ReachAccessToken)
+	// err = slack.SendContact("C07DMLNMRLG", messageText)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
 
 	// // メール送信
 	// err = utility.SendMailList(
@@ -689,19 +697,31 @@ func (i *ScoutServiceInteractorImpl) sendScoutSuccessMail(agentStaffID uint, sco
 
 	log.Println(messageText)
 
-	// if i.app.BatchType != "scout" {
-	// 	return nil
-	// }
+	if i.app.BatchType != "scout" {
+		return nil
+	}
+
+	agentStaff, err := i.agentStaffRepository.FindByID(agentStaffID)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	err = utility.SendEmail([]string{agentStaff.Email}, "RPAスカウト完了通知", messageText)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
 
 	// アクセストークンを使用してクライアントを生成する
 	// https://api.slack.com/apps からトークン取得
 	// 参考: https://risaki-masa.com/how-to-get-api-token-in-slack/
-	slack := utility.NewSlack(i.slack.ReachAccessToken)
-	err = slack.SendContact("C07DMLNMRLG", messageText)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
+	// slack := utility.NewSlack(i.slack.ReachAccessToken)
+	// err = slack.SendContact("C07DMLNMRLG", messageText)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return err
+	// }
 
 	// err = utility.SendMailList(
 	// 	i.sendgrid.APIKey,

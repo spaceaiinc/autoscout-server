@@ -1528,7 +1528,7 @@ func (i *ScoutServiceInteractorImpl) ScoutOnMynaviScouting(input ScoutOnMynaviSc
 	// ログアウト
 	defer page.MustNavigate("https://scouting.mynavi.jp/client/login/logout")
 
-	maxCount := 330
+	maxCount := 3000
 	currentCount := 0
 templateLoop:
 	for _, scoutServiceTemplate := range input.ScoutServiceTemplateList {
@@ -1908,10 +1908,10 @@ templateLoop:
 			}
 			log.Println("送信ボタン。sendBtn: ", sendBtn.MustText())
 
-			// if i.app.BatchType == "scout" {
-			sendBtn.MustClick()
-			time.Sleep(40 * time.Second)
-			// }
+			if i.app.BatchType == "scout" {
+				sendBtn.MustClick()
+				time.Sleep(40 * time.Second)
+			}
 		} else {
 
 			time.Sleep(5 * time.Second)
@@ -1928,11 +1928,11 @@ templateLoop:
 			}
 			log.Println("送信ボタン。sendBtn: ", sendBtn.MustText())
 
-			// if i.app.BatchType == "scout" {
-			sendBtn.MustClick()
+			if i.app.BatchType == "scout" {
+				sendBtn.MustClick()
 
-			time.Sleep((time.Duration(currentCountPerTemplate/5) + 5) * time.Second)
-			// }
+				time.Sleep((time.Duration(currentCountPerTemplate/5) + 5) * time.Second)
+			}
 		}
 
 		// ページを閉じる
@@ -2263,8 +2263,7 @@ templateLoop:
 				}
 
 				// 動作確認のため、2人まで
-				// if i.app.BatchType != "scout" && savedUserCnt >= 2 {
-				if savedUserCnt >= 2 {
+				if i.app.BatchType != "scout" && savedUserCnt >= 2 {
 					break pageLoop
 				}
 
@@ -2702,24 +2701,24 @@ templateLoop:
 		}
 		log.Println("送信ボタン。sendBtn: ", sendBtn.MustText())
 
-		// if i.app.BatchType == "scout" {
-		sendBtn.MustClick()
-		time.Sleep(5 * time.Second)
+		if i.app.BatchType == "scout" {
+			sendBtn.MustClick()
+			time.Sleep(5 * time.Second)
 
-		// confirmTip
-		confirmTip, err := page.
-			Element("div.confirmTip")
-		if err != nil {
-			errMessage = "スカウト送信確認が見つかりませんでした"
-			log.Println(errMessage)
-			return output, errors.New(errMessage)
+			// confirmTip
+			confirmTip, err := page.
+				Element("div.confirmTip")
+			if err != nil {
+				errMessage = "スカウト送信確認が見つかりませんでした"
+				log.Println(errMessage)
+				return output, errors.New(errMessage)
+			}
+
+			confirmTip.MustElement("a.md_btn.md_btn--min.js_cellChange.js_loadingIconFlg").MustClick()
+			page.WaitLoad()
+			// 送信数/2+20秒待つ
+			time.Sleep(time.Duration(scoutServiceTemplate.LastSendCount.Int64/2+20) * time.Second)
 		}
-
-		confirmTip.MustElement("a.md_btn.md_btn--min.js_cellChange.js_loadingIconFlg").MustClick()
-		page.WaitLoad()
-		// 送信数/2+20秒待つ
-		time.Sleep(time.Duration(scoutServiceTemplate.LastSendCount.Int64/2+20) * time.Second)
-		// }
 
 		/*
 			スカウト送信完了後、スカウト情報を更新
@@ -3538,10 +3537,10 @@ func (i *ScoutServiceInteractorImpl) ScoutOnMynaviAgentScout(input ScoutOnMynavi
 								log.Println("エラーページが表示されました")
 								continue templateLoop
 							}
-							// if i.app.BatchType == "scout" {
-							confirmSendBtn.MustClick()
-							page.WaitLoad()
-							// }
+							if i.app.BatchType == "scout" {
+								confirmSendBtn.MustClick()
+								page.WaitLoad()
+							}
 							time.Sleep(2 * time.Second)
 
 							// errorページが表示されているか確認
@@ -3586,10 +3585,10 @@ func (i *ScoutServiceInteractorImpl) ScoutOnMynaviAgentScout(input ScoutOnMynavi
 										log.Println("エラーページが表示されました")
 										continue templateLoop
 									}
-									// if i.app.BatchType == "scout" {
-									finalConfirmSendBtn.MustClick()
-									page.WaitLoad()
-									// }
+									if i.app.BatchType == "scout" {
+										finalConfirmSendBtn.MustClick()
+										page.WaitLoad()
+									}
 									time.Sleep(40 * time.Second)
 
 									// 送信されたか確認
