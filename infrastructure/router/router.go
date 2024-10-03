@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spaceaiinc/autoscout-server/domain/config"
 	"github.com/spaceaiinc/autoscout-server/infrastructure/database"
+	"github.com/spaceaiinc/autoscout-server/infrastructure/di"
 	"github.com/spaceaiinc/autoscout-server/infrastructure/driver"
 	"github.com/spaceaiinc/autoscout-server/infrastructure/router/routes"
 )
@@ -1236,7 +1237,9 @@ func (r *Router) SetUp() *Router {
 	/// スカウトサービス API
 	//
 	scoutServiceAPI := noAuthAPI.Group("/scout_service")
+
 	{
+		scoutServiceHandler := di.InitializeScoutServiceHandler(firebase, db, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack)
 		/************************************** POSTメソッド **************************************/
 		// スカウトサービス作成
 		scoutServiceAPI.POST("/create", routes.CreateScoutService(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
@@ -1250,11 +1253,10 @@ func (r *Router) SetUp() *Router {
 
 		/************************************** GETメソッド **************************************/
 		// IDからスカウトサービスを取得
-		scoutServiceAPI.GET("/:scout_service_id", routes.GetScoutServiceByID(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
+		scoutServiceAPI.GET("/:scout_service_id", routes.GetByID(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
 
 		// エージェントIDからスカウトサービスを取得
-		scoutServiceAPI.GET("/list/agent/:agent_id", routes.GetScoutServiceListByAgentID(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
-
+		scoutServiceAPI.GET("/list/agent/:agent_id", scoutServiceHandler.GetListByAgentID())
 	}
 
 	/****************************************************************************************/

@@ -23,8 +23,8 @@ type ScoutServiceInteractor interface {
 	UpdateScoutService(input UpdateScoutServiceInput) (UpdateScoutServiceByIDOutput, error)
 	UpdateScoutServicePassword(input UpdateScoutServicePasswordInput) (UpdateScoutServicePasswordByIDOutput, error)
 	DeleteScoutService(input DeleteScoutServiceInput) (DeleteScoutServiceByIDOutput, error)
-	GetScoutServiceByID(input GetScoutServiceByIDInput) (GetScoutServiceByIDOutput, error)
-	GetScoutServiceListByAgentID(input GetScoutServiceListByAgentIDInput) (GetScoutServiceListByAgentIDOutput, error)
+	GetByID(input ScoutServiceGetByIDInput) (ScoutServiceGetByIDOutput, error)
+	GetListByAgentID(input GetListByAgentIDInput) (GetListByAgentIDOutput, error)
 
 	// Batch処理用 API
 	BatchScout(input BatchScoutInput) (BatchScoutOutput, error)
@@ -468,17 +468,17 @@ func (i *ScoutServiceInteractorImpl) DeleteScoutService(input DeleteScoutService
 }
 
 // スカウトサービスを取得する
-type GetScoutServiceByIDInput struct {
+type ScoutServiceGetByIDInput struct {
 	ScoutServiceID uint
 }
 
-type GetScoutServiceByIDOutput struct {
+type ScoutServiceGetByIDOutput struct {
 	ScoutService *entity.ScoutService
 }
 
-func (i *ScoutServiceInteractorImpl) GetScoutServiceByID(input GetScoutServiceByIDInput) (GetScoutServiceByIDOutput, error) {
+func (i *ScoutServiceInteractorImpl) GetByID(input ScoutServiceGetByIDInput) (ScoutServiceGetByIDOutput, error) {
 	var (
-		output       GetScoutServiceByIDOutput
+		output       ScoutServiceGetByIDOutput
 		scoutService *entity.ScoutService
 		err          error
 	)
@@ -521,17 +521,17 @@ func (i *ScoutServiceInteractorImpl) GetScoutServiceByID(input GetScoutServiceBy
 }
 
 // エージェントIDからスカウトサービスを取得する
-type GetScoutServiceListByAgentIDInput struct {
+type GetListByAgentIDInput struct {
 	AgentID uint
 }
 
-type GetScoutServiceListByAgentIDOutput struct {
+type GetListByAgentIDOutput struct {
 	ScoutServiceList []*entity.ScoutService
 }
 
-func (i *ScoutServiceInteractorImpl) GetScoutServiceListByAgentID(input GetScoutServiceListByAgentIDInput) (GetScoutServiceListByAgentIDOutput, error) {
+func (i *ScoutServiceInteractorImpl) GetListByAgentID(input GetListByAgentIDInput) (GetListByAgentIDOutput, error) {
 	var (
-		output           GetScoutServiceListByAgentIDOutput
+		output           GetListByAgentIDOutput
 		scoutServiceList []*entity.ScoutService
 		err              error
 	)

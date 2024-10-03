@@ -159,34 +159,34 @@ func (mr *MockScoutServiceInteractorMockRecorder) EntryOnRan(input any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EntryOnRan", reflect.TypeOf((*MockScoutServiceInteractor)(nil).EntryOnRan), input)
 }
 
-// GetScoutServiceByID mocks base method.
-func (m *MockScoutServiceInteractor) GetScoutServiceByID(input interactor.GetScoutServiceByIDInput) (interactor.GetScoutServiceByIDOutput, error) {
+// GetByID mocks base method.
+func (m *MockScoutServiceInteractor) GetByID(input interactor.ScoutServiceGetByIDInput) (interactor.ScoutServiceGetByIDOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetScoutServiceByID", input)
-	ret0, _ := ret[0].(interactor.GetScoutServiceByIDOutput)
+	ret := m.ctrl.Call(m, "GetByID", input)
+	ret0, _ := ret[0].(interactor.ScoutServiceGetByIDOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetScoutServiceByID indicates an expected call of GetScoutServiceByID.
-func (mr *MockScoutServiceInteractorMockRecorder) GetScoutServiceByID(input any) *gomock.Call {
+// GetByID indicates an expected call of GetByID.
+func (mr *MockScoutServiceInteractorMockRecorder) GetByID(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetScoutServiceByID", reflect.TypeOf((*MockScoutServiceInteractor)(nil).GetScoutServiceByID), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockScoutServiceInteractor)(nil).GetByID), input)
 }
 
-// GetScoutServiceListByAgentID mocks base method.
-func (m *MockScoutServiceInteractor) GetScoutServiceListByAgentID(input interactor.GetScoutServiceListByAgentIDInput) (interactor.GetScoutServiceListByAgentIDOutput, error) {
+// GetListByAgentID mocks base method.
+func (m *MockScoutServiceInteractor) GetListByAgentID(input interactor.GetListByAgentIDInput) (interactor.GetListByAgentIDOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetScoutServiceListByAgentID", input)
-	ret0, _ := ret[0].(interactor.GetScoutServiceListByAgentIDOutput)
+	ret := m.ctrl.Call(m, "GetListByAgentID", input)
+	ret0, _ := ret[0].(interactor.GetListByAgentIDOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetScoutServiceListByAgentID indicates an expected call of GetScoutServiceListByAgentID.
-func (mr *MockScoutServiceInteractorMockRecorder) GetScoutServiceListByAgentID(input any) *gomock.Call {
+// GetListByAgentID indicates an expected call of GetListByAgentID.
+func (mr *MockScoutServiceInteractorMockRecorder) GetListByAgentID(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetScoutServiceListByAgentID", reflect.TypeOf((*MockScoutServiceInteractor)(nil).GetScoutServiceListByAgentID), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetListByAgentID", reflect.TypeOf((*MockScoutServiceInteractor)(nil).GetListByAgentID), input)
 }
 
 // GmailWebHook mocks base method.
