@@ -126,7 +126,7 @@ func UpdateScoutServicePassword(db *database.DB, firebase usecase.Firebase, send
 }
 
 // スカウトサービスの削除
-func DeleteScoutService(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
+func Delete(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		scoutServiceIDStr := c.Param("scout_service_id")
 
@@ -139,7 +139,7 @@ func DeleteScoutService(db *database.DB, firebase usecase.Firebase, sendgrid con
 		}
 
 		h := di.InitializeScoutServiceHandler(firebase, db, sendgrid, oneSignal, appVar, googleAPI, slack)
-		p, err := h.DeleteScoutService(uint(scoutServiceIDInt))
+		p, err := h.Delete(uint(scoutServiceIDInt))
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err

@@ -22,7 +22,7 @@ type ScoutServiceInteractor interface {
 	CreateScoutService(input CreateScoutServiceInput) (CreateScoutServiceByIDOutput, error)
 	UpdateScoutService(input UpdateScoutServiceInput) (UpdateScoutServiceByIDOutput, error)
 	UpdateScoutServicePassword(input UpdateScoutServicePasswordInput) (UpdateScoutServicePasswordByIDOutput, error)
-	DeleteScoutService(input DeleteScoutServiceInput) (DeleteScoutServiceByIDOutput, error)
+	Delete(input ScoutServiceDeleteInput) (ScoutServiceDeleteOutput, error)
 	GetByID(input ScoutServiceGetByIDInput) (ScoutServiceGetByIDOutput, error)
 	GetListByAgentID(input GetListByAgentIDInput) (GetListByAgentIDOutput, error)
 
@@ -428,17 +428,17 @@ func (i *ScoutServiceInteractorImpl) UpdateScoutServicePassword(input UpdateScou
 }
 
 // スカウトサービスを削除する
-type DeleteScoutServiceInput struct {
+type ScoutServiceDeleteInput struct {
 	ScoutServiceID uint
 }
 
-type DeleteScoutServiceByIDOutput struct {
+type ScoutServiceDeleteOutput struct {
 	OK bool
 }
 
-func (i *ScoutServiceInteractorImpl) DeleteScoutService(input DeleteScoutServiceInput) (DeleteScoutServiceByIDOutput, error) {
+func (i *ScoutServiceInteractorImpl) Delete(input ScoutServiceDeleteInput) (ScoutServiceDeleteOutput, error) {
 	var (
-		output DeleteScoutServiceByIDOutput
+		output ScoutServiceDeleteOutput
 		err    error
 	)
 

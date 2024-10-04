@@ -2,14 +2,11 @@ package interactor
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/csv"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
-	"net/mail"
 	"os"
 	"runtime/debug"
 	"sort"
@@ -19,7 +16,6 @@ import (
 
 	"github.com/spaceaiinc/autoscout-server/domain/entity"
 	"github.com/spaceaiinc/autoscout-server/domain/utility"
-	"google.golang.org/api/gmail/v1"
 	"gopkg.in/guregu/null.v4"
 
 	// ブラウザ操作
@@ -29,495 +25,153 @@ import (
 	"github.com/go-rod/rod/lib/proto"
 	"github.com/go-rod/rod/lib/utils"
 
-	"golang.org/x/oauth2"
 	"golang.org/x/text/encoding/japanese"
 	"golang.org/x/text/transform"
 	// csvの文字化け変換
 )
 
-type BatchEntryInput struct {
+type BatchEntryInputithoutGmail struct {
 	Now time.Time
 }
 
-type BatchEntryOutput struct {
+type BatchEntryOutputithoutGmail struct {
 	OK bool
 }
 
-func (i *ScoutServiceInteractorImpl) BatchEntry(input BatchEntryInput) (BatchEntryOutput, error) {
+func (i *ScoutServiceInteractorImpl) BatchEntryWithoutGmail(input BatchEntryInput) (BatchEntryOutput, error) {
 	var (
 		output BatchEntryOutput
 		err    error
-
-		ambiUserIDList           = []string{} // AmbiのユーザーID
-		mynaviScoutingUserIDList = []string{} // マイナビス転職スカウトのユーザーID
 	)
-
 	/********* 未実行のユーザー情報を取得 *********/
 
-	unprocessedUserList, err := i.userEntryRepository.GetUnprocessed()
+	/**
+	 * エントリー取得処理
+	 */
+	var (
+		errMessage           string
+		selectedScoutService *entity.ScoutService
+		now                  time.Time = time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
+		agentRobotID         uint
+	)
+
+	agentRobotIDInt, err := strconv.Atoi(os.Getenv("AGENT_ROBOT_ID"))
 	if err != nil {
+		log.Println("エージェントロボットの変換に失敗しました", err)
+		return output, err
+	}
+	agentRobotID = uint(agentRobotIDInt)
+
+	agentRobot, err := i.agentRobotRepository.FindByID(agentRobotID)
+	if err != nil {
+		log.Println("エージェントロボットの取得に失敗しました", err)
 		return output, err
 	}
 
-	fmt.Println("unprocessedUserList", len(unprocessedUserList))
-
-	/********* 未実行のユーザーのエントリー処理を実行（api実行中にメールを受信した場合の対策） *********/
-
-	if len(unprocessedUserList) > 0 {
-		/**
-		 * エントリー取得処理
-		 */
-		var (
-			errMessage           string
-			selectedScoutService *entity.ScoutService
-			now                  time.Time = time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
-			agentRobotID         uint
-		)
-
-		agentRobotIDInt, err := strconv.Atoi(os.Getenv("AGENT_ROBOT_ID"))
-		if err != nil {
-			log.Println("エージェントロボットの変換に失敗しました", err)
-			return output, err
-		}
-		agentRobotID = uint(agentRobotIDInt)
-
-		agentRobot, err := i.agentRobotRepository.FindByID(agentRobotID)
-		if err != nil {
-			log.Println("エージェントロボットの取得に失敗しました", err)
-			return output, err
-		}
-
-		scoutServices, err := i.scoutServiceRepository.GetByAgentRobotID(agentRobotID)
-		if err != nil {
-			log.Println("スカウトサービスの取得に失敗しました", err)
-			return output, err
-		}
-		// AMBIの方がエラーが少ないため優先
-		sort.Slice(scoutServices, func(i, j int) bool {
-			return scoutServices[i].ServiceType.Int64 == entity.ScoutServiceTypeAmbi
-		})
-
-		// タイムアウトを設定
-		ctx, cancel := context.WithTimeout(context.Background(), 14*time.Minute)
-		defer cancel()
-
-		// panicが発生した場合にエラーを返すためにdeferでrecoverを実行して、エラーとして返す
-		defer func() {
-			if rec := recover(); rec != nil {
-				// interactor or repositoryを含む文字列を取得
-				stackStr := string(debug.Stack())
-				var errorLine string
-				for _, line := range strings.Split(stackStr, "\n") {
-					if strings.Contains(line, "interactor/") || strings.Contains(line, "repository/") {
-						errorLine += line + "\n"
-						log.Println("error line:", errorLine)
-					}
-				}
-				errMessage = fmt.Sprintf("エントリー取得処理でpanicエラーが発生しました。Recover: %v\nStack:\n%s", rec, errorLine)
-				log.Println(errMessage)
-				err = errors.New(errMessage)
-
-				// エラーメール送信
-				now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
-				errorIssue := "パニックエラー"
-				if strings.Contains(fmt.Sprint(rec), "deadline") {
-					errorIssue = "タイムアウト"
-				}
-				if selectedScoutService != nil {
-					i.sendErrorMail(
-						fmt.Sprintf(
-							"%vの新規エントリー取得で%vが発生しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\n・Recover: %v\n・Stack:\n%s",
-							entity.ScoutServiceTypeLabel[selectedScoutService.ServiceType.Int64], errorIssue, now, agentRobot.Name, agentRobot.ID, rec, errorLine,
-						),
-					)
-				}
-			}
-		}()
-
-		// 未実行のユーザーIDをセット
-		for _, unprocessedUser := range unprocessedUserList {
-			if unprocessedUser.ServiceType == null.NewInt(entity.ScoutServiceTypeMynaviScouting, true) {
-				mynaviScoutingUserIDList = append(mynaviScoutingUserIDList, unprocessedUser.UserID)
-			}
-			if unprocessedUser.ServiceType == null.NewInt(entity.ScoutServiceTypeAmbi, true) {
-				ambiUserIDList = append(ambiUserIDList, unprocessedUser.UserID)
-			}
-		}
-
-		for _, scoutService := range scoutServices {
-
-			selectedScoutService = scoutService
-
-			// マイナビ転職スカウト
-			if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeMynaviScouting, true) &&
-				len(mynaviScoutingUserIDList) > 0 {
-				log.Println("マイナビのエントリー取得を開始します\n現在:", now.Hour())
-
-				// スカウト処理中の場合はログアウトさせないように終わるまで処理しない。
-				serviceOutput, err := i.EntryOnMynaviScouting(EntryOnMynaviScoutingInput{
-					AgentID:      agentRobot.AgentID,
-					ScoutService: scoutService,
-					Context:      ctx,
-
-					UserIDList: mynaviScoutingUserIDList,
-				})
-				if err != nil {
-					now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
-					errMessage = fmt.Sprintf("マイナビ転職スカウトの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
-					log.Println(errMessage)
-					i.sendErrorMail(errMessage)
-					return output, errors.New(errMessage)
-				}
-
-				// 処理したマイナビエントリーユーザーのIDのフラグを更新
-				err = i.userEntryRepository.UpdateIsProcessedByUserIDList(mynaviScoutingUserIDList, true)
-				if err != nil {
-					return output, err
-				}
-
-				log.Println("マイナビの取得に成功しました", serviceOutput.JobSeekerList)
-
-				output.OK = true
-				return output, err
-
-				// AMBI
-			} else if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeAmbi, true) &&
-				len(ambiUserIDList) > 0 {
-				log.Println("AMBIのエントリー取得を開始します\n現在:", now.Hour())
-
-				serviceOutput, err := i.EntryOnAmbi(EntryOnAmbiInput{
-					AgentID:      agentRobot.AgentID,
-					ScoutService: scoutService,
-					Context:      ctx,
-
-					UserIDList: ambiUserIDList,
-				})
-				if err != nil {
-					now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
-					errMessage = fmt.Sprintf("AMBIの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
-					log.Println(errMessage)
-					i.sendErrorMail(errMessage)
-					return output, errors.New(errMessage)
-				}
-
-				// 処理したAMBIエントリーユーザーのIDのフラグを更新
-				err = i.userEntryRepository.UpdateIsProcessedByUserIDList(ambiUserIDList, true)
-				if err != nil {
-					return output, err
-				}
-
-				log.Println("AMBIの取得に成功しました", serviceOutput.JobSeekerList)
-
-				output.OK = true
-				return output, err
-			}
-		}
-	} else {
-		fmt.Println("---------------\nエントリーユーザーが存在しません。\n---------------\n")
-
-		// 定期実行フラグ
+	scoutServices, err := i.scoutServiceRepository.GetByAgentRobotID(agentRobotID)
+	if err != nil {
+		log.Println("スカウトサービスの取得に失敗しました", err)
+		return output, err
 	}
+	// AMBIの方がエラーが少ないため優先
+	sort.Slice(scoutServices, func(i, j int) bool {
+		return scoutServices[i].ServiceType.Int64 == entity.ScoutServiceTypeAmbi
+	})
 
-	// var (
-	// 	amnbiIDListStr          string
-	// 	mynaviScoutingIDListStr string
-	// 	// mynaviAgentScoutIDListStr     string
-	// )
+	// タイムアウトを設定
+	ctx, cancel := context.WithTimeout(context.Background(), 14*time.Minute)
+	defer cancel()
 
-	// // Ambiの求職者ID
-	// if len(ambiUserIDList) > 0 {
-	// 	idStr := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(ambiUserIDList)), ", "), "[]")
-	// 	amnbiIDListStr = fmt.Sprintf("【AMBI】\n%s", idStr)
-	// 	fmt.Printf("---------------\n%s\n---------------\n", amnbiIDListStr)
-	// }
+	// panicが発生した場合にエラーを返すためにdeferでrecoverを実行して、エラーとして返す
+	defer func() {
+		if rec := recover(); rec != nil {
+			// interactor or repositoryを含む文字列を取得
+			stackStr := string(debug.Stack())
+			var errorLine string
+			for _, line := range strings.Split(stackStr, "\n") {
+				if strings.Contains(line, "interactor/") || strings.Contains(line, "repository/") {
+					errorLine += line + "\n"
+					log.Println("error line:", errorLine)
+				}
+			}
+			errMessage = fmt.Sprintf("エントリー取得処理でpanicエラーが発生しました。Recover: %v\nStack:\n%s", rec, errorLine)
+			log.Println(errMessage)
+			err = errors.New(errMessage)
 
-	// // マイナビ転職の求職者ID
-	// if len(mynaviScoutingUserIDList) > 0 {
-	// 	idStr := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(mynaviScoutingUserIDList)), ", "), "[]")
-	// 	mynaviScoutingIDListStr = fmt.Sprintf("【マイナビ転職スカウト】\n%s", idStr)
-	// 	fmt.Printf("---------------\n%s\n---------------\n", mynaviScoutingIDListStr)
-	// }
+			// エラーメール送信
+			now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
+			errorIssue := "パニックエラー"
+			if strings.Contains(fmt.Sprint(rec), "deadline") {
+				errorIssue = "タイムアウト"
+			}
+			if selectedScoutService != nil {
+				i.sendErrorMail(
+					fmt.Sprintf(
+						"%vの新規エントリー取得で%vが発生しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\n・Recover: %v\n・Stack:\n%s",
+						entity.ScoutServiceTypeLabel[selectedScoutService.ServiceType.Int64], errorIssue, now, agentRobot.Name, agentRobot.ID, rec, errorLine,
+					),
+				)
+			}
+		}
+	}()
+
+	for _, scoutService := range scoutServices {
+
+		selectedScoutService = scoutService
+
+		// マイナビ転職スカウト
+		if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeMynaviScouting, true) {
+			log.Println("マイナビのエントリー取得を開始します\n現在:", now.Hour())
+
+			// スカウト処理中の場合はログアウトさせないように終わるまで処理しない。
+			serviceOutput, err := i.EntryOnMynaviScoutingWithoutGmail(EntryOnMynaviScoutingWithoutGmailInput{
+				AgentID:      agentRobot.AgentID,
+				ScoutService: scoutService,
+				Context:      ctx,
+
+				// UserIDList: mynaviScoutingUserIDList,
+			})
+			if err != nil {
+				now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
+				errMessage = fmt.Sprintf("マイナビ転職スカウトの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
+				log.Println(errMessage)
+				i.sendErrorMail(errMessage)
+				return output, errors.New(errMessage)
+			}
+
+			log.Println("マイナビの取得に成功しました", serviceOutput.JobSeekerList)
+
+			output.OK = true
+			return output, err
+
+			// AMBI
+		} else if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeAmbi, true) {
+			log.Println("AMBIのエントリー取得を開始します\n現在:", now.Hour())
+
+			serviceOutput, err := i.EntryOnAmbiWithoutGmail(EntryOnAmbiWithoutGmailInput{
+				AgentID:      agentRobot.AgentID,
+				ScoutService: scoutService,
+				Context:      ctx,
+
+				// UserIDList: ambiUserIDList,
+			})
+			if err != nil {
+				now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
+				errMessage = fmt.Sprintf("AMBIの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
+				log.Println(errMessage)
+				i.sendErrorMail(errMessage)
+				return output, errors.New(errMessage)
+			}
+
+			log.Println("AMBIの取得に成功しました", serviceOutput.JobSeekerList)
+
+			output.OK = true
+			return output, err
+		}
+	}
 
 	output.OK = true
 	return output, err
-}
-
-/****************************************************************************************/
-// Gmail Hook処理 API
-//
-type GmailWebHookInput struct {
-	PubSubStruct *entity.PubsubStruct
-}
-
-type GmailWebHookOutput struct {
-	OK bool
-}
-
-func (i *ScoutServiceInteractorImpl) GmailWebHook(input GmailWebHookInput) (GmailWebHookOutput, error) {
-	var (
-		output       GmailWebHookOutput
-		err          error
-		messageData  entity.MeessageData
-		mailDataList []string
-	)
-
-	/********* 認証情報 *********/
-
-	// 認証情報からconfigを生成
-	config, err := utility.NewGoogleAuthConf(i.googleAPI.JSONFilePath)
-	if err != nil {
-		return output, err
-	}
-
-	tok, err := i.googleAuthenticationRepository.FindLatest()
-	if err != nil {
-		fmt.Println(err)
-		return output, err
-	}
-
-	token := &oauth2.Token{
-		AccessToken:  tok.AccessToken,
-		RefreshToken: tok.RefreshToken,
-		Expiry:       tok.Expiry,
-	}
-
-	srv, err := utility.GenerateService(config, token)
-	if err != nil {
-		return output, err
-	}
-
-	// デコード前のData
-	encodedData := input.PubSubStruct.Message.Data
-
-	// Base64デコード
-	decodedBytes, err := base64.StdEncoding.DecodeString(encodedData)
-	if err != nil {
-		wrapped := fmt.Errorf("decode error: %v", err)
-		return output, wrapped
-	}
-
-	// 形式: {"emailAddress":"info@spaceai.jp","historyId":526295}
-	decodedData := string(decodedBytes)
-
-	// JSON文字列を解析して構造体に格納
-	if err := json.Unmarshal([]byte(decodedData), &messageData); err != nil {
-		wrapped := fmt.Errorf("JSON Unmarshal error: %v", err)
-		return output, wrapped
-	}
-
-	/********* 指定のメールを取得する *********/
-
-	user := "me"
-
-	var (
-		ambiEmail             = "ambi-support@en-japan.com"    // AMBI事務局
-		mynaviScoutingEmail   = "ags-admin@mynavi.jp"          // マイナビス転職スカウト
-		mynaviAgentScoutEmail = "sk-mag-scout@mynavi-agent.jp" // マイナビAGENTスカウト
-		// dodaXEmail           = "partner_support@doda-x.jp"    // doda X（dodax_search@persol.co.jpも追加で必要かも）
-
-		ambiSubject             = "\"スカウトへのエントリー/AMBI\""                      // AMBIの件名
-		mynaviScoutingSubject   = "\"スカウト応募（マイナビ転職スカウト）がありました【マイナビスカウティング】\"" // マイナビ転職の件名
-		mynaviAgentScoutSubject = "\"【マイナビAGENTスカウト】求職者がエントリーしました\""          // マイナビAGENTの件名
-
-		ambiUserIDList           = []string{} // AmbiのユーザーID
-		mynaviScoutingUserIDList = []string{} // マイナビス転職スカウトのユーザーID
-		// mynaviAgentScoutUserIDList     = []string{} // マイナビAGENTスカウトのユーザーID
-		// dodaXUserIDList       = []string{} // doda XのユーザーID
-	)
-
-	// local用
-	// if i.app.Env != "prd" {
-	// 	ambiEmail = "tonbi0521@gmail.com"
-	// 	mynaviScoutingEmail = "sibuhiro81@gmail.com"
-	// }
-
-	// Gmailの検索条件: https://support.google.com/mail/answer/7190?hl=ja
-	var searchParam = fmt.Sprintf(
-		"((from:%s subject:%s) OR (from:%s subject:%s) OR (from:%s subject:%s)) is:unread",
-		ambiEmail, ambiSubject,
-		mynaviScoutingEmail, mynaviScoutingSubject,
-		mynaviAgentScoutEmail, mynaviAgentScoutSubject,
-	)
-
-	// Fromと未読の条件を指定してメールを取得
-	mes, err := srv.Users.Messages.List(user).Q(searchParam).Do()
-	if err != nil {
-		wrapped := fmt.Errorf("unable to retrieve history: %s", err)
-		return output, wrapped
-	}
-	if len(mes.Messages) == 0 {
-		log.Println("新着メールはありません")
-		return output, nil
-	}
-
-	fmt.Println("mes.Messagesの長さ", len(mes.Messages))
-
-	for _, message := range mes.Messages {
-		msg, err := srv.Users.Messages.Get(user, message.Id).Do()
-		if err != nil {
-			wrapped := fmt.Errorf("unable to retrieve message %v: %s", message.Id, err)
-			return output, wrapped
-		}
-		var (
-			from string
-			// to      string
-			subject string
-			body    string
-		)
-
-		for _, header := range msg.Payload.Headers {
-			switch header.Name {
-			case "From":
-				address, err := mail.ParseAddress(header.Value)
-				if err != nil {
-					wrapped := fmt.Errorf("error parsing address: %v", err)
-					return output, wrapped
-				}
-
-				from = address.Address
-			case "Subject":
-				subject = header.Value
-				// case "To":
-				// 	to = header.Value
-			}
-		}
-
-		// メール本文の表示
-		if msg.Payload.Body.Size > 0 {
-			// Base64デコード
-			bodyBytes, err := base64.URLEncoding.DecodeString(msg.Payload.Body.Data)
-			if err != nil {
-				wrapped := fmt.Errorf("error decoding message body: %v", err)
-				return output, wrapped
-			} else {
-				body = string(bodyBytes)
-			}
-		} else if len(msg.Payload.Parts) > 0 {
-			// MIMEメッセージの場合、パーツを調べて本文を探す
-			for _, part := range msg.Payload.Parts {
-				if part.MimeType == "text/plain" {
-					// Base64デコード
-					bodyBytes, err := base64.URLEncoding.DecodeString(part.Body.Data)
-					if err != nil {
-						wrapped := fmt.Errorf("error decoding multipart message body: %v", err)
-						return output, wrapped
-					} else {
-						body = string(bodyBytes)
-						break
-					}
-				}
-			}
-		}
-
-		var (
-			userID      string
-			serviceType null.Int
-		)
-
-		fmt.Printf("\n---------------\n%s\n---------------\n", body)
-
-		/********* メール送信元の媒体に応じてユーザーIDを振り分け *********/
-
-		switch from {
-
-		// Ambiエントリーメールの処理
-		case ambiEmail:
-			matches := utility.RegexpForAmbiUserID.FindStringSubmatch(body)
-
-			fmt.Println("Ambi matches: ", matches, len(matches))
-
-			if len(matches) >= 2 {
-				fmt.Println("会員番号:", matches[1])
-
-				// ユーザーIDと媒体の種類をセット
-				userID = matches[1]
-				serviceType = null.NewInt(entity.ScoutServiceTypeAmbi, true)
-
-				// ユーザーIDをリストに追加
-				ambiUserIDList = append(ambiUserIDList, matches[1])
-			}
-
-			if len(ambiUserIDList) == 0 {
-				fmt.Println("会員番号が見つかりませんでした（Ambi）")
-				return output, errors.New("会員番号が見つかりませんでした（Ambi）")
-			}
-
-		// マイナビ転職スカウトのエントリーメールの処理
-		case mynaviScoutingEmail:
-			matches := utility.RegexpForMynaviScoutingUserID.FindStringSubmatch(body)
-
-			fmt.Println("マイナビ転職 matches: ", matches, len(matches))
-
-			if len(matches) >= 2 {
-				fmt.Println("会員番号:", matches[1])
-
-				// ユーザーIDと媒体の種類をセット
-				userID = matches[1]
-				serviceType = null.NewInt(entity.ScoutServiceTypeMynaviScouting, true)
-
-				// ユーザーIDをリストに追加
-				mynaviScoutingUserIDList = append(mynaviScoutingUserIDList, matches[1])
-			}
-
-			if len(mynaviScoutingUserIDList) == 0 {
-				fmt.Println("会員番号が見つかりませんでした（マイナビ転職スカウト）")
-				return output, errors.New("会員番号が見つかりませんでした（マイナビ転職スカウト）")
-			}
-
-		// マイナビエージェントスカウトのエントリーメールの処理
-		case mynaviAgentScoutEmail:
-			fmt.Println("マイナビエージェントスカウトは未対応です")
-			// return output, nil
-		// scoutServiceType = uint(entity.ScoutServiceTypemynaviAgentScoutScout)
-
-		// matches := utility.RegexpFormynaviAgentScoutScoutUserID.FindStringSubmatch(body)
-
-		// if len(matches) > 1 {
-		// 	fmt.Println("会員番号:", matches[1], matches)
-		// 	mynaviAgentScoutUserIDList = append(mynaviAgentScoutUserIDList, matches[1])
-		// } else {
-		// 	fmt.Println("会員番号が見つかりませんでした。")
-		// }
-
-		default:
-			fmt.Println("対象スカウトサービスのメールではありません。from: ", from)
-			// return output, errors.New("対象スカウトサービスのメールではありません")
-		}
-
-		// ログにメールの詳細をフォーマットして表示
-		str := fmt.Sprintf("件名: %s\n", subject)
-		mailDataList = append(mailDataList, str)
-		fmt.Printf("From: %s\n", from)
-
-		/********* 指定メールの既読更新 *********/
-
-		// UNREADラベルを削除して既読にマーク
-		// スコープの追加または削除から、Gmail APIの".../auth/gmail.modify"を追加する必要あり（https://zenn.dev/acn_jp_sdet/articles/f3f88523954626）
-		if from == ambiEmail || from == mynaviScoutingEmail {
-			fmt.Println("既読処理を実行！！")
-			_, err = srv.Users.Messages.Modify(user, message.Id, &gmail.ModifyMessageRequest{
-				RemoveLabelIds: []string{"UNREAD"},
-			}).Do()
-			if err != nil {
-				errorMessage := fmt.Sprintf("メールを既読にすることができませんでした:  %s\n", err)
-				fmt.Println(errorMessage)
-				return output, errors.New(errorMessage)
-			} else {
-				fmt.Println("既読にしました")
-
-				// エントリー処理を実行するユーザーを登録
-				userEntry := entity.NewUserEntry(userID, serviceType)
-				err = i.userEntryRepository.Create(userEntry)
-				if err != nil {
-					return output, err
-				}
-			}
-		}
-	}
-
-	output.OK = true
-
-	return output, nil
 }
 
 /****************************************************************************************/
@@ -530,20 +184,20 @@ func (i *ScoutServiceInteractorImpl) GmailWebHook(input GmailWebHookInput) (Gmai
 		2023/04/14 15:01:00 RANのエントリー取得を開始します
 		2023/04/14 15:05:03 RANの取得に成功しました [0xc0003ecc00 0xc0003ed200 0xc0003ed800 0xc0005d6000 0xc0005d6600]
 */
-type EntryOnRanInput struct {
+type EntryOnRanWithoutGmailInput struct {
 	AgentID      uint
 	Context      context.Context
 	ScoutService *entity.ScoutService
 }
 
-type EntryOnRanOutput struct {
+type EntryOnRanWithoutGmailOutput struct {
 	JobSeekerList []*entity.JobSeeker
 }
 
-func (i *ScoutServiceInteractorImpl) EntryOnRan(input EntryOnRanInput) (EntryOnRanOutput, error) {
+func (i *ScoutServiceInteractorImpl) EntryOnRanWithoutGmail(input EntryOnRanWithoutGmailInput) (EntryOnRanWithoutGmailOutput, error) {
 
 	var (
-		output        EntryOnRanOutput
+		output        EntryOnRanWithoutGmailOutput
 		err           error
 		errMessage    string
 		jobSeekerList []*entity.JobSeeker
@@ -1131,7 +785,7 @@ userLoop:
 		2023/04/14 16:01:00 マイナビのエントリー取得を開始します
 		30分経過でタイムアウト
 */
-type EntryOnMynaviScoutingInput struct {
+type EntryOnMynaviScoutingWithoutGmailInput struct {
 	AgentID      uint
 	ScoutService *entity.ScoutService
 	Context      context.Context
@@ -1139,13 +793,13 @@ type EntryOnMynaviScoutingInput struct {
 	UserIDList []string
 }
 
-type EntryOnMynaviScoutingOutput struct {
+type EntryOnMynaviScoutingWithoutGmailOutput struct {
 	JobSeekerList []*entity.JobSeeker
 }
 
-func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviScoutingInput) (EntryOnMynaviScoutingOutput, error) {
+func (i *ScoutServiceInteractorImpl) EntryOnMynaviScoutingWithoutGmail(input EntryOnMynaviScoutingWithoutGmailInput) (EntryOnMynaviScoutingWithoutGmailOutput, error) {
 	var (
-		output        EntryOnMynaviScoutingOutput
+		output        EntryOnMynaviScoutingWithoutGmailOutput
 		err           error
 		errMessage    string
 		jobSeekerList []*entity.JobSeeker = []*entity.JobSeeker{}
@@ -1262,59 +916,96 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 
 	log.Println("ログイン成功")
 
-	var index = 0
-	for {
-		// エントリー管理ページへ遷移
-		page.MustNavigate("https://scouting.mynavi.jp/client/applicationTop/search")
-		page.WaitLoad()
-		time.Sleep(10 * time.Second)
+	// var index = 0
+	// userLoop:
+	// 	for {
+	// エントリー管理ページへ遷移
+	page.MustNavigate("https://scouting.mynavi.jp/client/applicationTop/search")
+	page.WaitLoad()
+	time.Sleep(10 * time.Second)
 
-		// エージェントサーチ経由とスカウト経由の応募者両方を見るために、2回ループする
-		searchTargetsOnSearch := page.MustElements("input[name=searchTarget]")
-		if len(searchTargetsOnSearch) != 2 {
-			errMessage = "スカウト経由の応募者を見るための要素が見つかりません"
-			log.Println(errMessage)
-			return output, errors.New(errMessage)
-		}
+	// エージェントサーチ経由とスカウト経由の応募者両方を見るために、2回ループする
+	searchTargetsOnSearch := page.MustElements("input[name=searchTarget]")
+	if len(searchTargetsOnSearch) != 2 {
+		errMessage = "スカウト経由の応募者を見るための要素が見つかりません"
+		log.Println(errMessage)
+		return output, errors.New(errMessage)
+	}
 
-		// 検索対象で「マイナビ転職スカウト応募」を選択
-		searchTargetsOnSearch[1].MustClick()
+	// 検索対象で「マイナビ転職スカウト応募」を選択
+	searchTargetsOnSearch[1].MustClick()
 
-		// マイナビの条件検索はIDのOR検索ができるためIDをカンマ区切りにして検索
-		var userIDListStr = strings.Join(input.UserIDList, ", ")
-		page.MustElement("input[name=memberId]").MustInput(userIDListStr)
+	// マイナビの条件検索はIDのOR検索ができるためIDをカンマ区切りにして検索
+	// var userIDListStr = strings.Join(input.UserIDList, ", ")
+	// page.MustElement("input[name=memberId]").MustInput(userIDListStr)
 
-		searchSubmitOnSearch := page.MustElement("a.btn.sizeLM.blue")
-		if searchSubmitOnSearch == nil || searchSubmitOnSearch.MustText() != "検索する" {
-			errMessage = "マイナビ転職スカウト経由の応募者検索する送信要素が見つかりません"
-			log.Println(errMessage)
-			return output, errors.New(errMessage)
-		}
-		searchSubmitOnSearch.MustClick()
-		page.WaitLoad()
-		time.Sleep(10 * time.Second)
+	lastEntryDateType, err := page.Element("input[name=entryDateType]")
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
+	lastEntryDateType.MustClick()
 
-		usersOnSearch := page.MustElements("section.user-box")
-		if len(usersOnSearch) == 0 {
-			errMessage = "応募者が見つかりません"
-			log.Println(errMessage)
-			return output, errors.New(errMessage)
-		}
+	lastEntryDate, err := page.Element("select[name=entryDateList]")
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
+	lastEntryDate.Select(
+		[]string{
+			"3日以内",
+		},
+		true,
+		"text",
+	)
 
-		// 最終ループを終えたら
-		if len(input.UserIDList) == index {
+	entryCheckbox, err := page.Element("input[name=entryStatusList]")
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
+	entryCheckbox.MustClick()
+
+	searchSubmitOnSearch := page.MustElement("a.btn.sizeLM.blue")
+	if searchSubmitOnSearch == nil || searchSubmitOnSearch.MustText() != "検索する" {
+		errMessage = "マイナビ転職スカウト経由の応募者検索する送信要素が見つかりません"
+		log.Println(errMessage)
+		return output, errors.New(errMessage)
+	}
+	searchSubmitOnSearch.MustClick()
+	page.WaitLoad()
+	time.Sleep(10 * time.Second)
+
+	usersOnSearch := page.MustElements("section.user-box")
+	if len(usersOnSearch) == 0 {
+		errMessage = "応募者が見つかりません"
+		log.Println(errMessage)
+		return output, errors.New(errMessage)
+	}
+
+	// 最終ループを終えたら
+	// if 3 == index {
+	// 	break
+	// }
+
+	// userID := input.UserIDList[index]
+
+	// userSendingButtonSelecter := fmt.Sprintf("section#scroll-%v > div.user-box-inner > div.user-foot > div.floatR > ul.inline-box > li > a.btn.sizeML", userID)
+	// userSendingButtonSelecter := fmt.Sprintf("section#scroll-%v > div.user-box-inner > div.user-foot > div.floatR > ul.inline-box > li > a.btn.sizeML", userID)
+
+	sendingButtons, err := page.Elements("div.user-box-inner > div.user-foot > div.floatR > ul.inline-box > li > a.btn.sizeML")
+	if err != nil {
+		log.Println("初回メッセージを送信するボタンが見つかりませんでした。")
+		log.Println(err)
+		return output, err
+	}
+	for sendingButtonI, sendingButton := range sendingButtons {
+		if 3 >= sendingButtonI {
 			break
-		}
-
-		userID := input.UserIDList[index]
-
-		userSendingButtonSelecter := fmt.Sprintf("section#scroll-%v > div.user-box-inner > div.user-foot > div.floatR > ul.inline-box > li > a.btn.sizeML", userID)
-
-		sendingButton, err := page.Element(userSendingButtonSelecter)
-		if err != nil {
-			log.Println("初回メッセージを送信するボタンが見つかりませんでした。")
-			log.Println(err)
-			return output, err
 		}
 
 		var buttonText = sendingButton.MustText()
@@ -1467,9 +1158,10 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 				return output, errors.New(errMessage)
 			}
 		}
-
-		index++
 	}
+
+	// 	index++
+	// }
 
 	// csvダウンロード
 	csvFile := browser.MustWaitDownload()
@@ -1515,8 +1207,13 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 	// 項目説明のレコードを読み込み
 	reader.Read()
 
+	recordIndex := 0
 recordLoop:
 	for {
+		if recordIndex > 3 {
+			break
+		}
+		recordIndex++
 		record, err := reader.Read()
 		// 空行があった場合は終了
 		log.Println("record: ", record)
@@ -2803,7 +2500,7 @@ recordLoop:
 
 	cw := csv.NewWriter(exportedFile)
 
-	defer file.Close()
+	defer exportedFile.Close()
 	defer cw.Flush()
 
 	cw.WriteAll(records)
@@ -2949,7 +2646,7 @@ AMBIから新規応募者を取得する
 2023/04/14 17:01:01 AMBIのエントリー取得を開始します
 2023/04/14 17:09:19 AMBIの取得に成功しました [0xc0002eac00 0xc0002eb200 0xc0002eb800 0xc0005d4000 0xc0005d4600 0xc00067e000 0xc0005d4c00]
 */
-type EntryOnAmbiInput struct {
+type EntryOnAmbiWithoutGmailInput struct {
 	AgentID      uint
 	ScoutService *entity.ScoutService
 	Context      context.Context
@@ -2957,13 +2654,13 @@ type EntryOnAmbiInput struct {
 	UserIDList []string
 }
 
-type EntryOnAmbiOutput struct {
+type EntryOnAmbiWithoutGmailOutput struct {
 	JobSeekerList []*entity.JobSeeker
 }
 
-func (i *ScoutServiceInteractorImpl) EntryOnAmbi(input EntryOnAmbiInput) (EntryOnAmbiOutput, error) {
+func (i *ScoutServiceInteractorImpl) EntryOnAmbiWithoutGmail(input EntryOnAmbiWithoutGmailInput) (EntryOnAmbiWithoutGmailOutput, error) {
 	var (
-		output        EntryOnAmbiOutput
+		output        EntryOnAmbiWithoutGmailOutput
 		jobSeekerList []*entity.JobSeeker
 		browser       *rod.Browser
 		page          *rod.Page
@@ -3067,7 +2764,7 @@ userIDLoop:
 	for _, userID := range input.UserIDList {
 		// エントリー一覧ページへ移動（ループに入れているのは2週目以降でID検索しても求職者が出てこないため）
 		page.
-			MustNavigate("https://en-ambi.com/company/entry/entry_list/?PK=6BF948").
+			MustNavigate("https://en-ambi.com/company/entry/entry_list").
 			WaitLoad()
 
 		// ユーザーIDで特定の求職者を検索
@@ -3094,8 +2791,8 @@ userIDLoop:
 				experienceCnt int              = 0 // 何社目か
 			)
 
-			// ID検索のため一件しかヒットしない想定
-			if userI >= 1 {
+			// 15分ごとのため3件しかヒットしない想定
+			if userI >= 3 {
 				break
 			}
 
@@ -3107,695 +2804,995 @@ userIDLoop:
 				continue
 			}
 
-			userBasicDiv, err := user.
-				Element("div.data.basic")
+			// userBasicDiv, err := user.
+			// 	Element("div.data.basic")
+			// if err != nil {
+			// 	errMessage = "ユーザーIDの取得に失敗しました。" + err.Error()
+			// 	log.Println(errMessage)
+			// 	return output, errors.New(errMessage)
+			// }
+
+			// userIDOnPageDiv, err := userBasicDiv.
+			// 	Element("div.num")
+			// if err != nil {
+			// 	errMessage = "ユーザーIDの取得に失敗しました。" + err.Error()
+			// 	log.Println(errMessage)
+			// 	return output, errors.New(errMessage)
+			// }
+
+			// // No.912271 -> 912271
+			// userIDOnPage := strings.Replace(userIDOnPageDiv.MustText(), "No.", "", -1)
+			// log.Println("userIDOnPage:", userIDOnPage)
+
+			// // ユーザーIDと一致した場合のみ処理を行う
+			// if userID == userIDOnPage {
+			// ユーザー詳細ページへ遷移
+			user.
+				MustElement("div.profileSet").
+				MustClick()
+			page.WaitLoad()
+			time.Sleep(10 * time.Second)
+
+			//職務経歴書更新日：21/09/07 最終ログイン日：23/03/14 山田 太郎（ヤマダ タロウ） / 26歳 エントリー済 スカウト済
+			// -> 山田, 太郎, ヤマダ, タロウ, 26
+			basicInfoWithLineBreak := page.MustElement("div.dataArea > div.name").MustText()
+			// jobSeeker.SecretMemo = "・エントリー媒体\nAMBI\n\n・基本情報\n" + basicInfoWithLineBreak + "\n\n"
+			// 改行を半角スペースに変換
+			basicInfo := strings.Join(utility.RegexpForLineBreak.Split(basicInfoWithLineBreak, -1), " ")
+			splitedBasicInfo := strings.Split(basicInfo, " ")
+
+			log.Println("splitedBasicInfo:", splitedBasicInfo)
+
+			if len(splitedBasicInfo) < 3 {
+				log.Println("splitedBasicInfoの長さが3未満です", splitedBasicInfo)
+				continue
+			}
+
+			// 名前を取得
+			fullName := strings.Split(splitedBasicInfo[2], "（")[0]
+			log.Println("fullName:", fullName)
+
+			// 対応済みの場合は情報だけ取得 / 名前がブラインドで対応済みの場合はNG対応のためスキップ
+			if fullName != "＊＊＊＊＊" || quitChecker == "対応済" {
+				continue
+			}
+
+			// 面談設定テンプレートを送信 デフォルトで選択されている
+			interviewLabel, err := page.Element("label[for=interview-01]")
 			if err != nil {
-				errMessage = "ユーザーIDの取得に失敗しました。" + err.Error()
+				errMessage = "面談設定テンプレートを選択できませんでした"
 				log.Println(errMessage)
 				return output, errors.New(errMessage)
 			}
 
-			userIDOnPageDiv, err := userBasicDiv.
-				Element("div.num")
+			interviewLabel.MustClick()
+			time.Sleep(5 * time.Second)
+
+			templateSelectEl, err := page.
+				Element("select#js_messageTemplate_select")
 			if err != nil {
-				errMessage = "ユーザーIDの取得に失敗しました。" + err.Error()
+				errMessage = "面談設定テンプレートを選択できませんでした"
 				log.Println(errMessage)
 				return output, errors.New(errMessage)
 			}
 
-			// No.912271 -> 912271
-			userIDOnPage := strings.Replace(userIDOnPageDiv.MustText(), "No.", "", -1)
-			log.Println("userIDOnPage:", userIDOnPage)
-
-			// ユーザーIDと一致した場合のみ処理を行う
-			if userID == userIDOnPage {
-				// ユーザー詳細ページへ遷移
-				user.
-					MustElement("div.profileSet").
-					MustClick()
-				page.WaitLoad()
-				time.Sleep(10 * time.Second)
-
-				//職務経歴書更新日：21/09/07 最終ログイン日：23/03/14 山田 太郎（ヤマダ タロウ） / 26歳 エントリー済 スカウト済
-				// -> 山田, 太郎, ヤマダ, タロウ, 26
-				basicInfoWithLineBreak := page.MustElement("div.dataArea > div.name").MustText()
-				// jobSeeker.SecretMemo = "・エントリー媒体\nAMBI\n\n・基本情報\n" + basicInfoWithLineBreak + "\n\n"
-				// 改行を半角スペースに変換
-				basicInfo := strings.Join(utility.RegexpForLineBreak.Split(basicInfoWithLineBreak, -1), " ")
-				splitedBasicInfo := strings.Split(basicInfo, " ")
-
-				log.Println("splitedBasicInfo:", splitedBasicInfo)
-
-				if len(splitedBasicInfo) < 3 {
-					log.Println("splitedBasicInfoの長さが3未満です", splitedBasicInfo)
-					continue
-				}
-
-				// 名前を取得
-				fullName := strings.Split(splitedBasicInfo[2], "（")[0]
-				log.Println("fullName:", fullName)
-
-				// 対応済みの場合は情報だけ取得
-				if fullName == "＊＊＊＊＊" {
-					// 名前がブラインドで対応済みの場合はNG対応のためスキップ
-					if quitChecker == "対応済" {
-						continue
-					}
-
-					// 面談設定テンプレートを送信 デフォルトで選択されている
-					interviewLabel, err := page.Element("label[for=interview-01]")
-					if err != nil {
-						errMessage = "面談設定テンプレートを選択できませんでした"
-						log.Println(errMessage)
-						return output, errors.New(errMessage)
-					}
-
-					interviewLabel.MustClick()
-					time.Sleep(5 * time.Second)
-
-					templateSelectEl, err := page.
-						Element("select#js_messageTemplate_select")
-					if err != nil {
-						errMessage = "面談設定テンプレートを選択できませんでした"
-						log.Println(errMessage)
-						return output, errors.New(errMessage)
-					}
-
-					err = templateSelectEl.
-						Select(
-							[]string{
-								input.ScoutService.TemplateTitleForEmployed,
-							},
-							true,
-							"text",
-						)
-					if err != nil {
-						errMessage = "面談設定テンプレートを選択できませんでした"
-						log.Println(errMessage)
-						return output, errors.New(errMessage)
-					}
-
-					time.Sleep(10 * time.Second)
-
-					// SMSも送信　input#smsCheck disabledの可能性もあるのでMustClick()ではなくClick()を使用
-					if !page.MustHas("input.js_unavailable#smsCheck") {
-						smsCheckBtn := page.MustElement("label[for=smsCheck]")
-						smsCheckBtn.Click(proto.InputMouseButtonLeft, 1)
-						time.Sleep(3 * time.Second)
-					}
-
-					// prd以外の場合は送信しないためここで終了
-					if i.app.BatchType != "entry" {
-						log.Println("テスト環境のため、メッセージ送信はスキップします")
-						jobSeeker := entity.JobSeeker{
-							SecretMemo: "・エントリー媒体：AMBI\n\n開発テスト用取り込み\n\n対象ID: " + fmt.Sprint(userID),
-						}
-						jobSeekerList = append(jobSeekerList, &jobSeeker)
-						continue
-					}
-
-					// 送信ボタン
-					// 送信ボタンが押せない場合はスキップ
-					if page.MustHas("a.md_btn.md_btn--green.welcomeDone.md_btn.md_btn--disabled.js_disabled") {
-						time.Sleep(10 * time.Second)
-						if page.MustHas("a.md_btn.md_btn--green.welcomeDone.md_btn.md_btn--disabled.js_disabled") {
-							continue userIDLoop
-						}
-					}
-					page.MustElement("a.md_btn.md_btn--green.welcomeDone.js_tipOpen.js_sendMessage").MustClick()
-					time.Sleep(5 * time.Second)
-
-					// 確認ボタン　md_btn md_btn--min js_sendYes
-					page.MustElement("a.md_btn.md_btn--min.js_sendYes").MustClick()
-					page.WaitLoad()
-					time.Sleep(15 * time.Second)
-
-					// 送信後に情報取得
-					//職務経歴書更新日：21/09/07 最終ログイン日：23/03/14 山田 太郎（ヤマダ タロウ） / 26歳 エントリー済 スカウト済
-					// -> 山田, 太郎, ヤマダ, タロウ, 26
-					basicInfoWithLineBreak = page.MustElement("div.dataArea > div.name").MustText()
-					jobSeeker.SecretMemo = "・エントリー媒体\nAMBI\n\n・基本情報\n" + basicInfoWithLineBreak + "未対応\n\n"
-					// 改行を半角スペースに変換
-					basicInfo = strings.Join(utility.RegexpForLineBreak.Split(basicInfoWithLineBreak, -1), " ")
-					splitedBasicInfo = strings.Split(basicInfo, " ")
-
-					log.Println("splitedBasicInfo:", splitedBasicInfo)
-
-					if len(splitedBasicInfo) < 5 {
-						log.Println("splitedBasicInfoの長さが5未満です", splitedBasicInfo)
-						continue
-					}
-
-					// 苗字を取得
-					jobSeeker.LastName = splitedBasicInfo[2]
-					log.Println("jobSeeker.LastName:", jobSeeker.LastName)
-
-					// 名前を取得
-					firstNameAndLastFurigana := strings.Split(splitedBasicInfo[3], "（")
-					log.Println("firstNameAndLastFurigana:", firstNameAndLastFurigana)
-
-					jobSeeker.FirstName = firstNameAndLastFurigana[0]
-					log.Println("jobSeeker.FirstName:", jobSeeker.FirstName)
-
-					// フリガナを取得
-					if len(firstNameAndLastFurigana) > 1 {
-						lastFurigana := strings.Replace(firstNameAndLastFurigana[1], "（", "", -1)
-						log.Println("lastFurigana:", lastFurigana)
-						jobSeeker.LastFurigana = lastFurigana
-					}
-
-					firstFurigana := strings.Replace(splitedBasicInfo[4], "）", "", -1)
-					log.Println("firstFurigana:", firstFurigana)
-					jobSeeker.FirstFurigana = firstFurigana
-
-					// 名前がブラインドではない場合
-				} else {
-					// 名前を分割 &nbsp(\u00a0) で分割
-					nameList := strings.Split(fullName, "\u00a0")
-
-					for index, name := range nameList {
-						if index == 0 {
-							jobSeeker.LastName = name
-						} else if index == 1 {
-							jobSeeker.FirstName = name
-						}
-					}
-
-					// フリガナを取得
-					splitedFullFurigana := strings.Split(splitedBasicInfo[2], "（")
-					if len(splitedFullFurigana) < 2 {
-						log.Println("splitedFullFuriganaの長さが2未満です", splitedFullFurigana)
-						jobSeeker.LastFurigana = splitedBasicInfo[2]
-					} else {
-						fullFurigana := strings.Split(splitedFullFurigana[1], "）")[0]
-						log.Println("fullFurigana:", fullFurigana)
-
-						// フリガナを分割
-						furiganaList := strings.Split(fullFurigana, "\u00a0")
-						log.Println("furiganaList:", furiganaList)
-
-						for index, furigana := range furiganaList {
-							if index == 0 {
-								jobSeeker.LastFurigana = furigana
-							} else if index == 1 {
-								jobSeeker.FirstFurigana = furigana
-							}
-						}
-					}
-				}
-
-				// 「名前」が既存の求職者と重複している場合はスキップ
-				for _, jobSeekerInDb := range jobSeekerListInDb {
-					if jobSeekerInDb.LastName == jobSeeker.LastName &&
-						jobSeekerInDb.FirstName == jobSeeker.FirstName {
-						// モーダルを閉じる
-						fmt.Println("2日以内に登録した求職者と重複しています。", jobSeeker.LastName+jobSeeker.FirstName, jobSeeker.LastFurigana+jobSeeker.FirstFurigana)
-						page.MustElement("a.closeBtn").MustClick()
-						continue userIDLoop
-					}
-				}
-
-				log.Println(
-					"jobSeeker.LastName:", jobSeeker.LastName, "jobSeeker.FirstName:", jobSeeker.FirstName,
-					"jobSeeker.LastFurigana:", jobSeeker.LastFurigana, "jobSeeker.FirstFurigana:", jobSeeker.FirstFurigana,
+			err = templateSelectEl.
+				Select(
+					[]string{
+						input.ScoutService.TemplateTitleForEmployed,
+					},
+					true,
+					"text",
 				)
+			if err != nil {
+				errMessage = "面談設定テンプレートを選択できませんでした"
+				log.Println(errMessage)
+				return output, errors.New(errMessage)
+			}
 
-				// 東京都 渋谷区 14-1 / 09012341234 / tarou.yamada@gmail.com
-				// -> 東京都, 渋谷区 14-1, 09012341234, tarou.yamada@gmail.com
-				addressAndContactWithSlash := page.MustElement("div.dataArea > div.data").MustText()
+			time.Sleep(10 * time.Second)
 
-				splitedAddressAndContact := strings.Split(addressAndContactWithSlash, "/")
-				for index, addressAndContact := range splitedAddressAndContact {
-					// 都道府県と住所
-					if index == 0 {
-						prefectureAndAddress := strings.TrimSpace(addressAndContact)
-						jobSeeker.Address = prefectureAndAddress
+			// SMSも送信　input#smsCheck disabledの可能性もあるのでMustClick()ではなくClick()を使用
+			if !page.MustHas("input.js_unavailable#smsCheck") {
+				smsCheckBtn := page.MustElement("label[for=smsCheck]")
+				smsCheckBtn.Click(proto.InputMouseButtonLeft, 1)
+				time.Sleep(3 * time.Second)
+			}
 
-						splitedPrefectureAndAddress := strings.Split(prefectureAndAddress, "\u00a0")
-						log.Println("splitedPrefectureAndAddress:", splitedPrefectureAndAddress)
-						jobSeeker.Prefecture = entity.GetIntPrefecture(splitedPrefectureAndAddress[0])
-					} else if index == 1 {
-						// 電話番号
-						phone := strings.TrimSpace(addressAndContact)
-						jobSeeker.SecretMemo += "・電話番号\n" + phone + "\n\n"
-						jobSeeker.PhoneNumber = phone
-					} else if index == 2 {
-						// メールアドレス
-						email := strings.TrimSpace(addressAndContact)
-						jobSeeker.SecretMemo += "・メールアドレス\n" + email + "\n\n"
-						jobSeeker.Email = email
-					}
-				}
-
-				// 求職者情報テーブルを取得
-				userInfos := page.MustElements("table.md_tableForm > tbody > tr > td")
-				userInfoLen := len(userInfos)
-				log.Println("userInfoLen:", userInfos[0].MustText(), userInfoLen)
-
-			userInfoLoop:
-				for index, info := range userInfos {
-					infoText := info.MustText()
-
-					// 1990年（平成元年） 09月02日 -> 1990-09-03
-					switch index {
-					case 0:
-						jobSeeker.SecretMemo += "・生年月日\n" + infoText + "\n\n"
-						birthday := strings.Split(infoText, " ")
-						if len(birthday) < 2 {
-							log.Println("birthdayの長さが2未満です", birthday)
-							continue userInfoLoop
-						}
-
-						yearArr := strings.Split(birthday[0], "年")
-						year := strings.Split(yearArr[0], "（")
-						monthAndDay := strings.Split(birthday[1], "月")
-						month := monthAndDay[0]
-						dayArr := strings.Split(monthAndDay[1], "日")
-						day := dayArr[0]
-
-						birthdayStr := year[0] + "-" + month + "-" + day
-						log.Println("birthday:", birthdayStr)
-
-						jobSeeker.Birthday = birthdayStr
-
-					case 1:
-						log.Println("最終学歴:", infoText)
-						jobSeeker.SecretMemo += "・最終学歴\n" + infoText + "\n\n"
-
-						// 大学卒 / テスト大学大学院テスト学部テスト学科 / 2019（令和元）年卒業
-						// 大学卒
-						// spaceを消す
-						infoText = strings.Replace(infoText, "&nbsp;", "", -1)
-						educationSplitedBySlash := strings.Split(infoText, "/")
-						log.Println("educationSplitedBySlash:", educationSplitedBySlash)
-						if len(educationSplitedBySlash) < 4 {
-							log.Println("educationSplitedBySlashの長さが4未満です", educationSplitedBySlash)
-							continue userInfoLoop
-						}
-						// 文系, 理系
-						studyCategory := educationSplitedBySlash[2]
-						if strings.Contains(studyCategory, "理系") {
-							jobSeeker.StudyCategory = null.NewInt(0, true)
-						} else if strings.Contains(studyCategory, "文系") {
-							jobSeeker.StudyCategory = null.NewInt(1, true)
-						}
-						// 希望転職時期　1年以内
-					case 2:
-						jobSeeker.SecretMemo += "・希望転職時期\n" + infoText + "\n\n"
-						// ambiマスタ:すぐに	3ヶ月以内	6ヶ月以内	1年以内	いいところがあれば	まだ未定	転職を考えていない
-						if infoText == "すぐに" {
-							jobSeeker.JoinCompanyPeriod = null.NewInt(0, true)
-						} else if infoText == "3ヶ月以内" {
-							jobSeeker.JoinCompanyPeriod = null.NewInt(3, true)
-						} else if infoText == "6ヶ月以内" {
-							jobSeeker.JoinCompanyPeriod = null.NewInt(6, true)
-						} else if infoText == "1年以内" {
-							jobSeeker.JoinCompanyPeriod = null.NewInt(7, true)
-						}
-						// 直近の年収 : 400万円以上
-					case 3:
-						jobSeeker.SecretMemo += "・直近の年収\n" + infoText + "\n\n"
-						annualncomeStrTrimed := strings.Replace(infoText, "万円以上", "", -1)
-						annualIncomeInt, err := strconv.Atoi(annualncomeStrTrimed)
-						if err != nil {
-							log.Println("年収の変換に失敗しました。")
-							continue userInfoLoop
-						}
-						jobSeeker.AnnualIncome = null.NewInt(int64(annualIncomeInt), true)
-						continue
-
-						// 就業状況	就業している
-					case 4:
-						jobSeeker.SecretMemo += "・就業状況\n" + infoText + "\n\n"
-						if infoText == "就業している" {
-							jobSeeker.StateOfEmployment = null.NewInt(0, true)
-						} else if infoText == "就業していない" {
-							jobSeeker.StateOfEmployment = null.NewInt(1, true)
-						}
-						continue
-
-						// 転職回数	1回
-					case 5:
-						jobSeeker.SecretMemo += "・転職回数\n" + infoText + "\n\n"
-						if infoText == "転職経験なし" {
-							jobSeeker.JobChange = null.NewInt(0, true)
-						} else {
-							jobChangeSplit := strings.Split(infoText, "回")
-							jobChange, err := strconv.Atoi(jobChangeSplit[0])
-							if err != nil {
-								log.Println("転職回数の変換に失敗しました。")
-								continue userInfoLoop
-							}
-							jobSeeker.JobChange = null.NewInt(int64(jobChange), true)
-							if jobChange > 5 {
-								jobSeeker.JobChange = null.NewInt(5, true)
-							}
-						}
-						continue
-
-						// 配偶者	なし
-					case 6:
-						jobSeeker.SecretMemo += "・配偶者\n" + infoText + "\n\n"
-						if infoText == "なし" {
-							jobSeeker.Spouse = null.NewInt(1, true)
-						} else if infoText == "あり" {
-							jobSeeker.Spouse = null.NewInt(0, true)
-						}
-
-						continue
-
-						// 英語
-						// 例:
-						// 英語スキル
-						// TOEIC：--- TOEFL：---
-						// 会話：初級 読解：初級 作文：中級
-
-						// その他の語学スキル（言語 ---語）
-						// 会話：--- 読解：--- 作文：---
-					case 7:
-						jobSeeker.SecretMemo += "・語学スキル\n" + infoText + "\n\n"
-						continue
-
-						// 保有資格
-						// 例:中学校・高校教諭専修免許状
-					case 8:
-						jobSeeker.SecretMemo += "・保有資格\n" + infoText + "\n\n"
-						continue
-
-						// 経験職種と年数
-						// 例:
-						// 店長・販売・店舗管理： 1年以上
-						// 講師・教師・インストラクター： 1年以上
-						// マーケティング・販促企画： 経験あり
-					case 9:
-						jobSeeker.SecretMemo += "・経験職種と年数\n" + infoText + "\n\n"
-						continue
-
-						// スキル	家電量販店での販売 / 教員 / 自営業
-					case 10:
-						jobSeeker.SecretMemo += "・スキル\n" + infoText + "\n\n"
-						continue
-
-						// 経験業界	教育・学校
-					case 11:
-						jobSeeker.SecretMemo += "・経験業界\n" + infoText + "\n\n"
-						continue
-
-						// マネジメント経験	あり（5人以下）
-					case 12:
-						jobSeeker.SecretMemo += "・マネジメント経験\n" + infoText + "\n\n"
-						continue
-
-						// キャリア要約
-					case 13:
-						jobSeeker.SecretMemo += "・キャリア要約\n" + infoText + "\n\n"
-						continue
-
-					// 希望条件
-					// 希望職種 *職種経歴が可変のため、列の最後から取得する
-					case userInfoLen - 4:
-						desiredOccupationWithLineBreak := userInfos[userInfoLen-4].MustText()
-						jobSeeker.SecretMemo += "・希望職種\n" + desiredOccupationWithLineBreak + "\n\n"
-
-						desiredOccupationList := utility.RegexpForLineBreak.Split(desiredOccupationWithLineBreak, -1)
-
-						// ambiの職種マスタをautoscoutに変換していく
-						var duplicateCheck = make(map[int64]bool)
-
-						for _, occupation := range desiredOccupationList {
-							for _, ambiBigValue := range entity.AmbiOccupation {
-								for ambiKey, ambiValue := range ambiBigValue {
-									if occupation == ambiValue {
-										autoscoutOccupation1, autoscoutOccupation2 := entity.ConvertAmbiOccupationInt(null.NewInt(int64(ambiKey), true))
-										log.Println("ambi職種マスタ", ambiKey, ambiValue, "autoscoutマスタ", autoscoutOccupation1, autoscoutOccupation2)
-
-										// 重複チェック
-										if _, ok := duplicateCheck[autoscoutOccupation1]; !ok {
-											duplicateCheck[autoscoutOccupation1] = true
-
-											// 1つ目の職種
-											if autoscoutOccupation1 != 0 {
-												jobSeekerDesiredOccupation := entity.JobSeekerDesiredOccupation{
-													JobSeekerID:       jobSeeker.ID,
-													DesiredOccupation: null.NewInt(autoscoutOccupation1, true),
-													DesiredRank:       null.NewInt(1, true),
-												}
-												jobSeeker.DesiredOccupations = append(jobSeeker.DesiredOccupations, jobSeekerDesiredOccupation)
-											}
-										}
-										if _, ok := duplicateCheck[autoscoutOccupation2]; !ok {
-											duplicateCheck[autoscoutOccupation2] = true
-											// 2つ目の職種がある場合
-											if autoscoutOccupation2 != 0 {
-												jobSeekerDesiredOccupation := entity.JobSeekerDesiredOccupation{
-													JobSeekerID:       jobSeeker.ID,
-													DesiredOccupation: null.NewInt(autoscoutOccupation2, true),
-													DesiredRank:       null.NewInt(1, true),
-												}
-												jobSeeker.DesiredOccupations = append(jobSeeker.DesiredOccupations, jobSeekerDesiredOccupation)
-											}
-										}
-									}
-								}
-							}
-						}
-						continue userInfoLoop
-
-					case userInfoLen - 3:
-
-						// 希望都道府県  *職種経歴が可変のため、列の最後から取得する
-						// 大阪府 / 東京都
-						desiredPrefectureWithSlash := userInfos[userInfoLen-3].MustText()
-						jobSeeker.SecretMemo += "・希望都道府県\n" + desiredPrefectureWithSlash + "\n\n"
-
-						// 希望都道府県を分割
-						desiredPrefectureList := strings.Split(desiredPrefectureWithSlash, "/")
-
-						for _, desiredPrefecture := range desiredPrefectureList {
-							desiredPrefecture = strings.TrimSpace(desiredPrefecture)
-							prefecture := entity.GetIntPrefecture(desiredPrefecture)
-							if prefecture.Valid {
-								jobSeekerDesiredPrefecture := entity.JobSeekerDesiredWorkLocation{
-									JobSeekerID:         jobSeeker.ID,
-									DesiredWorkLocation: prefecture,
-									DesiredRank:         null.NewInt(1, true),
-								}
-								jobSeeker.DesiredWorkLocations = append(jobSeeker.DesiredWorkLocations, jobSeekerDesiredPrefecture)
-							}
-						}
-						continue userInfoLoop
-
-					// 希望業界 *職種経歴が可変のため、列の最後から取得する
-					case userInfoLen - 2:
-						desiredIndustryWithLineBreak := userInfos[userInfoLen-2].MustText()
-						jobSeeker.SecretMemo += "・希望業界\n" + desiredIndustryWithLineBreak + "\n\n"
-
-						// ambiの業界マスタをautoscoutに変換していく
-						duplicateCheck := make(map[int64]bool)
-						desiredIndustryList := utility.RegexpForLineBreak.Split(desiredIndustryWithLineBreak, -1)
-						for _, desiredIndustry := range desiredIndustryList {
-							desiredIndustry = strings.TrimSpace(desiredIndustry)
-							for _, ambiBigValue := range entity.AmbiIndustry {
-								for ambiKey, ambiValue := range ambiBigValue {
-									if desiredIndustry == ambiValue {
-										autoscoutIndustry := entity.ConvertAmbiIndustryInt(null.NewInt(int64(ambiKey), true))
-										// 重複チェック
-										if _, ok := duplicateCheck[autoscoutIndustry]; !ok {
-											duplicateCheck[autoscoutIndustry] = true
-
-											log.Println("ambi業界マスタ", ambiKey, ambiValue, "autoscoutマスタ", autoscoutIndustry)
-											// 1つ目の業界
-											if autoscoutIndustry != 0 {
-												jobSeekerDesiredIndustry := entity.JobSeekerDesiredIndustry{
-													JobSeekerID:     jobSeeker.ID,
-													DesiredIndustry: null.NewInt(autoscoutIndustry, true),
-													DesiredRank:     null.NewInt(1, true),
-												}
-												jobSeeker.DesiredIndustries = append(jobSeeker.DesiredIndustries, jobSeekerDesiredIndustry)
-											}
-										}
-									}
-								}
-							}
-						}
-						continue userInfoLoop
-						// 希望年収 *職種経歴が可変のため、列の最後から取得する
-						// 400万円以上
-					case userInfoLen - 1:
-						desiredIncomeStr := userInfos[userInfoLen-1].MustText()
-						jobSeeker.SecretMemo += "・希望年収\n" + desiredIncomeStr + "\n\n"
-						desiredIncomeStrTrimed := strings.Replace(desiredIncomeStr, "万円以上\n", "", -1)
-						log.Println("希望年収", desiredIncomeStrTrimed)
-						desiredIncomeInt, err := strconv.Atoi(desiredIncomeStrTrimed)
-						if err != nil {
-							log.Println(err, desiredIncomeStrTrimed)
-							continue userInfoLoop
-						}
-						log.Println("希望年収", desiredIncomeInt)
-
-						jobSeeker.DesiredAnnualIncome = null.NewInt(int64(desiredIncomeInt), true)
-						log.Println("希望年収", jobSeeker.DesiredAnnualIncome)
-						continue userInfoLoop
-
-					default:
-						// 職務経歴を取得
-						experienceCnt++
-						jobSeeker.SecretMemo += "・職務経歴" + fmt.Sprint(experienceCnt) + "\n" + infoText + "\n\n"
-						continue userInfoLoop
-
-					}
+			// prd以外の場合は送信しないためここで終了
+			if i.app.BatchType != "entry" {
+				log.Println("テスト環境のため、メッセージ送信はスキップします")
+				jobSeeker := entity.JobSeeker{
+					SecretMemo: "・エントリー媒体：AMBI\n\n開発テスト用取り込み\n\n対象ID: " + fmt.Sprint(userID),
 				}
 				jobSeekerList = append(jobSeekerList, &jobSeeker)
-
-				// モーダルを閉じる
-				page.MustElement("a.closeBtn").MustClick()
-				time.Sleep(2 * time.Second)
-			} else {
-				log.Println("ユーザーIDが一致しませんでしたのでスキップします")
-				continue userIDLoop
+				continue
 			}
+
+			// 送信ボタン
+			// 送信ボタンが押せない場合はスキップ
+			if page.MustHas("a.md_btn.md_btn--green.welcomeDone.md_btn.md_btn--disabled.js_disabled") {
+				time.Sleep(10 * time.Second)
+				if page.MustHas("a.md_btn.md_btn--green.welcomeDone.md_btn.md_btn--disabled.js_disabled") {
+					continue userIDLoop
+				}
+			}
+			page.MustElement("a.md_btn.md_btn--green.welcomeDone.js_tipOpen.js_sendMessage").MustClick()
+			time.Sleep(5 * time.Second)
+
+			// 確認ボタン　md_btn md_btn--min js_sendYes
+			page.MustElement("a.md_btn.md_btn--min.js_sendYes").MustClick()
+			page.WaitLoad()
+			time.Sleep(15 * time.Second)
+
+			// 送信後に情報取得
+			//職務経歴書更新日：21/09/07 最終ログイン日：23/03/14 山田 太郎（ヤマダ タロウ） / 26歳 エントリー済 スカウト済
+			// -> 山田, 太郎, ヤマダ, タロウ, 26
+			basicInfoWithLineBreak = page.MustElement("div.dataArea > div.name").MustText()
+			jobSeeker.SecretMemo = "・エントリー媒体\nAMBI\n\n・基本情報\n" + basicInfoWithLineBreak + "未対応\n\n"
+			// 改行を半角スペースに変換
+			basicInfo = strings.Join(utility.RegexpForLineBreak.Split(basicInfoWithLineBreak, -1), " ")
+			splitedBasicInfo = strings.Split(basicInfo, " ")
+
+			log.Println("splitedBasicInfo:", splitedBasicInfo)
+
+			if len(splitedBasicInfo) < 5 {
+				log.Println("splitedBasicInfoの長さが5未満です", splitedBasicInfo)
+				continue
+			}
+
+			// 苗字を取得
+			jobSeeker.LastName = splitedBasicInfo[2]
+			log.Println("jobSeeker.LastName:", jobSeeker.LastName)
+
+			// 名前を取得
+			firstNameAndLastFurigana := strings.Split(splitedBasicInfo[3], "（")
+			log.Println("firstNameAndLastFurigana:", firstNameAndLastFurigana)
+
+			jobSeeker.FirstName = firstNameAndLastFurigana[0]
+			log.Println("jobSeeker.FirstName:", jobSeeker.FirstName)
+
+			// フリガナを取得
+			if len(firstNameAndLastFurigana) > 1 {
+				lastFurigana := strings.Replace(firstNameAndLastFurigana[1], "（", "", -1)
+				log.Println("lastFurigana:", lastFurigana)
+				jobSeeker.LastFurigana = lastFurigana
+			}
+
+			firstFurigana := strings.Replace(splitedBasicInfo[4], "）", "", -1)
+			log.Println("firstFurigana:", firstFurigana)
+			jobSeeker.FirstFurigana = firstFurigana
+
+			// 名前がブラインドではない場合
+			// } else {
+			// 	// 名前を分割 &nbsp(\u00a0) で分割
+			// 	nameList := strings.Split(fullName, "\u00a0")
+
+			// 	for index, name := range nameList {
+			// 		if index == 0 {
+			// 			jobSeeker.LastName = name
+			// 		} else if index == 1 {
+			// 			jobSeeker.FirstName = name
+			// 		}
+			// 	}
+
+			// 	// フリガナを取得
+			// 	splitedFullFurigana := strings.Split(splitedBasicInfo[2], "（")
+			// 	if len(splitedFullFurigana) < 2 {
+			// 		log.Println("splitedFullFuriganaの長さが2未満です", splitedFullFurigana)
+			// 		jobSeeker.LastFurigana = splitedBasicInfo[2]
+			// 	} else {
+			// 		fullFurigana := strings.Split(splitedFullFurigana[1], "）")[0]
+			// 		log.Println("fullFurigana:", fullFurigana)
+
+			// 		// フリガナを分割
+			// 		furiganaList := strings.Split(fullFurigana, "\u00a0")
+			// 		log.Println("furiganaList:", furiganaList)
+
+			// 		for index, furigana := range furiganaList {
+			// 			if index == 0 {
+			// 				jobSeeker.LastFurigana = furigana
+			// 			} else if index == 1 {
+			// 				jobSeeker.FirstFurigana = furigana
+			// 			}
+			// 		}
+			// 	}
+			// }
+
+			// 「名前」が既存の求職者と重複している場合はスキップ
+			for _, jobSeekerInDb := range jobSeekerListInDb {
+				if jobSeekerInDb.LastName == jobSeeker.LastName &&
+					jobSeekerInDb.FirstName == jobSeeker.FirstName {
+					// モーダルを閉じる
+					fmt.Println("2日以内に登録した求職者と重複しています。", jobSeeker.LastName+jobSeeker.FirstName, jobSeeker.LastFurigana+jobSeeker.FirstFurigana)
+					page.MustElement("a.closeBtn").MustClick()
+					continue userIDLoop
+				}
+			}
+
+			log.Println(
+				"jobSeeker.LastName:", jobSeeker.LastName, "jobSeeker.FirstName:", jobSeeker.FirstName,
+				"jobSeeker.LastFurigana:", jobSeeker.LastFurigana, "jobSeeker.FirstFurigana:", jobSeeker.FirstFurigana,
+			)
+
+			// 東京都 渋谷区 14-1 / 09012341234 / tarou.yamada@gmail.com
+			// -> 東京都, 渋谷区 14-1, 09012341234, tarou.yamada@gmail.com
+			addressAndContactWithSlash := page.MustElement("div.dataArea > div.data").MustText()
+
+			splitedAddressAndContact := strings.Split(addressAndContactWithSlash, "/")
+			for index, addressAndContact := range splitedAddressAndContact {
+				// 都道府県と住所
+				if index == 0 {
+					prefectureAndAddress := strings.TrimSpace(addressAndContact)
+					jobSeeker.Address = prefectureAndAddress
+
+					splitedPrefectureAndAddress := strings.Split(prefectureAndAddress, "\u00a0")
+					log.Println("splitedPrefectureAndAddress:", splitedPrefectureAndAddress)
+					jobSeeker.Prefecture = entity.GetIntPrefecture(splitedPrefectureAndAddress[0])
+				} else if index == 1 {
+					// 電話番号
+					phone := strings.TrimSpace(addressAndContact)
+					jobSeeker.SecretMemo += "・電話番号\n" + phone + "\n\n"
+					jobSeeker.PhoneNumber = phone
+				} else if index == 2 {
+					// メールアドレス
+					email := strings.TrimSpace(addressAndContact)
+					jobSeeker.SecretMemo += "・メールアドレス\n" + email + "\n\n"
+					jobSeeker.Email = email
+				}
+			}
+
+			// 求職者情報テーブルを取得
+			userInfos := page.MustElements("table.md_tableForm > tbody > tr > td")
+			userInfoLen := len(userInfos)
+			log.Println("userInfoLen:", userInfos[0].MustText(), userInfoLen)
+
+		userInfoLoop:
+			for index, info := range userInfos {
+				infoText := info.MustText()
+
+				// 1990年（平成元年） 09月02日 -> 1990-09-03
+				switch index {
+				case 0:
+					jobSeeker.SecretMemo += "・生年月日\n" + infoText + "\n\n"
+					birthday := strings.Split(infoText, " ")
+					if len(birthday) < 2 {
+						log.Println("birthdayの長さが2未満です", birthday)
+						continue userInfoLoop
+					}
+
+					yearArr := strings.Split(birthday[0], "年")
+					year := strings.Split(yearArr[0], "（")
+					monthAndDay := strings.Split(birthday[1], "月")
+					month := monthAndDay[0]
+					dayArr := strings.Split(monthAndDay[1], "日")
+					day := dayArr[0]
+
+					birthdayStr := year[0] + "-" + month + "-" + day
+					log.Println("birthday:", birthdayStr)
+
+					jobSeeker.Birthday = birthdayStr
+
+				case 1:
+					log.Println("最終学歴:", infoText)
+					jobSeeker.SecretMemo += "・最終学歴\n" + infoText + "\n\n"
+
+					// 大学卒 / テスト大学大学院テスト学部テスト学科 / 2019（令和元）年卒業
+					// 大学卒
+					// spaceを消す
+					infoText = strings.Replace(infoText, "&nbsp;", "", -1)
+					educationSplitedBySlash := strings.Split(infoText, "/")
+					log.Println("educationSplitedBySlash:", educationSplitedBySlash)
+					if len(educationSplitedBySlash) < 4 {
+						log.Println("educationSplitedBySlashの長さが4未満です", educationSplitedBySlash)
+						continue userInfoLoop
+					}
+					// 文系, 理系
+					studyCategory := educationSplitedBySlash[2]
+					if strings.Contains(studyCategory, "理系") {
+						jobSeeker.StudyCategory = null.NewInt(0, true)
+					} else if strings.Contains(studyCategory, "文系") {
+						jobSeeker.StudyCategory = null.NewInt(1, true)
+					}
+					// 希望転職時期　1年以内
+				case 2:
+					jobSeeker.SecretMemo += "・希望転職時期\n" + infoText + "\n\n"
+					// ambiマスタ:すぐに	3ヶ月以内	6ヶ月以内	1年以内	いいところがあれば	まだ未定	転職を考えていない
+					if infoText == "すぐに" {
+						jobSeeker.JoinCompanyPeriod = null.NewInt(0, true)
+					} else if infoText == "3ヶ月以内" {
+						jobSeeker.JoinCompanyPeriod = null.NewInt(3, true)
+					} else if infoText == "6ヶ月以内" {
+						jobSeeker.JoinCompanyPeriod = null.NewInt(6, true)
+					} else if infoText == "1年以内" {
+						jobSeeker.JoinCompanyPeriod = null.NewInt(7, true)
+					}
+					// 直近の年収 : 400万円以上
+				case 3:
+					jobSeeker.SecretMemo += "・直近の年収\n" + infoText + "\n\n"
+					annualncomeStrTrimed := strings.Replace(infoText, "万円以上", "", -1)
+					annualIncomeInt, err := strconv.Atoi(annualncomeStrTrimed)
+					if err != nil {
+						log.Println("年収の変換に失敗しました。")
+						continue userInfoLoop
+					}
+					jobSeeker.AnnualIncome = null.NewInt(int64(annualIncomeInt), true)
+					continue
+
+					// 就業状況	就業している
+				case 4:
+					jobSeeker.SecretMemo += "・就業状況\n" + infoText + "\n\n"
+					if infoText == "就業している" {
+						jobSeeker.StateOfEmployment = null.NewInt(0, true)
+					} else if infoText == "就業していない" {
+						jobSeeker.StateOfEmployment = null.NewInt(1, true)
+					}
+					continue
+
+					// 転職回数	1回
+				case 5:
+					jobSeeker.SecretMemo += "・転職回数\n" + infoText + "\n\n"
+					if infoText == "転職経験なし" {
+						jobSeeker.JobChange = null.NewInt(0, true)
+					} else {
+						jobChangeSplit := strings.Split(infoText, "回")
+						jobChange, err := strconv.Atoi(jobChangeSplit[0])
+						if err != nil {
+							log.Println("転職回数の変換に失敗しました。")
+							continue userInfoLoop
+						}
+						jobSeeker.JobChange = null.NewInt(int64(jobChange), true)
+						if jobChange > 5 {
+							jobSeeker.JobChange = null.NewInt(5, true)
+						}
+					}
+					continue
+
+					// 配偶者	なし
+				case 6:
+					jobSeeker.SecretMemo += "・配偶者\n" + infoText + "\n\n"
+					if infoText == "なし" {
+						jobSeeker.Spouse = null.NewInt(1, true)
+					} else if infoText == "あり" {
+						jobSeeker.Spouse = null.NewInt(0, true)
+					}
+
+					continue
+
+					// 英語
+					// 例:
+					// 英語スキル
+					// TOEIC：--- TOEFL：---
+					// 会話：初級 読解：初級 作文：中級
+
+					// その他の語学スキル（言語 ---語）
+					// 会話：--- 読解：--- 作文：---
+				case 7:
+					jobSeeker.SecretMemo += "・語学スキル\n" + infoText + "\n\n"
+					continue
+
+					// 保有資格
+					// 例:中学校・高校教諭専修免許状
+				case 8:
+					jobSeeker.SecretMemo += "・保有資格\n" + infoText + "\n\n"
+					continue
+
+					// 経験職種と年数
+					// 例:
+					// 店長・販売・店舗管理： 1年以上
+					// 講師・教師・インストラクター： 1年以上
+					// マーケティング・販促企画： 経験あり
+				case 9:
+					jobSeeker.SecretMemo += "・経験職種と年数\n" + infoText + "\n\n"
+					continue
+
+					// スキル	家電量販店での販売 / 教員 / 自営業
+				case 10:
+					jobSeeker.SecretMemo += "・スキル\n" + infoText + "\n\n"
+					continue
+
+					// 経験業界	教育・学校
+				case 11:
+					jobSeeker.SecretMemo += "・経験業界\n" + infoText + "\n\n"
+					continue
+
+					// マネジメント経験	あり（5人以下）
+				case 12:
+					jobSeeker.SecretMemo += "・マネジメント経験\n" + infoText + "\n\n"
+					continue
+
+					// キャリア要約
+				case 13:
+					jobSeeker.SecretMemo += "・キャリア要約\n" + infoText + "\n\n"
+					continue
+
+				// 希望条件
+				// 希望職種 *職種経歴が可変のため、列の最後から取得する
+				case userInfoLen - 4:
+					desiredOccupationWithLineBreak := userInfos[userInfoLen-4].MustText()
+					jobSeeker.SecretMemo += "・希望職種\n" + desiredOccupationWithLineBreak + "\n\n"
+
+					desiredOccupationList := utility.RegexpForLineBreak.Split(desiredOccupationWithLineBreak, -1)
+
+					// ambiの職種マスタをautoscoutに変換していく
+					var duplicateCheck = make(map[int64]bool)
+
+					for _, occupation := range desiredOccupationList {
+						for _, ambiBigValue := range entity.AmbiOccupation {
+							for ambiKey, ambiValue := range ambiBigValue {
+								if occupation == ambiValue {
+									autoscoutOccupation1, autoscoutOccupation2 := entity.ConvertAmbiOccupationInt(null.NewInt(int64(ambiKey), true))
+									log.Println("ambi職種マスタ", ambiKey, ambiValue, "autoscoutマスタ", autoscoutOccupation1, autoscoutOccupation2)
+
+									// 重複チェック
+									if _, ok := duplicateCheck[autoscoutOccupation1]; !ok {
+										duplicateCheck[autoscoutOccupation1] = true
+
+										// 1つ目の職種
+										if autoscoutOccupation1 != 0 {
+											jobSeekerDesiredOccupation := entity.JobSeekerDesiredOccupation{
+												JobSeekerID:       jobSeeker.ID,
+												DesiredOccupation: null.NewInt(autoscoutOccupation1, true),
+												DesiredRank:       null.NewInt(1, true),
+											}
+											jobSeeker.DesiredOccupations = append(jobSeeker.DesiredOccupations, jobSeekerDesiredOccupation)
+										}
+									}
+									if _, ok := duplicateCheck[autoscoutOccupation2]; !ok {
+										duplicateCheck[autoscoutOccupation2] = true
+										// 2つ目の職種がある場合
+										if autoscoutOccupation2 != 0 {
+											jobSeekerDesiredOccupation := entity.JobSeekerDesiredOccupation{
+												JobSeekerID:       jobSeeker.ID,
+												DesiredOccupation: null.NewInt(autoscoutOccupation2, true),
+												DesiredRank:       null.NewInt(1, true),
+											}
+											jobSeeker.DesiredOccupations = append(jobSeeker.DesiredOccupations, jobSeekerDesiredOccupation)
+										}
+									}
+								}
+							}
+						}
+					}
+					continue userInfoLoop
+
+				case userInfoLen - 3:
+
+					// 希望都道府県  *職種経歴が可変のため、列の最後から取得する
+					// 大阪府 / 東京都
+					desiredPrefectureWithSlash := userInfos[userInfoLen-3].MustText()
+					jobSeeker.SecretMemo += "・希望都道府県\n" + desiredPrefectureWithSlash + "\n\n"
+
+					// 希望都道府県を分割
+					desiredPrefectureList := strings.Split(desiredPrefectureWithSlash, "/")
+
+					for _, desiredPrefecture := range desiredPrefectureList {
+						desiredPrefecture = strings.TrimSpace(desiredPrefecture)
+						prefecture := entity.GetIntPrefecture(desiredPrefecture)
+						if prefecture.Valid {
+							jobSeekerDesiredPrefecture := entity.JobSeekerDesiredWorkLocation{
+								JobSeekerID:         jobSeeker.ID,
+								DesiredWorkLocation: prefecture,
+								DesiredRank:         null.NewInt(1, true),
+							}
+							jobSeeker.DesiredWorkLocations = append(jobSeeker.DesiredWorkLocations, jobSeekerDesiredPrefecture)
+						}
+					}
+					continue userInfoLoop
+
+				// 希望業界 *職種経歴が可変のため、列の最後から取得する
+				case userInfoLen - 2:
+					desiredIndustryWithLineBreak := userInfos[userInfoLen-2].MustText()
+					jobSeeker.SecretMemo += "・希望業界\n" + desiredIndustryWithLineBreak + "\n\n"
+
+					// ambiの業界マスタをautoscoutに変換していく
+					duplicateCheck := make(map[int64]bool)
+					desiredIndustryList := utility.RegexpForLineBreak.Split(desiredIndustryWithLineBreak, -1)
+					for _, desiredIndustry := range desiredIndustryList {
+						desiredIndustry = strings.TrimSpace(desiredIndustry)
+						for _, ambiBigValue := range entity.AmbiIndustry {
+							for ambiKey, ambiValue := range ambiBigValue {
+								if desiredIndustry == ambiValue {
+									autoscoutIndustry := entity.ConvertAmbiIndustryInt(null.NewInt(int64(ambiKey), true))
+									// 重複チェック
+									if _, ok := duplicateCheck[autoscoutIndustry]; !ok {
+										duplicateCheck[autoscoutIndustry] = true
+
+										log.Println("ambi業界マスタ", ambiKey, ambiValue, "autoscoutマスタ", autoscoutIndustry)
+										// 1つ目の業界
+										if autoscoutIndustry != 0 {
+											jobSeekerDesiredIndustry := entity.JobSeekerDesiredIndustry{
+												JobSeekerID:     jobSeeker.ID,
+												DesiredIndustry: null.NewInt(autoscoutIndustry, true),
+												DesiredRank:     null.NewInt(1, true),
+											}
+											jobSeeker.DesiredIndustries = append(jobSeeker.DesiredIndustries, jobSeekerDesiredIndustry)
+										}
+									}
+								}
+							}
+						}
+					}
+					continue userInfoLoop
+					// 希望年収 *職種経歴が可変のため、列の最後から取得する
+					// 400万円以上
+				case userInfoLen - 1:
+					desiredIncomeStr := userInfos[userInfoLen-1].MustText()
+					jobSeeker.SecretMemo += "・希望年収\n" + desiredIncomeStr + "\n\n"
+					desiredIncomeStrTrimed := strings.Replace(desiredIncomeStr, "万円以上\n", "", -1)
+					log.Println("希望年収", desiredIncomeStrTrimed)
+					desiredIncomeInt, err := strconv.Atoi(desiredIncomeStrTrimed)
+					if err != nil {
+						log.Println(err, desiredIncomeStrTrimed)
+						continue userInfoLoop
+					}
+					log.Println("希望年収", desiredIncomeInt)
+
+					jobSeeker.DesiredAnnualIncome = null.NewInt(int64(desiredIncomeInt), true)
+					log.Println("希望年収", jobSeeker.DesiredAnnualIncome)
+					continue userInfoLoop
+
+				default:
+					// 職務経歴を取得
+					experienceCnt++
+					jobSeeker.SecretMemo += "・職務経歴" + fmt.Sprint(experienceCnt) + "\n" + infoText + "\n\n"
+					continue userInfoLoop
+
+				}
+			}
+			jobSeekerList = append(jobSeekerList, &jobSeeker)
+
+			// モーダルを閉じる
+			page.MustElement("a.closeBtn").MustClick()
+			time.Sleep(2 * time.Second)
+			// } else {
+			// 	log.Println("ユーザーIDが一致しませんでしたのでスキップします")
+			// 	continue userIDLoop
+			// }
 		}
 	}
 
 	// 求職者をDBに保存
+	var (
+		records [][]string
+		record  []string
+	)
+
+	// csvの一行目を作成
+	records = append(
+		records,
+		[]string{
+			"candidate-externalId",
+			"candidate-firstName",
+			"candidate-Lastname",
+			"candidate-email",
+			"candidate-title",
+			"candidate-middleName",
+			"candidate-FirstNameKana",
+			"candidate-LastNameKana",
+			"candidate-workEmail",
+			"candidate-employmentType",
+			"candidate-jobTypes",
+			"candidate-gender",
+			"candidate-dob",
+			"candidate-address",
+			"candidate-citizenship",
+			"candidate-Country",
+			"candidate-city",
+			"candidate-linkedln",
+			"candidate-currentSalary",
+			"candidate-desiredSalary",
+			"candidate-company1",
+			"candidate-company2",
+			"candidate-company3",
+			"candidate-contractInterval",
+			"candidate-contractRate",
+			"candidate-currency",
+			"candidate-degreeName",
+			"candidate-education",
+			"candidate-educationLevel",
+			"candidate-employer1",
+			"candidate-employer2",
+			"candidate-employer3",
+			"candidate-gpa",
+			"candidate-grade",
+			"candidate-graduationDate",
+			"candidate-homePhone",
+			"candidate-phone",
+			"candidate-mobile",
+			"candidate-jobTitle1",
+			"candidate-jobTitle2",
+			"candidate-jobTitle3",
+			"candidate-keyword",
+			"candidate-note",
+			"candidate-numberOfEmployers",
+			"candidate-photo",
+			"candidate-resume",
+			"candidate-schoolName",
+			"candidate-skills",
+			"candidate-startDate1",
+			"candidate-startDate2",
+			"candidate-startDate3",
+			"candidate-endDate1",
+			"candidate-endDate2",
+			"candidate-endDate3",
+			"candidate-State",
+			"candidate-workHistory",
+			"candidate-workPhone",
+			"candidate-zipCode",
+			"candidate-owners",
+			"candidate-comments",
+		},
+	)
+
 	for _, jobSeeker := range jobSeekerList {
+		// 求人ごとにデータを格納
+		record =
+			[]string{
+				// 		"candidate-externalId",
+				jobSeeker.ExternalID,
+				// "candidate-firstName",
+				jobSeeker.FirstName,
+				// "candidate-Lastname",
+				jobSeeker.LastName,
+				// "candidate-email",
+				jobSeeker.Email,
+				// "candidate-title",
+				"",
+				// "candidate-middleName",
+				"",
+				// "candidate-FirstNameKana",
+				jobSeeker.FirstFurigana,
+				// "candidate-LastNameKana",
+				jobSeeker.LastFurigana,
+				// "candidate-workEmail",
+				"",
+				// "candidate-employmentType",
+				"FULL_TIME",
+				// "candidate-jobTypes",
+				"PERMANENT",
+				// "candidate-gender",
+				entity.ConvertGenderToVincere(jobSeeker.Gender),
+				// "candidate-dob",
+				"",
+				// "candidate-address",
+				jobSeeker.Address,
+				// "candidate-citizenship",
+				"",
+				// "candidate-Country",
+				"",
+				// "candidate-city",
+				"",
+				// "candidate-linkedln",
+				"",
+				// "candidate-currentSalary",
+				fmt.Sprint(jobSeeker.AnnualIncome),
+				// "candidate-desiredSalary",
+				fmt.Sprint(jobSeeker.DesiredAnnualIncome),
+				// "candidate-company1",
+				"",
+				// "candidate-company2",
+				"",
+				// "candidate-company3",
+				"",
+				// "candidate-contractInterval",
+				"",
+				// "candidate-contractRate",
+				"",
+				// "candidate-currency",
+				"",
+				// "candidate-degreeName",
+				"",
+				// "candidate-education",
+				"",
+				// "candidate-educationLevel",
+				"",
+				// "candidate-employer1",
+				"",
+				// "candidate-employer2",
+				"",
+				// "candidate-employer3",
+				"",
+				// "candidate-gpa",
+				"",
+				// "candidate-grade",
+				"",
+				// "candidate-graduationDate",
+				"",
+				// "candidate-homePhone",
+				"",
+				// "candidate-phone",
+				jobSeeker.PhoneNumber,
+				// "candidate-mobile",
+				jobSeeker.PhoneNumber,
+				// "candidate-jobTitle1",
+				"",
+				// "candidate-jobTitle2",
+				"",
+				// "candidate-jobTitle3",
+				"",
+				// "candidate-keyword",
+				"",
+				// "candidate-note",
+				"",
+				// "candidate-numberOfEmployers",
+				"",
+				// "candidate-photo",
+				"",
+				// "candidate-resume",
+				"",
+				// "candidate-schoolName",
+				"",
+				// "candidate-skills",
+				"",
+				// "candidate-startDate1",
+				"",
+				// "candidate-startDate2",
+				"",
+				// "candidate-startDate3",
+				"",
+				// "candidate-endDate1",
+				"",
+				// "candidate-endDate2",
+				"",
+				// "candidate-endDate3",
+				"",
+				// "candidate-State",
+				"",
+				// "candidate-workHistory",
+				"",
+				// "candidate-workPhone",
+				"",
+				// "candidate-zipCode",
+				"",
+				// "candidate-owners",
+				"",
+				// "candidate-comments",
+				jobSeeker.SecretMemo,
 
-		// 本番以外はメールアドレスに空白
-		// if i.app.Env != "prd" {
-		// 	jobSeeker.Email = ""
-		// }
+				// jobSeeker.StaffName,
+				// getStrPhaseForJobSeeker(jobSeeker.Phase),
+				// jobSeeker.ChannelName,
+				// jobSeeker.CreatedAt.In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006-01-02 15:04:05"),
+				// jobSeeker.InterviewDate.In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006-01-02 15:04:05"),
+				// getStrUserStatus(jobSeeker.UserStatus),
+				// jobSeeker.LastName,
+				// jobSeeker.FirstName,
+				// jobSeeker.LastFurigana,
+				// jobSeeker.FirstFurigana,
+				// getStrGenderForJobSeeker(jobSeeker.Gender),
+				// jobSeeker.GenderRemarks,
+				// getStrNationalityForJobSeeker(jobSeeker.Nationality),
+				// jobSeeker.NationalityRemarks,
+				// getStrAvailable(jobSeeker.MedicalHistory),
+				// jobSeeker.MedicalHistoryRemarks,
+				// jobSeeker.Birthday,
+				// getStrAvailable(jobSeeker.Spouse),
+				// getStrAvailable(jobSeeker.SupportObligation),
+				// fmt.Sprint(jobSeeker.Dependents.Int64),
+				// jobSeeker.Email,
+				// jobSeeker.PhoneNumber,
+				// jobSeeker.EmergencyPhoneNumber,
+				// getStrPrefecture(jobSeeker.Prefecture),
+				// fmt.Sprint(jobSeeker.PostCode, "\n", getStrPrefecture(jobSeeker.Prefecture), jobSeeker.Address),
+				// jobSeeker.AddressFurigana,
+				// fmt.Sprint(jobSeeker.AnnualIncome.Int64) + "万円",
 
-		// 面談調整メールを送信
-		jobSeeker.Phase = null.NewInt(int64(entity.EntryInterview), true) // フェーズ： エントリー
-		jobSeeker.AgentID = input.AgentID
-		jobSeeker.AgentStaffID = null.NewInt(int64(input.ScoutService.AgentStaffID), true)
-		jobSeeker.RegisterPhase = null.NewInt(1, true) // 登録状況:下書き
-		jobSeeker.InterviewDate = time.Now().UTC()
-		jobSeeker.InflowChannelID = input.ScoutService.InflowChannelID
+				// // 学歴
+				// getStrStudyCategoryForJobSeeker(jobSeeker.StudyCategory),
+				// getStrStudentHistoryList(jobSeeker.StudentHistories),
 
-		err := i.jobSeekerRepository.Create(jobSeeker)
-		if err != nil {
-			log.Println(err)
-			return output, err
-		}
+				// // 職歴
+				// getStrStateOfEmployment(jobSeeker.StateOfEmployment),
+				// getStrJobChangeForJobSeeker(jobSeeker.JobChange),
+				// getStrAvailable(jobSeeker.ShortResignation),
+				// jobSeeker.ShortResignationRemarks,
+				// getStrWorkHistoryList(jobSeeker.WorkHistories),
 
-		// 開発環境の場合はユーザー名などを統一する
-		// if os.Getenv("APP_ENV") != "prd" {
-		// 	err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
-		// 	if err != nil {
-		// 		fmt.Println(err)
-		// 		return output, err
-		// 	}
-		// }
+				// // PCスキル
+				// getStrExcelSkill(jobSeeker.ExcelSkill),
+				// getStrWordSkill(jobSeeker.WordSkill),
+				// getStrPowerPointSkill(jobSeeker.PowerPointSkill),
 
-		jobSeekerDocument := entity.NewJobSeekerDocument(
-			jobSeeker.ID,
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-		)
+				// // 活かせるスキル・資格
+				// getStrLicenseListForJobSeeker(jobSeeker.Licenses),
+				// getStrPCToolListForJobSeeker(jobSeeker.PCTools),
+				// getStrLanguageDevelopmentExperienceListForJobSeeker(jobSeeker.DevelopmentSkills),
+				// getStrOSDevelopmentExperienceListForJobSeeker(jobSeeker.DevelopmentSkills),
+				// getStrLanguageListForJobSeeker(jobSeeker.LanguageSkills),
 
-		err = i.jobSeekerDocumentRepository.Create(jobSeekerDocument)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
+				// // 希望条件
+				// getStrDesiredHolidayTypeList(jobSeeker.DesiredHolidayTypes),
+				// getStrDesiredCompanyScaleList(jobSeeker.DesiredCompanyScales),
+				// getStrDesiredIndustryList(jobSeeker.DesiredIndustries),
+				// getStrDesiredOccupationList(jobSeeker.DesiredOccupations),
+				// getStrDesiredWorkLocationList(jobSeeker.DesiredWorkLocations),
+				// getStrTransfer(jobSeeker.Transfer),
+				// jobSeeker.TransferRequirement,
+				// fmt.Sprint(jobSeeker.DesiredAnnualIncome.Int64) + "万円",
+				// fmt.Sprint(getStrJoinCompanyPeriod(jobSeeker.JoinCompanyPeriod)),
 
-		// 求職者作成時にメッセージグループ作成
-		// エージェントと求職者のチャットグループを作成
-		chatGroup := entity.NewChatGroupWithJobSeeker(
-			jobSeeker.AgentID,
-			jobSeeker.ID,
-			false, // 初めはLINE連携してないから false
-		)
+				// getStrAppearanceForJobSeeker(jobSeeker.Appearance),
+				// // jobSeeker.AppearanceDetailOfTruth,
+				// // jobSeeker.AppearanceDetail,
+				// getStrCommunicationForJobSeeker(jobSeeker.Communication),
+				// // jobSeeker.CommunicationDetailOfTruth,
+				// // jobSeeker.CommunicationDetail,
+				// getStrThinkingForJobSeeker(jobSeeker.Thinking),
+				// // jobSeeker.ThinkingDetailOfTruth,
+				// // jobSeeker.ThinkingDetail,
+				// getStrSelfPromotionList(jobSeeker.SelfPromotions),
+				// jobSeeker.ResearchContent,
+				// jobSeeker.AcceptancePoints,
 
-		err = i.chatGroupWithJobSeekerRepository.Create(chatGroup)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
-
-		// 面談実施待ちより前のフェーズの場合は「面談調整タスク」を作成
-		var (
-			phaseSub null.Int
-			date     string
-		)
-
-		phaseSub = null.NewInt(0, true) //日程調整依頼
-
-		// タスクの期限は当日で登録
-		now := time.Now()
-		date = now.Format("2006-01-02")
-
-		// 面談調整タスクの作成
-		interviewTaskGroup := entity.NewInterviewTaskGroup(
-			jobSeeker.AgentID,
-			jobSeeker.ID,
-			jobSeeker.InterviewDate,
-			utility.EarliestTime(), // 初期値,
-		)
-
-		err = i.interviewTaskGroupRepository.Create(interviewTaskGroup)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
-
-		interviewTask := entity.NewInterviewTask(
-			interviewTaskGroup.ID,
-			null.NewInt(0, false),
-			null.NewInt(0, false),
-			jobSeeker.Phase,
-			phaseSub,
-			"",
-			date,
-			null.NewInt(99, true),
-			getStrPhaseForJobSeeker(jobSeeker.Phase),
-		)
-
-		err = i.interviewTaskRepository.Create(interviewTask)
-		if err != nil {
-			fmt.Println(err)
-			return output, err
-		}
-
-		// 希望職種
-		for _, desiredOccupation := range jobSeeker.DesiredOccupations {
-			desiredOccupation.JobSeekerID = jobSeeker.ID
-			err := i.jobSeekerDesiredOccupationRepository.Create(&desiredOccupation)
-			if err != nil {
-				log.Println(err)
-				return output, err
+				// // メモ
+				// jobSeeker.SecretMemo,
+				// // jobSeeker.PublicMemo,
 			}
-		}
 
-		// 希望業界
-		for _, desiredIndustry := range jobSeeker.DesiredIndustries {
-			desiredIndustry.JobSeekerID = jobSeeker.ID
-			err := i.jobSeekerDesiredIndustryRepository.Create(&desiredIndustry)
-			if err != nil {
-				log.Println(err)
-				return output, err
-			}
-		}
-
-		// 希望勤務地
-		for _, desiredWorkLocation := range jobSeeker.DesiredWorkLocations {
-			desiredWorkLocation.JobSeekerID = jobSeeker.ID
-			err := i.jobSeekerDesiredWorkLocationRepository.Create(&desiredWorkLocation)
-			if err != nil {
-				log.Println(err)
-				return output, err
-			}
-		}
+			// レコードを追加
+		records = append(records, record)
 	}
+
+	//CSVファイルを作成
+	filePath := ("./job-seeker-" + fmt.Sprint(utility.CreateUUID()) + ".csv")
+
+	exportedFile, err := os.Create(filePath)
+	if err != nil {
+		fmt.Println(err)
+		return output, err
+	}
+
+	cw := csv.NewWriter(exportedFile)
+
+	defer exportedFile.Close()
+	defer cw.Flush()
+
+	cw.WriteAll(records)
+
+	if err := cw.Error(); err != nil {
+		fmt.Println("error writing csv:", err)
+		return output, err
+	}
+
+	// for _, jobSeeker := range jobSeekerList {
+
+	// 	// 本番以外はメールアドレスに空白
+	// 	// if i.app.Env != "prd" {
+	// 	// 	jobSeeker.Email = ""
+	// 	// }
+
+	// 	// 面談調整メールを送信
+	// 	jobSeeker.Phase = null.NewInt(int64(entity.EntryInterview), true) // フェーズ： エントリー
+	// 	jobSeeker.AgentID = input.AgentID
+	// 	jobSeeker.AgentStaffID = null.NewInt(int64(input.ScoutService.AgentStaffID), true)
+	// 	jobSeeker.RegisterPhase = null.NewInt(1, true) // 登録状況:下書き
+	// 	jobSeeker.InterviewDate = time.Now().UTC()
+	// 	jobSeeker.InflowChannelID = input.ScoutService.InflowChannelID
+
+	// 	err := i.jobSeekerRepository.Create(jobSeeker)
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 		return output, err
+	// 	}
+
+	// 	// 開発環境の場合はユーザー名などを統一する
+	// 	// if os.Getenv("APP_ENV") != "prd" {
+	// 	// 	err = i.jobSeekerRepository.UpdateForDev(jobSeeker.ID)
+	// 	// 	if err != nil {
+	// 	// 		fmt.Println(err)
+	// 	// 		return output, err
+	// 	// 	}
+	// 	// }
+
+	// 	jobSeekerDocument := entity.NewJobSeekerDocument(
+	// 		jobSeeker.ID,
+	// 		"",
+	// 		"",
+	// 		"",
+	// 		"",
+	// 		"",
+	// 		"",
+	// 		"",
+	// 		"",
+	// 		"",
+	// 		"",
+	// 	)
+
+	// 	err = i.jobSeekerDocumentRepository.Create(jobSeekerDocument)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		return output, err
+	// 	}
+
+	// 	// 求職者作成時にメッセージグループ作成
+	// 	// エージェントと求職者のチャットグループを作成
+	// 	chatGroup := entity.NewChatGroupWithJobSeeker(
+	// 		jobSeeker.AgentID,
+	// 		jobSeeker.ID,
+	// 		false, // 初めはLINE連携してないから false
+	// 	)
+
+	// 	err = i.chatGroupWithJobSeekerRepository.Create(chatGroup)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		return output, err
+	// 	}
+
+	// 	// 面談実施待ちより前のフェーズの場合は「面談調整タスク」を作成
+	// 	var (
+	// 		phaseSub null.Int
+	// 		date     string
+	// 	)
+
+	// 	phaseSub = null.NewInt(0, true) //日程調整依頼
+
+	// 	// タスクの期限は当日で登録
+	// 	now := time.Now()
+	// 	date = now.Format("2006-01-02")
+
+	// 	// 面談調整タスクの作成
+	// 	interviewTaskGroup := entity.NewInterviewTaskGroup(
+	// 		jobSeeker.AgentID,
+	// 		jobSeeker.ID,
+	// 		jobSeeker.InterviewDate,
+	// 		utility.EarliestTime(), // 初期値,
+	// 	)
+
+	// 	err = i.interviewTaskGroupRepository.Create(interviewTaskGroup)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		return output, err
+	// 	}
+
+	// 	interviewTask := entity.NewInterviewTask(
+	// 		interviewTaskGroup.ID,
+	// 		null.NewInt(0, false),
+	// 		null.NewInt(0, false),
+	// 		jobSeeker.Phase,
+	// 		phaseSub,
+	// 		"",
+	// 		date,
+	// 		null.NewInt(99, true),
+	// 		getStrPhaseForJobSeeker(jobSeeker.Phase),
+	// 	)
+
+	// 	err = i.interviewTaskRepository.Create(interviewTask)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		return output, err
+	// 	}
+
+	// 	// 希望職種
+	// 	for _, desiredOccupation := range jobSeeker.DesiredOccupations {
+	// 		desiredOccupation.JobSeekerID = jobSeeker.ID
+	// 		err := i.jobSeekerDesiredOccupationRepository.Create(&desiredOccupation)
+	// 		if err != nil {
+	// 			log.Println(err)
+	// 			return output, err
+	// 		}
+	// 	}
+
+	// 	// 希望業界
+	// 	for _, desiredIndustry := range jobSeeker.DesiredIndustries {
+	// 		desiredIndustry.JobSeekerID = jobSeeker.ID
+	// 		err := i.jobSeekerDesiredIndustryRepository.Create(&desiredIndustry)
+	// 		if err != nil {
+	// 			log.Println(err)
+	// 			return output, err
+	// 		}
+	// 	}
+
+	// 	// 希望勤務地
+	// 	for _, desiredWorkLocation := range jobSeeker.DesiredWorkLocations {
+	// 		desiredWorkLocation.JobSeekerID = jobSeeker.ID
+	// 		err := i.jobSeekerDesiredWorkLocationRepository.Create(&desiredWorkLocation)
+	// 		if err != nil {
+	// 			log.Println(err)
+	// 			return output, err
+	// 		}
+	// 	}
+	// }
 
 	log.Println("処理成功. jobSeekerList:", jobSeekerList)
 
@@ -3811,19 +3808,19 @@ userIDLoop:
 2023/04/14 16:01:00 マイナビのエントリー取得を開始します
 30分経過でタイムアウト
 */
-type EntryOnMynaviAgentScoutInput struct {
+type EntryOnWithoutGmailMynaviAgentScoutInput struct {
 	AgentID        uint
 	Context        context.Context
 	ScoutServiceID uint
 }
 
-type EntryOnMynaviAgentScoutOutput struct {
+type EntryOnWithoutGmailMynaviAgentScoutOutput struct {
 	JobSeekerList []*entity.JobSeeker
 }
 
-func (i *ScoutServiceInteractorImpl) EntryOnMynaviAgentScout(input EntryOnMynaviAgentScoutInput) (EntryOnMynaviAgentScoutOutput, error) {
+func (i *ScoutServiceInteractorImpl) EntryOnWithoutGmailMynaviAgentScout(input EntryOnWithoutGmailMynaviAgentScoutInput) (EntryOnWithoutGmailMynaviAgentScoutOutput, error) {
 	var (
-		output        EntryOnMynaviAgentScoutOutput
+		output        EntryOnWithoutGmailMynaviAgentScoutOutput
 		err           error
 		errMessage    string
 		jobSeekerList []*entity.JobSeeker = []*entity.JobSeeker{}

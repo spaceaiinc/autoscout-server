@@ -120,6 +120,10 @@ type JobSeeker struct {
 	ResetPasswordToken string `db:"reset_password_token" json:"-"` // パスワードリセット用のトークン メールごとに変更
 
 	ExternalID string `db:"external_id" json:"external_id"` // 外部ID
+
+	VincereJobTitle1 string `db:"-" json:"-"` // Vincereの求人タイトル1
+	VincereJobTitle2 string `db:"-" json:"-"` // Vincereの求人タイトル2
+	VincereJobTitle3 string `db:"-" json:"-"` // Vincereの求人タイトル3
 }
 
 func NewJobSeeker(

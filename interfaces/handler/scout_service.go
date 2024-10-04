@@ -18,7 +18,7 @@ type ScoutServiceHandler interface {
 	CreateScoutService(param entity.CreateOrUpdateScoutServiceParam) (presenter.Presenter, error)
 	UpdateScoutService(param entity.CreateOrUpdateScoutServiceParam, scoutServiceID uint) (presenter.Presenter, error)
 	UpdateScoutServicePassword(param entity.UpdateScoutServicePasswordParam) (presenter.Presenter, error)
-	DeleteScoutService(id uint) (presenter.Presenter, error)
+	Delete(id uint) (presenter.Presenter, error)
 	GetByID(id uint) (presenter.Presenter, error)
 	GetListByAgentID() func(c echo.Context) error
 
@@ -84,8 +84,8 @@ func (h *ScoutServiceHandlerImpl) UpdateScoutServicePassword(param entity.Update
 }
 
 // スカウトサービスを削除
-func (h *ScoutServiceHandlerImpl) DeleteScoutService(scoutServiceID uint) (presenter.Presenter, error) {
-	output, err := h.scoutServiceInteractor.DeleteScoutService(interactor.DeleteScoutServiceInput{
+func (h *ScoutServiceHandlerImpl) Delete(scoutServiceID uint) (presenter.Presenter, error) {
+	output, err := h.scoutServiceInteractor.Delete(interactor.ScoutServiceDeleteInput{
 		ScoutServiceID: scoutServiceID,
 	})
 
@@ -112,9 +112,9 @@ func (h *ScoutServiceHandlerImpl) GetByID(scoutServiceID uint) (presenter.Presen
 // エージェントIDからスカウトサービスを取得
 func (h *ScoutServiceHandlerImpl) GetListByAgentID() func(c echo.Context) error {
 	return func(c echo.Context) error {
-		scoutServiceIDStr := c.Param("scout_service_id")
+		agentIDStr := c.Param("agent_id")
 
-		scoutServiceIDInt, err := strconv.Atoi(scoutServiceIDStr)
+		agentIDInt, err := strconv.Atoi(agentIDStr)
 		if err != nil {
 			wrapped := fmt.Errorf("%s:%w", err.Error(), entity.ErrRequestError)
 			renderJSON(c, presenter.NewErrorJSONPresenter(wrapped))
@@ -122,7 +122,7 @@ func (h *ScoutServiceHandlerImpl) GetListByAgentID() func(c echo.Context) error 
 		}
 
 		output, err := h.scoutServiceInteractor.GetListByAgentID(interactor.GetListByAgentIDInput{
-			AgentID: uint(scoutServiceIDInt),
+			AgentID: uint(agentIDInt),
 		})
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))

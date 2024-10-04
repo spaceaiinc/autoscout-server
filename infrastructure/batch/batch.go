@@ -258,14 +258,14 @@ func (b *Batch) SetUp() *Batch {
 		// 関数名をタグ付け
 		batchScoutJob.Tag("batchScout")
 
-		// now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
-		// log.Println("BatchScout開始 現在時刻(JST):", now)
-		// err = b.batchScout(now)
-		// // slack通知
-		// if err != nil && b.cfg.App.BatchType == "scout" {
-		// 	b.notifyError(err)
-		// }
-		// log.Println("BatchScout処理終了")
+		now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
+		log.Println("BatchScout開始 現在時刻(JST):", now)
+		err = b.batchScout(now)
+		// slack通知
+		if err != nil && b.cfg.App.BatchType == "scout" {
+			b.notifyError(err)
+		}
+		log.Println("BatchScout処理終了")
 
 		// /*
 		// 	求人一括インポート処理 テスト用

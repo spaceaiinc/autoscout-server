@@ -85,16 +85,16 @@ func (mr *MockScoutServiceInteractorMockRecorder) CreateScoutService(input any) 
 }
 
 // DeleteScoutService mocks base method.
-func (m *MockScoutServiceInteractor) DeleteScoutService(input interactor.DeleteScoutServiceInput) (interactor.DeleteScoutServiceByIDOutput, error) {
+func (m *MockScoutServiceInteractor) Delete(input interactor.ScoutServiceDeleteInput) (interactor.ScoutServiceDeleteOutput, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteScoutService", input)
-	ret0, _ := ret[0].(interactor.DeleteScoutServiceByIDOutput)
+	ret0, _ := ret[0].(interactor.ScoutServiceDeleteOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DeleteScoutService indicates an expected call of DeleteScoutService.
-func (mr *MockScoutServiceInteractorMockRecorder) DeleteScoutService(input any) *gomock.Call {
+func (mr *MockScoutServiceInteractorMockRecorder) Delete(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteScoutService", reflect.TypeOf((*MockScoutServiceInteractor)(nil).DeleteScoutService), input)
 }
