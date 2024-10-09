@@ -519,7 +519,7 @@ type SendJobSeekerContactParam struct {
 }
 
 // 求職者のお問い合わせ
-type UpdateJobSeekerInterviewDateFromGestPageParam struct {
+type UpdateJobSeekerInterviewDateFromGuestPageParam struct {
 	InterviewDate time.Time `json:"interview_date" validate:"required"`
 	JobSeekerID   uint      `json:"job_seeker_id" validate:"required"`
 	StaffName     string    `json:"staff_name" validate:"required"`

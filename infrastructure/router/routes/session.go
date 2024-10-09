@@ -100,7 +100,7 @@ func GetSignInUser(db *database.DB, firebase usecase.Firebase, sendgrid config.S
 }
 
 // SignIn
-func SignInForGestEnterprise(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
+func SignInForGuestEnterprise(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
 			param   = new(SignInPasswordParam)
@@ -121,7 +121,7 @@ func SignInForGestEnterprise(db *database.DB, firebase usecase.Firebase, sendgri
 		}
 
 		h := di.InitializeSessionHandler(firebase, db, sendgrid)
-		p, err := h.SignInForGestEnterprise(param.Password, jobInformationUUID)
+		p, err := h.SignInForGuestEnterprise(param.Password, jobInformationUUID)
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err
@@ -132,7 +132,7 @@ func SignInForGestEnterprise(db *database.DB, firebase usecase.Firebase, sendgri
 }
 
 // SignIn
-func SignInForGestEnterpriseByTaskGroupUUID(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
+func SignInForGuestEnterpriseByTaskGroupUUID(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
 			param   = new(SignInPasswordParam)
@@ -153,7 +153,7 @@ func SignInForGestEnterpriseByTaskGroupUUID(db *database.DB, firebase usecase.Fi
 		}
 
 		h := di.InitializeSessionHandler(firebase, db, sendgrid)
-		p, err := h.SignInForGestEnterpriseByTaskGroupUUID(param.Password, taskGroupUUID)
+		p, err := h.SignInForGuestEnterpriseByTaskGroupUUID(param.Password, taskGroupUUID)
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err
@@ -164,7 +164,7 @@ func SignInForGestEnterpriseByTaskGroupUUID(db *database.DB, firebase usecase.Fi
 }
 
 // SignIn
-func SignInForGestJobSeeker(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
+func SignInForGuestJobSeeker(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
 			param   = new(SignInPasswordParam)
@@ -186,7 +186,7 @@ func SignInForGestJobSeeker(db *database.DB, firebase usecase.Firebase, sendgrid
 		}
 
 		h := di.InitializeSessionHandler(firebase, db, sendgrid)
-		p, err := h.SignInForGestJobSeeker(param.Password, jobSeekerUUID)
+		p, err := h.SignInForGuestJobSeeker(param.Password, jobSeekerUUID)
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err
@@ -197,7 +197,7 @@ func SignInForGestJobSeeker(db *database.DB, firebase usecase.Firebase, sendgrid
 }
 
 // マイページログイン（LPからログイントークンを使ってログイン）
-func SignInForGestJobSeekerFromLP(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
+func SignInForGuestJobSeekerFromLP(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
 			param   = new(SignInLoginTokenParam)
@@ -227,7 +227,7 @@ func SignInForGestJobSeekerFromLP(db *database.DB, firebase usecase.Firebase, se
 		}
 
 		h := di.InitializeSessionHandler(firebase, db, sendgrid)
-		p, err := h.SignInForGestJobSeekerFromLP(jobSeekerUUID, loginToken)
+		p, err := h.SignInForGuestJobSeekerFromLP(jobSeekerUUID, loginToken)
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err
@@ -238,7 +238,7 @@ func SignInForGestJobSeekerFromLP(db *database.DB, firebase usecase.Firebase, se
 }
 
 // SignIn
-func SignInForGestSendingJobSeeker(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
+func SignInForGuestSendingJobSeeker(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
 			param   = new(SignInPasswordParam)
@@ -259,7 +259,7 @@ func SignInForGestSendingJobSeeker(db *database.DB, firebase usecase.Firebase, s
 		}
 
 		h := di.InitializeSessionHandler(firebase, db, sendgrid)
-		p, err := h.SignInForGestSendingJobSeeker(param.Password, jobSeekerUUID)
+		p, err := h.SignInForGuestSendingJobSeeker(param.Password, jobSeekerUUID)
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err
@@ -270,7 +270,7 @@ func SignInForGestSendingJobSeeker(db *database.DB, firebase usecase.Firebase, s
 }
 
 // LPのログインフォームのログイン処理
-func LoginGestJobSeekerForLP(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
+func LoginGuestJobSeekerForLP(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
 			param = new(LoginForLPParam)
@@ -283,7 +283,7 @@ func LoginGestJobSeekerForLP(db *database.DB, firebase usecase.Firebase, sendgri
 		}
 
 		h := di.InitializeSessionHandler(firebase, db, sendgrid)
-		p, err := h.LoginGestJobSeekerForLP(param.Email, param.Password)
+		p, err := h.LoginGuestJobSeekerForLP(param.Email, param.Password)
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err

@@ -204,7 +204,7 @@ func parseSearchSaleQueryParams(c echo.Context) (entity.SearchSale, error) {
 	return searchSaleParamList, nil
 }
 
-// ヨミの絞り込み検索（アカウント設定のヨミ一覧ページに使用）
+// ヨミの絞り込み検索（設定のヨミ一覧ページに使用）
 func parseSearchAccuracyQueryParams(c echo.Context) (entity.SearchAccuracy, error) {
 	var (
 		searchSaleParamList entity.SearchAccuracy

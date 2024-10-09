@@ -14,7 +14,7 @@ import (
 )
 
 type GoogleAuthenticationInteractor interface {
-	// Gest API
+	// Guest API
 	GetGoogleAuthCodeURL(input GetGoogleAuthCodeURLInput) (GetGoogleAuthCodeURLOutput, error)
 	UpdateGoogleOauthToken(input UpdateGoogleOauthTokenInput) (UpdateGoogleOauthTokenOutput, error)
 }

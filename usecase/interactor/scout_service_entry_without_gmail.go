@@ -119,7 +119,7 @@ func (i *ScoutServiceInteractorImpl) BatchEntryWithoutGmail(input BatchEntryInpu
 
 		selectedScoutService = scoutService
 
-		// マイナビ転職スカウト
+		// マイナビスカウティング
 		if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeMynaviScouting, true) {
 			log.Println("マイナビのエントリー取得を開始します\n現在:", now.Hour())
 
@@ -133,7 +133,7 @@ func (i *ScoutServiceInteractorImpl) BatchEntryWithoutGmail(input BatchEntryInpu
 			})
 			if err != nil {
 				now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
-				errMessage = fmt.Sprintf("マイナビ転職スカウトの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
+				errMessage = fmt.Sprintf("マイナビスカウティングの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
 				log.Println(errMessage)
 				i.sendErrorMail(errMessage)
 				return output, errors.New(errMessage)
@@ -932,7 +932,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScoutingWithoutGmail(input Ent
 		return output, errors.New(errMessage)
 	}
 
-	// 検索対象で「マイナビ転職スカウト応募」を選択
+	// 検索対象で「マイナビスカウティング応募」を選択
 	searchTargetsOnSearch[1].MustClick()
 
 	// マイナビの条件検索はIDのOR検索ができるためIDをカンマ区切りにして検索
@@ -972,7 +972,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScoutingWithoutGmail(input Ent
 
 	searchSubmitOnSearch := page.MustElement("a.btn.sizeLM.blue")
 	if searchSubmitOnSearch == nil || searchSubmitOnSearch.MustText() != "検索する" {
-		errMessage = "マイナビ転職スカウト経由の応募者検索する送信要素が見つかりません"
+		errMessage = "マイナビスカウティング経由の応募者検索する送信要素が見つかりません"
 		log.Println(errMessage)
 		return output, errors.New(errMessage)
 	}
@@ -1223,7 +1223,7 @@ recordLoop:
 		}
 
 		jobSeeker := entity.JobSeeker{}
-		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビ転職スカウト\n\n"
+		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビスカウティング\n\n"
 		isMatchedUserCount := 0
 
 		for columnI, column := range record {
@@ -4058,7 +4058,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnWithoutGmailMynaviAgentScout(input E
 		}
 
 		jobSeeker := entity.JobSeeker{}
-		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビ転職スカウト\n\n"
+		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビスカウティング\n\n"
 
 		for columnI, column := range record {
 			log.Printf("column[%v]: %v", columnI, column)

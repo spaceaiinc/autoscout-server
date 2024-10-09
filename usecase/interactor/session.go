@@ -13,19 +13,19 @@ import (
 )
 
 type SessionInteractor interface {
-	// Gest API
+	// Guest API
 	SignIn(input SessionSignInInput) (SessionSignInOutput, error)
 	SignOut(input SessionSignOutInput) (SessionSignOutOutput, error)
 	GetSignInUser(input GetSignInUserInput) (GetSignInUserOutput, error)
 
-	SignInForGestEnterprise(input SessionSignInForGestEnterpriseInput) (SessionSignInForGestEnterpriseOutput, error)
-	SignInForGestEnterpriseByTaskGroupUUID(input SessionSignInForGestEnterpriseByTaskGroupUUIDInput) (SessionSignInForGestEnterpriseByTaskGroupUUIDOutput, error)
-	SignInForGestJobSeeker(input SessionSignInForGestJobSeekerInput) (SessionSignInForGestJobSeekerOutput, error)
-	SignInForGestJobSeekerFromLP(input SessionSignInForGestJobSeekerFromLPInput) (SessionSignInForGestJobSeekerFromLPOutput, error)
-	SignInForGestSendingJobSeeker(input SessionSignInForGestSendingJobSeekerInput) (SessionSignInForGestSendingJobSeekerOutput, error)
+	SignInForGuestEnterprise(input SessionSignInForGuestEnterpriseInput) (SessionSignInForGuestEnterpriseOutput, error)
+	SignInForGuestEnterpriseByTaskGroupUUID(input SessionSignInForGuestEnterpriseByTaskGroupUUIDInput) (SessionSignInForGuestEnterpriseByTaskGroupUUIDOutput, error)
+	SignInForGuestJobSeeker(input SessionSignInForGuestJobSeekerInput) (SessionSignInForGuestJobSeekerOutput, error)
+	SignInForGuestJobSeekerFromLP(input SessionSignInForGuestJobSeekerFromLPInput) (SessionSignInForGuestJobSeekerFromLPOutput, error)
+	SignInForGuestSendingJobSeeker(input SessionSignInForGuestSendingJobSeekerInput) (SessionSignInForGuestSendingJobSeekerOutput, error)
 
 	// LP
-	LoginGestJobSeekerForLP(input LoginGestJobSeekerForLPInput) (LoginGestJobSeekerForLPOutput, error)
+	LoginGuestJobSeekerForLP(input LoginGuestJobSeekerForLPInput) (LoginGuestJobSeekerForLPOutput, error)
 }
 
 type SessionInteractorImpl struct {
@@ -241,18 +241,18 @@ func (i *SessionInteractorImpl) GetSignInUser(input GetSignInUserInput) (GetSign
 	return output, nil
 }
 
-type SessionSignInForGestEnterpriseInput struct {
+type SessionSignInForGuestEnterpriseInput struct {
 	Password           string
 	JobInformationUUID uuid.UUID
 }
 
-type SessionSignInForGestEnterpriseOutput struct {
-	User *entity.GestEnterpriseUser
+type SessionSignInForGuestEnterpriseOutput struct {
+	User *entity.GuestEnterpriseUser
 }
 
-func (i *SessionInteractorImpl) SignInForGestEnterprise(input SessionSignInForGestEnterpriseInput) (SessionSignInForGestEnterpriseOutput, error) {
+func (i *SessionInteractorImpl) SignInForGuestEnterprise(input SessionSignInForGuestEnterpriseInput) (SessionSignInForGuestEnterpriseOutput, error) {
 	var (
-		output = SessionSignInForGestEnterpriseOutput{}
+		output = SessionSignInForGuestEnterpriseOutput{}
 	)
 
 	// 企業のログイン
@@ -262,28 +262,28 @@ func (i *SessionInteractorImpl) SignInForGestEnterprise(input SessionSignInForGe
 	}
 
 	// エージェントアカウントのログインユーザー情報を作成
-	gestEnterprise := entity.NewGestEnterpriseUser(
+	guestEnterprise := entity.NewGuestEnterpriseUser(
 		input.JobInformationUUID,
 		enterprise.CompanyName,
 	)
 
-	output.User = gestEnterprise
+	output.User = guestEnterprise
 
 	return output, nil
 }
 
-type SessionSignInForGestEnterpriseByTaskGroupUUIDInput struct {
+type SessionSignInForGuestEnterpriseByTaskGroupUUIDInput struct {
 	Password      string
 	TaskGroupUUID uuid.UUID
 }
 
-type SessionSignInForGestEnterpriseByTaskGroupUUIDOutput struct {
-	User *entity.GestEnterpriseUser
+type SessionSignInForGuestEnterpriseByTaskGroupUUIDOutput struct {
+	User *entity.GuestEnterpriseUser
 }
 
-func (i *SessionInteractorImpl) SignInForGestEnterpriseByTaskGroupUUID(input SessionSignInForGestEnterpriseByTaskGroupUUIDInput) (SessionSignInForGestEnterpriseByTaskGroupUUIDOutput, error) {
+func (i *SessionInteractorImpl) SignInForGuestEnterpriseByTaskGroupUUID(input SessionSignInForGuestEnterpriseByTaskGroupUUIDInput) (SessionSignInForGuestEnterpriseByTaskGroupUUIDOutput, error) {
 	var (
-		output = SessionSignInForGestEnterpriseByTaskGroupUUIDOutput{}
+		output = SessionSignInForGuestEnterpriseByTaskGroupUUIDOutput{}
 	)
 
 	// 企業のログイン
@@ -298,28 +298,28 @@ func (i *SessionInteractorImpl) SignInForGestEnterpriseByTaskGroupUUID(input Ses
 	}
 
 	// エージェントアカウントのログインユーザー情報を作成
-	gestEnterprise := entity.NewGestEnterpriseUser(
+	guestEnterprise := entity.NewGuestEnterpriseUser(
 		jobInformation.UUID,
 		enterprise.CompanyName,
 	)
 
-	output.User = gestEnterprise
+	output.User = guestEnterprise
 
 	return output, nil
 }
 
-type SessionSignInForGestJobSeekerInput struct {
+type SessionSignInForGuestJobSeekerInput struct {
 	Password      string
 	JobSeekerUUID uuid.UUID
 }
 
-type SessionSignInForGestJobSeekerOutput struct {
-	User *entity.GestJobSeekerUser
+type SessionSignInForGuestJobSeekerOutput struct {
+	User *entity.GuestJobSeekerUser
 }
 
-func (i *SessionInteractorImpl) SignInForGestJobSeeker(input SessionSignInForGestJobSeekerInput) (SessionSignInForGestJobSeekerOutput, error) {
+func (i *SessionInteractorImpl) SignInForGuestJobSeeker(input SessionSignInForGuestJobSeekerInput) (SessionSignInForGuestJobSeekerOutput, error) {
 	var (
-		output = SessionSignInForGestJobSeekerOutput{}
+		output = SessionSignInForGuestJobSeekerOutput{}
 	)
 
 	// 求職者ログイン
@@ -353,7 +353,7 @@ func (i *SessionInteractorImpl) SignInForGestJobSeeker(input SessionSignInForGes
 	}
 
 	// エージェントアカウントのログインユーザー情報を作成
-	gestJobSeeker := entity.NewGestJobSeekerUser(
+	guestJobSeeker := entity.NewGuestJobSeekerUser(
 		jobSeeker.ID,
 		input.JobSeekerUUID,
 		jobSeeker.LastName,
@@ -364,24 +364,24 @@ func (i *SessionInteractorImpl) SignInForGestJobSeeker(input SessionSignInForGes
 		jobSeeker.CanViewMatchingJob,
 	)
 
-	output.User = gestJobSeeker
+	output.User = guestJobSeeker
 
 	return output, nil
 }
 
 // マイページログイン（LPからログイントークンを使ってログイン）
-type SessionSignInForGestJobSeekerFromLPInput struct {
+type SessionSignInForGuestJobSeekerFromLPInput struct {
 	JobSeekerUUID uuid.UUID
 	LoginToken    uuid.UUID
 }
 
-type SessionSignInForGestJobSeekerFromLPOutput struct {
-	User *entity.GestJobSeekerUser
+type SessionSignInForGuestJobSeekerFromLPOutput struct {
+	User *entity.GuestJobSeekerUser
 }
 
-func (i *SessionInteractorImpl) SignInForGestJobSeekerFromLP(input SessionSignInForGestJobSeekerFromLPInput) (SessionSignInForGestJobSeekerFromLPOutput, error) {
+func (i *SessionInteractorImpl) SignInForGuestJobSeekerFromLP(input SessionSignInForGuestJobSeekerFromLPInput) (SessionSignInForGuestJobSeekerFromLPOutput, error) {
 	var (
-		output = SessionSignInForGestJobSeekerFromLPOutput{}
+		output = SessionSignInForGuestJobSeekerFromLPOutput{}
 	)
 
 	// 求職者ログイン
@@ -410,7 +410,7 @@ func (i *SessionInteractorImpl) SignInForGestJobSeekerFromLP(input SessionSignIn
 	}
 
 	// エージェントアカウントのログインユーザー情報を作成
-	gestJobSeeker := entity.NewGestJobSeekerUser(
+	guestJobSeeker := entity.NewGuestJobSeekerUser(
 		jobSeeker.ID,
 		input.JobSeekerUUID,
 		jobSeeker.LastName,
@@ -421,23 +421,23 @@ func (i *SessionInteractorImpl) SignInForGestJobSeekerFromLP(input SessionSignIn
 		jobSeeker.CanViewMatchingJob,
 	)
 
-	output.User = gestJobSeeker
+	output.User = guestJobSeeker
 
 	return output, nil
 }
 
-type SessionSignInForGestSendingJobSeekerInput struct {
+type SessionSignInForGuestSendingJobSeekerInput struct {
 	Password      string
 	JobSeekerUUID uuid.UUID
 }
 
-type SessionSignInForGestSendingJobSeekerOutput struct {
-	User *entity.GestJobSeekerUser
+type SessionSignInForGuestSendingJobSeekerOutput struct {
+	User *entity.GuestJobSeekerUser
 }
 
-func (i *SessionInteractorImpl) SignInForGestSendingJobSeeker(input SessionSignInForGestSendingJobSeekerInput) (SessionSignInForGestSendingJobSeekerOutput, error) {
+func (i *SessionInteractorImpl) SignInForGuestSendingJobSeeker(input SessionSignInForGuestSendingJobSeekerInput) (SessionSignInForGuestSendingJobSeekerOutput, error) {
 	var (
-		output = SessionSignInForGestSendingJobSeekerOutput{}
+		output = SessionSignInForGuestSendingJobSeekerOutput{}
 	)
 
 	// 求職者ログイン
@@ -454,7 +454,7 @@ func (i *SessionInteractorImpl) SignInForGestSendingJobSeeker(input SessionSignI
 		return output, errors.New("パスワードが正しくありません。")
 	} else {
 		// エージェントアカウントのログインユーザー情報を作成
-		gestJobSeeker := entity.NewGestJobSeekerUser(
+		guestJobSeeker := entity.NewGuestJobSeekerUser(
 			sendingJobSeeker.ID,
 			input.JobSeekerUUID,
 			sendingJobSeeker.LastName,
@@ -465,26 +465,26 @@ func (i *SessionInteractorImpl) SignInForGestSendingJobSeeker(input SessionSignI
 			false,
 		)
 
-		output.User = gestJobSeeker
+		output.User = guestJobSeeker
 	}
 
 	return output, nil
 }
 
 // LPのログインフォームのログイン処理
-type LoginGestJobSeekerForLPInput struct {
+type LoginGuestJobSeekerForLPInput struct {
 	Email    string
 	Password string
 }
 
-type LoginGestJobSeekerForLPOutput struct {
+type LoginGuestJobSeekerForLPOutput struct {
 	UUID       uuid.UUID
 	LoginToken uuid.UUID
 }
 
-func (i *SessionInteractorImpl) LoginGestJobSeekerForLP(input LoginGestJobSeekerForLPInput) (LoginGestJobSeekerForLPOutput, error) {
+func (i *SessionInteractorImpl) LoginGuestJobSeekerForLP(input LoginGuestJobSeekerForLPInput) (LoginGuestJobSeekerForLPOutput, error) {
 	var (
-		output              = LoginGestJobSeekerForLPOutput{}
+		output             = LoginGuestJobSeekerForLPOutput{}
 		SystemAgentID uint = 1
 	)
 

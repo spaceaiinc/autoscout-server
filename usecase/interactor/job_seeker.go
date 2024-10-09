@@ -4023,7 +4023,7 @@ type GetGuestJobSeekerForByUUIDInput struct {
 }
 
 type GetGuestJobSeekerForByUUIDOutput struct {
-	User *entity.GestJobSeekerUser
+	User *entity.GuestJobSeekerUser
 }
 
 func (i *JobSeekerInteractorImpl) GetGuestJobSeekerForByUUID(input GetGuestJobSeekerForByUUIDInput) (GetGuestJobSeekerForByUUIDOutput, error) {
@@ -4039,7 +4039,7 @@ func (i *JobSeekerInteractorImpl) GetGuestJobSeekerForByUUID(input GetGuestJobSe
 	}
 
 	// エージェントアカウントのログインユーザー情報を作成
-	gestJobSeeker := entity.NewGestJobSeekerUser(
+	guestJobSeeker := entity.NewGuestJobSeekerUser(
 		jobSeeker.ID,
 		input.JobSeekerUUID,
 		jobSeeker.LastName,
@@ -4050,7 +4050,7 @@ func (i *JobSeekerInteractorImpl) GetGuestJobSeekerForByUUID(input GetGuestJobSe
 		jobSeeker.CanViewMatchingJob,
 	)
 
-	output.User = gestJobSeeker
+	output.User = guestJobSeeker
 
 	return output, nil
 }
@@ -4259,7 +4259,7 @@ func (i *JobSeekerInteractorImpl) SendJobSeekerResetPasswordEmail(input SendJobS
 	}
 
 	baseURL := os.Getenv("BASE_DOMAIN")
-	resetPasswordURL := fmt.Sprintf("%s/gest_js/reset_password/?job_seeker=%s&reset_password_token=%s", baseURL, jobSeeker.UUID, resetPasswordToken)
+	resetPasswordURL := fmt.Sprintf("%s/guest_js/reset_password/?job_seeker=%s&reset_password_token=%s", baseURL, jobSeeker.UUID, resetPasswordToken)
 
 	// メール送信
 	err = utility.SendMailToSingleWithoutCC(
@@ -4321,11 +4321,11 @@ func (i *JobSeekerInteractorImpl) SendJobSeekerContact(input SendJobSeekerContac
 
 // 送客求職者の面談日時の更新
 type UpdateInterviewDateByJobSeekerIDInput struct {
-	Param entity.UpdateJobSeekerInterviewDateFromGestPageParam
+	Param entity.UpdateJobSeekerInterviewDateFromGuestPageParam
 }
 
 type UpdateInterviewDateByJobSeekerIDOutput struct {
-	User *entity.GestJobSeekerUser
+	User *entity.GuestJobSeekerUser
 }
 
 func (i *JobSeekerInteractorImpl) UpdateInterviewDateByJobSeekerID(input UpdateInterviewDateByJobSeekerIDInput) (UpdateInterviewDateByJobSeekerIDOutput, error) {
@@ -4467,7 +4467,7 @@ func (i *JobSeekerInteractorImpl) UpdateInterviewDateByJobSeekerID(input UpdateI
 	}
 
 	// エージェントアカウントのログインユーザー情報を作成
-	gestJobSeeker := entity.NewGestJobSeekerUser(
+	guestJobSeeker := entity.NewGuestJobSeekerUser(
 		jobSeeker.ID,
 		jobSeeker.UUID,
 		jobSeeker.LastName,
@@ -4478,7 +4478,7 @@ func (i *JobSeekerInteractorImpl) UpdateInterviewDateByJobSeekerID(input UpdateI
 		jobSeeker.CanViewMatchingJob,
 	)
 
-	output.User = gestJobSeeker
+	output.User = guestJobSeeker
 
 	return output, nil
 }
@@ -5018,7 +5018,7 @@ func (i *JobSeekerInteractorImpl) UpdateJobSeekerDesiredFromLP(input UpdateJobSe
 		seekerEmail = jobSeeker.Email
 		from        = entity.EmailUser{Name: "autoscout事務局", Email: "info@spaceai.jp"}
 		to          = entity.EmailUser{Name: seekerName, Email: seekerEmail}
-		signinPage  = fmt.Sprintf("%s/gest_js/signin/?job_seeker=%s&page=matching_job&lp=%s", baseURL, jobSeeker.UUID, logintTokenFromLP.LoginToken)
+		signinPage  = fmt.Sprintf("%s/guest_js/signin/?job_seeker=%s&page=matching_job&lp=%s", baseURL, jobSeeker.UUID, logintTokenFromLP.LoginToken)
 		contactPage = fmt.Sprintf("%s/contact", baseURL) // autoscout LPのお問い合わせ
 	)
 

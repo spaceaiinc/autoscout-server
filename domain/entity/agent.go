@@ -22,7 +22,7 @@ type Agent struct {
 	PhoneNumber                     string    `db:"phone_number" json:"phone_number"`                                               // 電話番号
 	InterviewAdjustmentEmail        string    `db:"interview_adjustment_email" json:"interview_adjustment_email"`                   // メールアドレス（面談調整用）
 	AgreementFileURL                string    `db:"agreement_file_url" json:"agreement_file_url"`                                   // 同意書ファイルのURL
-	LineBotID                       string    `db:"line_bot_id" json:"-"`                                                 // LINE BotアカウントのID
+	LineBotID                       string    `db:"line_bot_id" json:"-"`                                                           // LINE BotアカウントのID
 	LineMessagingChannelSecret      string    `db:"line_messaging_channel_secret" json:"line_messaging_channel_secret"`             // LINE Messaging APIのチャネルシークレット
 	LineMessagingChannelAccessToken string    `db:"line_messaging_channel_access_token" json:"line_messaging_channel_access_token"` // LINE Messaging APIのチャネルアクセストークン
 	LineLoginChannelID              string    `db:"line_loging_channel_id" json:"line_loging_channel_id"`                           // LINE LoginのチャネルID
@@ -57,8 +57,6 @@ func NewAgent(
 	lineMessagingChannelAccessToken string,
 	lineLoginChannelID string,
 	lineLoginChannelSecret string,
-	// isTrial bool,
-	// trialEndTime string,
 	sendingAgreementFileURL string,
 	isCRMActive bool,
 	isAllianceActive bool,
@@ -84,11 +82,11 @@ func NewAgent(
 		LineLoginChannelSecret:          lineLoginChannelSecret,
 		// IsTrial:                         isTrial,
 		// TrialEndTime:                    trialEndTime,
-		SendingAgreementFileURL:         sendingAgreementFileURL,
-		IsCRMActive:                     isCRMActive,
-		IsAllianceActive:                isAllianceActive,
-		IsSendingActive:                 isSendingActive,
-		SendingType:                     sendingType,
+		SendingAgreementFileURL: sendingAgreementFileURL,
+		IsCRMActive:             isCRMActive,
+		IsAllianceActive:        isAllianceActive,
+		IsSendingActive:         isSendingActive,
+		SendingType:             sendingType,
 	}
 }
 
@@ -104,7 +102,7 @@ type CreateOrUpdateAgentParam struct {
 	PhoneNumber                     string   `db:"phone_number" json:"phone_number"`                                               // 連絡先
 	InterviewAdjustmentEmail        string   `db:"interview_adjustment_email" json:"interview_adjustment_email"`                   // メールアドレス（面談調整用）
 	AgreementFileURL                string   `db:"agreement_file_url" json:"agreement_file_url"`                                   // 同意書ファイルのURL
-	LineBotID                       string   `db:"line_bot_id" json:"-"`                                                 // LINE BotアカウントのID
+	LineBotID                       string   `db:"line_bot_id" json:"-"`                                                           // LINE BotアカウントのID
 	LineMessagingChannelSecret      string   `db:"line_messaging_channel_secret" json:"line_messaging_channel_secret"`             // LINE Messaging APIのチャネルシークレット
 	LineMessagingChannelAccessToken string   `db:"line_messaging_channel_access_token" json:"line_messaging_channel_access_token"` // LINE Messaging APIのチャネルアクセストークン
 	LineLoginChannelID              string   `db:"line_loging_channel_id" json:"line_loging_channel_id"`                           // LINE LoginのチャネルID
@@ -138,7 +136,7 @@ type AgentForAdminParam struct {
 type AgentLineChannelParam struct {
 	AgentID                         uint      `db:"agent_id" json:"agent_id" validate:"required"` // エージェントID
 	AgentUUID                       uuid.UUID `db:"agent_uuid" json:"agent_uuid"`
-	LineBotID                       string    `db:"line_bot_id" json:"-"`                                                                     // LINE BotアカウントのID
+	LineBotID                       string    `db:"line_bot_id" json:"-"`                                                                               // LINE BotアカウントのID
 	LineMessagingChannelSecret      string    `db:"line_messaging_channel_secret" json:"line_messaging_channel_secret" validate:"required"`             // LINE Messaging APIのチャネルシークレット
 	LineMessagingChannelAccessToken string    `db:"line_messaging_channel_access_token" json:"line_messaging_channel_access_token" validate:"required"` // LINE Messaging APIのチャネルアクセストークン
 	LineLoginChannelID              string    `db:"line_loging_channel_id" json:"line_loging_channel_id" validate:"required"`                           // LINE LoginのチャネルID

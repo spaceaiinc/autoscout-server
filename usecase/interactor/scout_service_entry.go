@@ -148,7 +148,7 @@ func (i *ScoutServiceInteractorImpl) BatchEntry(input BatchEntryInput) (BatchEnt
 
 			selectedScoutService = scoutService
 
-			// マイナビ転職スカウト
+			// マイナビスカウティング
 			if scoutService.ServiceType == null.NewInt(entity.ScoutServiceTypeMynaviScouting, true) &&
 				len(mynaviScoutingUserIDList) > 0 {
 				log.Println("マイナビのエントリー取得を開始します\n現在:", now.Hour())
@@ -163,7 +163,7 @@ func (i *ScoutServiceInteractorImpl) BatchEntry(input BatchEntryInput) (BatchEnt
 				})
 				if err != nil {
 					now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60)).Format("2006/01/02 15:04:05")
-					errMessage = fmt.Sprintf("マイナビ転職スカウトの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
+					errMessage = fmt.Sprintf("マイナビスカウティングの新規エントリー求職者取得に失敗しました。\n発生時刻: %s\nロボット名: %s\nロボットID: %v\nエラー内容:%s", now, agentRobot.Name, agentRobot.ID, err.Error())
 					log.Println(errMessage)
 					i.sendErrorMail(errMessage)
 					return output, errors.New(errMessage)
@@ -234,7 +234,7 @@ func (i *ScoutServiceInteractorImpl) BatchEntry(input BatchEntryInput) (BatchEnt
 	// // マイナビ転職の求職者ID
 	// if len(mynaviScoutingUserIDList) > 0 {
 	// 	idStr := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(mynaviScoutingUserIDList)), ", "), "[]")
-	// 	mynaviScoutingIDListStr = fmt.Sprintf("【マイナビ転職スカウト】\n%s", idStr)
+	// 	mynaviScoutingIDListStr = fmt.Sprintf("【マイナビスカウティング】\n%s", idStr)
 	// 	fmt.Printf("---------------\n%s\n---------------\n", mynaviScoutingIDListStr)
 	// }
 
@@ -315,9 +315,9 @@ func (i *ScoutServiceInteractorImpl) GmailWebHook(input GmailWebHookInput) (Gmai
 		mynaviAgentScoutEmail = "sk-mag-scout@mynavi-agent.jp" // マイナビAGENTスカウト
 		// dodaXEmail           = "partner_support@doda-x.jp"    // doda X（dodax_search@persol.co.jpも追加で必要かも）
 
-		ambiSubject             = "\"スカウトへのエントリー/AMBI\""                      // AMBIの件名
-		mynaviScoutingSubject   = "\"スカウト応募（マイナビ転職スカウト）がありました【マイナビスカウティング】\"" // マイナビ転職の件名
-		mynaviAgentScoutSubject = "\"【マイナビAGENTスカウト】求職者がエントリーしました\""          // マイナビAGENTの件名
+		ambiSubject             = "\"スカウトへのエントリー/AMBI\""                       // AMBIの件名
+		mynaviScoutingSubject   = "\"スカウト応募（マイナビスカウティング）がありました【マイナビスカウティング】\"" // マイナビ転職の件名
+		mynaviAgentScoutSubject = "\"【マイナビAGENTスカウト】求職者がエントリーしました\""           // マイナビAGENTの件名
 
 		ambiUserIDList           = []string{} // AmbiのユーザーID
 		mynaviScoutingUserIDList = []string{} // マイナビス転職スカウトのユーザーID
@@ -442,7 +442,7 @@ func (i *ScoutServiceInteractorImpl) GmailWebHook(input GmailWebHookInput) (Gmai
 				return output, errors.New("会員番号が見つかりませんでした（Ambi）")
 			}
 
-		// マイナビ転職スカウトのエントリーメールの処理
+		// マイナビスカウティングのエントリーメールの処理
 		case mynaviScoutingEmail:
 			matches := utility.RegexpForMynaviScoutingUserID.FindStringSubmatch(body)
 
@@ -460,8 +460,8 @@ func (i *ScoutServiceInteractorImpl) GmailWebHook(input GmailWebHookInput) (Gmai
 			}
 
 			if len(mynaviScoutingUserIDList) == 0 {
-				fmt.Println("会員番号が見つかりませんでした（マイナビ転職スカウト）")
-				return output, errors.New("会員番号が見つかりませんでした（マイナビ転職スカウト）")
+				fmt.Println("会員番号が見つかりませんでした（マイナビスカウティング）")
+				return output, errors.New("会員番号が見つかりませんでした（マイナビスカウティング）")
 			}
 
 		// マイナビエージェントスカウトのエントリーメールの処理
@@ -1277,7 +1277,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 			return output, errors.New(errMessage)
 		}
 
-		// 検索対象で「マイナビ転職スカウト応募」を選択
+		// 検索対象で「マイナビスカウティング応募」を選択
 		searchTargetsOnSearch[1].MustClick()
 
 		// マイナビの条件検索はIDのOR検索ができるためIDをカンマ区切りにして検索
@@ -1286,7 +1286,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 
 		searchSubmitOnSearch := page.MustElement("a.btn.sizeLM.blue")
 		if searchSubmitOnSearch == nil || searchSubmitOnSearch.MustText() != "検索する" {
-			errMessage = "マイナビ転職スカウト経由の応募者検索する送信要素が見つかりません"
+			errMessage = "マイナビスカウティング経由の応募者検索する送信要素が見つかりません"
 			log.Println(errMessage)
 			return output, errors.New(errMessage)
 		}
@@ -1526,7 +1526,7 @@ recordLoop:
 		}
 
 		jobSeeker := entity.JobSeeker{}
-		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビ転職スカウト\n\n"
+		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビスカウティング\n\n"
 		isMatchedUserCount := 0
 
 		for columnI, column := range record {
@@ -4061,7 +4061,7 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviAgentScout(input EntryOnMynavi
 		}
 
 		jobSeeker := entity.JobSeeker{}
-		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビ転職スカウト\n\n"
+		jobSeeker.SecretMemo = "・エントリー媒体\nマイナビスカウティング\n\n"
 
 		for columnI, column := range record {
 			log.Printf("column[%v]: %v", columnI, column)

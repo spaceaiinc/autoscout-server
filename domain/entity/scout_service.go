@@ -14,14 +14,14 @@ type ScoutService struct {
 	AgentStaffID                  uint      `db:"agent_staff_id" json:"agent_staff_id"` // エージェントスタッフID
 	LoginID                       string    `db:"login_id" json:"login_id"`
 	Password                      string    `db:"password" json:"password"`
-	ServiceType                   null.Int  `db:"service_type" json:"service_type"`                                         // サービスタイプ(0: RAN, 1: マイナビ転職スカウト, 2:AMBI)
+	ServiceType                   null.Int  `db:"service_type" json:"service_type"`                                         // サービスタイプ(0: RAN, 1: マイナビスカウティング, 2:AMBI)
 	IsActive                      bool      `db:"is_active" json:"is_active"`                                               // アクティブかどうか/false:走らせない true:走る(媒体共通)
 	Memo                          string    `db:"memo" json:"memo"`                                                         // メモ
 	TemplateTitleForEmployed      string    `db:"template_title_for_employed" json:"template_title_for_employed"`           // 面談調整メールのテンプレート ※就業中
 	TemplateTitleForUnemployed    string    `db:"template_title_for_unemployed" json:"template_title_for_unemployed"`       // 面談調整メールのテンプレート ※離職中
 	InterviewAdjustmentTemplateID null.Int  `db:"interview_adjustment_template_id" json:"interview_adjustment_template_id"` // 面談調整メールのテンプレートID
 	InflowChannelID               null.Int  `db:"inflow_channel_id" json:"inflow_channel_id"`                               // インフローチャンネルID
-	LastSendCount              null.Int  `db:"last_send_count" json:"last_send_count"`                             // 最終送信求職者のID
+	LastSendCount                 null.Int  `db:"last_send_count" json:"last_send_count"`                                   // 最終送信求職者のID
 	CreatedAt                     time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt                     time.Time `db:"updated_at" json:"updated_at"`
 

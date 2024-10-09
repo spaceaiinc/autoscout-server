@@ -8,22 +8,22 @@ import (
 )
 
 type SessionHandler interface {
-	// Gest API
+	// Guest API
 	SignIn(token string) (presenter.Presenter, error)
 	SignOut(token string) (presenter.Presenter, error)
 	GetSignInUser(token string) (presenter.Presenter, error)
 
 	// 求人企業が求人票修正するためのログイン
-	SignInForGestEnterprise(password string, jobInformationUUID uuid.UUID) (presenter.Presenter, error)
-	SignInForGestEnterpriseByTaskGroupUUID(password string, taskGroupUUID uuid.UUID) (presenter.Presenter, error)
+	SignInForGuestEnterprise(password string, jobInformationUUID uuid.UUID) (presenter.Presenter, error)
+	SignInForGuestEnterpriseByTaskGroupUUID(password string, taskGroupUUID uuid.UUID) (presenter.Presenter, error)
 
 	// ゲスト求職者ためのログイン
-	SignInForGestJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error)
-	SignInForGestJobSeekerFromLP(jobSeekerUUID, loginToken uuid.UUID) (presenter.Presenter, error)
-	SignInForGestSendingJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error)
+	SignInForGuestJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error)
+	SignInForGuestJobSeekerFromLP(jobSeekerUUID, loginToken uuid.UUID) (presenter.Presenter, error)
+	SignInForGuestSendingJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error)
 
 	// LPのログインフォームのログイン処理
-	LoginGestJobSeekerForLP(email, password string) (presenter.Presenter, error)
+	LoginGuestJobSeekerForLP(email, password string) (presenter.Presenter, error)
 }
 
 type SessionHandlerImpl struct {
@@ -37,7 +37,7 @@ func NewSessionHandlerImpl(si interactor.SessionInteractor) SessionHandler {
 }
 
 /****************************************************************************************/
-/// Gest API
+/// Guest API
 func (h *SessionHandlerImpl) SignIn(token string) (presenter.Presenter, error) {
 	output, err := h.sessionInteractor.SignIn(interactor.SessionSignInInput{Token: token})
 	if err != nil {
@@ -65,8 +65,8 @@ func (h *SessionHandlerImpl) GetSignInUser(token string) (presenter.Presenter, e
 	return presenter.NewUserSessionJSONPresenter(responses.NewUserSession(output.User)), nil
 }
 
-func (h *SessionHandlerImpl) SignInForGestEnterprise(password string, jobInformationUUID uuid.UUID) (presenter.Presenter, error) {
-	output, err := h.sessionInteractor.SignInForGestEnterprise(interactor.SessionSignInForGestEnterpriseInput{
+func (h *SessionHandlerImpl) SignInForGuestEnterprise(password string, jobInformationUUID uuid.UUID) (presenter.Presenter, error) {
+	output, err := h.sessionInteractor.SignInForGuestEnterprise(interactor.SessionSignInForGuestEnterpriseInput{
 		Password:           password,
 		JobInformationUUID: jobInformationUUID,
 	})
@@ -74,11 +74,11 @@ func (h *SessionHandlerImpl) SignInForGestEnterprise(password string, jobInforma
 		return nil, err
 	}
 
-	return presenter.NewGestEnterpriseUserSessionJSONPresenter(responses.NewGestEnterpriseUserSession(output.User)), nil
+	return presenter.NewGuestEnterpriseUserSessionJSONPresenter(responses.NewGuestEnterpriseUserSession(output.User)), nil
 }
 
-func (h *SessionHandlerImpl) SignInForGestEnterpriseByTaskGroupUUID(password string, taskGroupUUID uuid.UUID) (presenter.Presenter, error) {
-	output, err := h.sessionInteractor.SignInForGestEnterpriseByTaskGroupUUID(interactor.SessionSignInForGestEnterpriseByTaskGroupUUIDInput{
+func (h *SessionHandlerImpl) SignInForGuestEnterpriseByTaskGroupUUID(password string, taskGroupUUID uuid.UUID) (presenter.Presenter, error) {
+	output, err := h.sessionInteractor.SignInForGuestEnterpriseByTaskGroupUUID(interactor.SessionSignInForGuestEnterpriseByTaskGroupUUIDInput{
 		Password:      password,
 		TaskGroupUUID: taskGroupUUID,
 	})
@@ -86,11 +86,11 @@ func (h *SessionHandlerImpl) SignInForGestEnterpriseByTaskGroupUUID(password str
 		return nil, err
 	}
 
-	return presenter.NewGestEnterpriseUserSessionJSONPresenter(responses.NewGestEnterpriseUserSession(output.User)), nil
+	return presenter.NewGuestEnterpriseUserSessionJSONPresenter(responses.NewGuestEnterpriseUserSession(output.User)), nil
 }
 
-func (h *SessionHandlerImpl) SignInForGestJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error) {
-	output, err := h.sessionInteractor.SignInForGestJobSeeker(interactor.SessionSignInForGestJobSeekerInput{
+func (h *SessionHandlerImpl) SignInForGuestJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error) {
+	output, err := h.sessionInteractor.SignInForGuestJobSeeker(interactor.SessionSignInForGuestJobSeekerInput{
 		Password:      password,
 		JobSeekerUUID: jobSeekerUUID,
 	})
@@ -98,12 +98,12 @@ func (h *SessionHandlerImpl) SignInForGestJobSeeker(password string, jobSeekerUU
 		return nil, err
 	}
 
-	return presenter.NewGestJobSeekerUserSessionJSONPresenter(responses.NewGestJobSeekerUserSession(output.User)), nil
+	return presenter.NewGuestJobSeekerUserSessionJSONPresenter(responses.NewGuestJobSeekerUserSession(output.User)), nil
 }
 
 // マイページログイン（LPからログイントークンを使ってログイン）
-func (h *SessionHandlerImpl) SignInForGestJobSeekerFromLP(jobSeekerUUID, loginToken uuid.UUID) (presenter.Presenter, error) {
-	output, err := h.sessionInteractor.SignInForGestJobSeekerFromLP(interactor.SessionSignInForGestJobSeekerFromLPInput{
+func (h *SessionHandlerImpl) SignInForGuestJobSeekerFromLP(jobSeekerUUID, loginToken uuid.UUID) (presenter.Presenter, error) {
+	output, err := h.sessionInteractor.SignInForGuestJobSeekerFromLP(interactor.SessionSignInForGuestJobSeekerFromLPInput{
 		JobSeekerUUID: jobSeekerUUID,
 		LoginToken:    loginToken,
 	})
@@ -111,11 +111,11 @@ func (h *SessionHandlerImpl) SignInForGestJobSeekerFromLP(jobSeekerUUID, loginTo
 		return nil, err
 	}
 
-	return presenter.NewGestJobSeekerUserSessionJSONPresenter(responses.NewGestJobSeekerUserSession(output.User)), nil
+	return presenter.NewGuestJobSeekerUserSessionJSONPresenter(responses.NewGuestJobSeekerUserSession(output.User)), nil
 }
 
-func (h *SessionHandlerImpl) SignInForGestSendingJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error) {
-	output, err := h.sessionInteractor.SignInForGestSendingJobSeeker(interactor.SessionSignInForGestSendingJobSeekerInput{
+func (h *SessionHandlerImpl) SignInForGuestSendingJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error) {
+	output, err := h.sessionInteractor.SignInForGuestSendingJobSeeker(interactor.SessionSignInForGuestSendingJobSeekerInput{
 		Password:      password,
 		JobSeekerUUID: jobSeekerUUID,
 	})
@@ -123,15 +123,15 @@ func (h *SessionHandlerImpl) SignInForGestSendingJobSeeker(password string, jobS
 		return nil, err
 	}
 
-	return presenter.NewGestJobSeekerUserSessionJSONPresenter(responses.NewGestJobSeekerUserSession(output.User)), nil
+	return presenter.NewGuestJobSeekerUserSessionJSONPresenter(responses.NewGuestJobSeekerUserSession(output.User)), nil
 }
 
 /****************************************************************************************/
 // LP API
 
 // LPのログインフォームのログイン処理
-func (h *SessionHandlerImpl) LoginGestJobSeekerForLP(email, password string) (presenter.Presenter, error) {
-	output, err := h.sessionInteractor.LoginGestJobSeekerForLP(interactor.LoginGestJobSeekerForLPInput{
+func (h *SessionHandlerImpl) LoginGuestJobSeekerForLP(email, password string) (presenter.Presenter, error) {
+	output, err := h.sessionInteractor.LoginGuestJobSeekerForLP(interactor.LoginGuestJobSeekerForLPInput{
 		Email:    email,
 		Password: password,
 	})

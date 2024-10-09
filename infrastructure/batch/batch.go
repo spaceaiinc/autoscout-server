@@ -148,7 +148,7 @@ func (b *Batch) SetUp() *Batch {
 		// initialEnterpriseImporterJob.Tag("batchInitialEnterpriseImporter")
 
 		// Pub/Subで取得したエントリーユーザーを媒体ごとに取り込む処理（15分に一度実行する）
-		// AMBI&マイナビ転職スカウト
+		// AMBI&マイナビスカウティング
 		batchEntryUser, err := b.scheduler.
 			Every(1).
 			Day().
@@ -203,7 +203,7 @@ func (b *Batch) SetUp() *Batch {
 
 	} else if b.cfg.App.Env == "local" {
 		// // Pub/Subで取得したエントリーユーザーを媒体ごとに取り込む処理（15分に一度実行する）
-		// // AMBI&マイナビ転職スカウト
+		// // AMBI&マイナビスカウティング
 		// batchEntryUser, err := b.scheduler.
 		// 	Every(1).
 		// 	Day().
@@ -319,7 +319,7 @@ func (b *Batch) SetUp() *Batch {
 
 	} else if b.cfg.App.Env == "dev" {
 		// Pub/Subで取得したエントリーユーザーを媒体ごとに取り込む処理（15分に一度実行する）
-		// AMBI&マイナビ転職スカウト
+		// AMBI&マイナビスカウティング
 		batchEntryUser, err := b.scheduler.
 			Every(1).
 			Day().
