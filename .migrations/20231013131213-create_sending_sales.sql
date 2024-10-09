@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS sending_sales (
     id	INT AUTO_INCREMENT NOT NULL UNIQUE,	    -- 重複しないID
     sending_job_seeker_id	INT NOT NULL,		-- 送客求職者のID
     sending_enterprise_id	INT NOT NULL,		-- 送客先エージェントのID
-    motoyui_sales	INT,		                -- Motoyuiの売上
+    system_sales	INT,		                -- Systemの売上
     kickback INT,		                        -- キックバック（送客元の売上）
     created_at DATETIME,	                    -- 作成日時
     updated_at DATETIME,	                    -- 最終更新日時

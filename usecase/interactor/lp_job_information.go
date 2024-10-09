@@ -34,7 +34,7 @@ func (i *JobInformationInteractorImpl) GetSearchJobInformationCountByLPDiagnosis
 		err    error
 		// jobInformationList   = input.SearchParam.JobInformationList
 		// jobInformationIDList []uint
-		// motoyuiAgentID       uint = 1
+		// systemAgentID       uint = 1
 
 		// 年収の合計
 		sumIncome uint
@@ -74,7 +74,7 @@ func (i *JobInformationInteractorImpl) GetSearchJobInformationCountByLPDiagnosis
 	}
 
 	// 元結求人のアクティブ求人を取得
-	// jobInformationList, err = i.jobInformationRepository.GetActiveAllByAgentIDAndDiagnosisParamWithoutExternal(motoyuiAgentID, input.SearchParam)
+	// jobInformationList, err = i.jobInformationRepository.GetActiveAllByAgentIDAndDiagnosisParamWithoutExternal(systemAgentID, input.SearchParam)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// 	return output, err
@@ -454,8 +454,8 @@ type GetJobInformationListForDiagnosisOutput struct {
 
 func (i *JobInformationInteractorImpl) GetJobInformationListForDiagnosis() (GetJobInformationListForDiagnosisOutput, error) {
 	var (
-		output         GetJobInformationListForDiagnosisOutput
-		motoyuiAgentID uint = 1
+		output        GetJobInformationListForDiagnosisOutput
+		systemAgentID uint = 1
 	)
 
 	// 並行処理用のチャネルとエラーチャネル
@@ -467,7 +467,7 @@ func (i *JobInformationInteractorImpl) GetJobInformationListForDiagnosis() (GetJ
 	resultChan := make(chan result, 8)
 
 	// 各リポジトリからデータを取得するゴルーチンを起動
-	jobInformationList, err := i.jobInformationRepository.GetActiveAllByAgentIDWithoutExternal(motoyuiAgentID)
+	jobInformationList, err := i.jobInformationRepository.GetActiveAllByAgentIDWithoutExternal(systemAgentID)
 	if err != nil {
 		fmt.Println(err)
 		return output, err
@@ -1762,7 +1762,7 @@ func (i *JobInformationInteractorImpl) GetJobListingListAndJobSeekerDesiredForDi
 		err                            error
 		jobInformationList             []*entity.JobInformation
 		jobInformationListAfterMapping []*entity.JobInformation
-		motoyuiAgentID                 uint = 1
+		systemAgentID                  uint = 1
 
 		// 絞り込み
 		searchParamLicenses              []null.Int
@@ -2109,7 +2109,7 @@ func (i *JobInformationInteractorImpl) GetJobListingListAndJobSeekerDesiredForDi
 
 	/************ 10. 求人リストの取得 **************/
 	// 元結求人&外部求人除く
-	jobInformationList, err = i.jobInformationRepository.GetActiveAllByAgentIDWithoutExternal(motoyuiAgentID)
+	jobInformationList, err = i.jobInformationRepository.GetActiveAllByAgentIDWithoutExternal(systemAgentID)
 	if err != nil {
 		fmt.Println(err)
 		return output, err

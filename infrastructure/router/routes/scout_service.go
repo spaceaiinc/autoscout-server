@@ -126,7 +126,7 @@ func UpdateScoutServicePassword(db *database.DB, firebase usecase.Firebase, send
 }
 
 // スカウトサービスの削除
-func DeleteScoutService(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
+func Delete(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		scoutServiceIDStr := c.Param("scout_service_id")
 
@@ -139,7 +139,7 @@ func DeleteScoutService(db *database.DB, firebase usecase.Firebase, sendgrid con
 		}
 
 		h := di.InitializeScoutServiceHandler(firebase, db, sendgrid, oneSignal, appVar, googleAPI, slack)
-		p, err := h.DeleteScoutService(uint(scoutServiceIDInt))
+		p, err := h.Delete(uint(scoutServiceIDInt))
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err
@@ -151,7 +151,7 @@ func DeleteScoutService(db *database.DB, firebase usecase.Firebase, sendgrid con
 }
 
 // IDからスカウトサービスを取得
-func GetScoutServiceByID(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
+func GetByID(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		scoutServiceIDStr := c.Param("scout_service_id")
 
@@ -164,7 +164,7 @@ func GetScoutServiceByID(db *database.DB, firebase usecase.Firebase, sendgrid co
 		}
 
 		h := di.InitializeScoutServiceHandler(firebase, db, sendgrid, oneSignal, appVar, googleAPI, slack)
-		p, err := h.GetScoutServiceByID(uint(scoutServiceIDInt))
+		p, err := h.GetByID(uint(scoutServiceIDInt))
 		if err != nil {
 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
 			return err
@@ -176,29 +176,29 @@ func GetScoutServiceByID(db *database.DB, firebase usecase.Firebase, sendgrid co
 }
 
 // エージェントIDからスカウトサービスを取得
-func GetScoutServiceListByAgentID(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		agentIDStr := c.Param("agent_id")
+// func GetListByAgentID(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, appVar config.App, googleAPI config.GoogleAPI, slack config.Slack) func(c echo.Context) error {
+// 	return func(c echo.Context) error {
+// 		agentIDStr := c.Param("agent_id")
 
-		agentIDInt, err := strconv.Atoi(agentIDStr)
+// 		agentIDInt, err := strconv.Atoi(agentIDStr)
 
-		if err != nil {
-			wrapped := fmt.Errorf("%s:%w", err.Error(), entity.ErrRequestError)
-			renderJSON(c, presenter.NewErrorJSONPresenter(wrapped))
-			return wrapped
-		}
+// 		if err != nil {
+// 			wrapped := fmt.Errorf("%s:%w", err.Error(), entity.ErrRequestError)
+// 			renderJSON(c, presenter.NewErrorJSONPresenter(wrapped))
+// 			return wrapped
+// 		}
 
-		h := di.InitializeScoutServiceHandler(firebase, db, sendgrid, oneSignal, appVar, googleAPI, slack)
-		p, err := h.GetScoutServiceListByAgentID(uint(agentIDInt))
-		if err != nil {
-			renderJSON(c, presenter.NewErrorJSONPresenter(err))
-			return err
-		}
+// 		h := di.InitializeScoutServiceHandler(firebase, db, sendgrid, oneSignal, appVar, googleAPI, slack)
+// 		p, err := h.GetListByAgentID(uint(agentIDInt))
+// 		if err != nil {
+// 			renderJSON(c, presenter.NewErrorJSONPresenter(err))
+// 			return err
+// 		}
 
-		renderJSON(c, p)
-		return nil
-	}
-}
+// 		renderJSON(c, p)
+// 		return nil
+// 	}
+// }
 
 /****************************************************************************************/
 /****************************************************************************************/

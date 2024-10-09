@@ -139,7 +139,7 @@ func excludeDuplicateJobSeeker(
 	return jobSeekerList
 }
 
-// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」を除外して他社エージェントに非表示にするための関数
+// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」を除外して他社エージェントに非表示にするための関数
 func excludeTestJobSeeker(
 	jobSeekerList []*entity.JobSeeker,
 	agentID uint,
@@ -149,16 +149,16 @@ func excludeTestJobSeeker(
 	/**
 	 * 条件
 	 *
-	 * ユーザーが「1: 株式会社Motoyui」と「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」以外で
-	 * 求職者の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」の場合
+	 * ユーザーが「1: 株式会社Space AI」と「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」以外で
+	 * 求職者の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」の場合
 	 * スライスから除外する
 	**/
 
 	if env == "prd" {
 		for i := 0; i < len(jobSeekerList); i++ {
-			// ユーザーが「1: 株式会社Motoyui」と「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」以外の場合
+			// ユーザーが「1: 株式会社Space AI」と「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」以外の場合
 			if agentID != 1 && agentID != 2 && agentID != 3 {
-				// 求職者の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」の場合
+				// 求職者の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」の場合
 				if jobSeekerList[i].AgentID == 2 || jobSeekerList[i].AgentID == 3 {
 					// 除外する
 					jobSeekerList = append(jobSeekerList[:i], jobSeekerList[i+1:]...)
@@ -171,7 +171,7 @@ func excludeTestJobSeeker(
 	return jobSeekerList
 }
 
-// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」を除外して他社エージェントに非表示にするための関数
+// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」を除外して他社エージェントに非表示にするための関数
 func getJobSeekerChildTableData(
 	jobSeeker *entity.JobSeeker,
 	i *JobSeekerInteractorImpl,

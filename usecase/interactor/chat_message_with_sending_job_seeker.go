@@ -72,7 +72,7 @@ func (i *ChatMessageWithSendingJobSeekerInteractorImpl) SendChatMessageWithSendi
 	)
 
 	// 送信元がエージェントかつ、テキストメッセージの場合、LINEに送信
-	agent, err := i.agentRepository.FindByID(1) // MotoyuiのID
+	agent, err := i.agentRepository.FindByID(1) // SystemのID
 	if err != nil {
 		fmt.Println(err)
 		return output, err
@@ -155,7 +155,7 @@ func (i *ChatMessageWithSendingJobSeekerInteractorImpl) SendChatMessageWithSendi
 	)
 
 	// エージェントから求職者への画像送信（LINE）
-	agent, err := i.agentRepository.FindByID(1) // MotoyuiのID
+	agent, err := i.agentRepository.FindByID(1) // SystemのID
 	if err != nil {
 		fmt.Println(err)
 		return output, err

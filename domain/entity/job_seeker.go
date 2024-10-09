@@ -120,6 +120,10 @@ type JobSeeker struct {
 	ResetPasswordToken string `db:"reset_password_token" json:"-"` // パスワードリセット用のトークン メールごとに変更
 
 	ExternalID string `db:"external_id" json:"external_id"` // 外部ID
+
+	VincereJobTitle1 string `db:"-" json:"-"` // Vincereの求人タイトル1
+	VincereJobTitle2 string `db:"-" json:"-"` // Vincereの求人タイトル2
+	VincereJobTitle3 string `db:"-" json:"-"` // Vincereの求人タイトル3
 }
 
 func NewJobSeeker(
@@ -515,7 +519,7 @@ type SendJobSeekerContactParam struct {
 }
 
 // 求職者のお問い合わせ
-type UpdateJobSeekerInterviewDateFromGestPageParam struct {
+type UpdateJobSeekerInterviewDateFromGuestPageParam struct {
 	InterviewDate time.Time `json:"interview_date" validate:"required"`
 	JobSeekerID   uint      `json:"job_seeker_id" validate:"required"`
 	StaffName     string    `json:"staff_name" validate:"required"`

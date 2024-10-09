@@ -74,7 +74,7 @@ type JobSeekerHandler interface {
 	UpdateJobSeekerPassword(param entity.UpdateJobSeekerPasswordParam) (presenter.Presenter, error) // ゲスト求職者のパスワードを更新
 	SendJobSeekerResetPasswordEmail(param entity.SendJobSeekerResetPasswordEmailParam) (presenter.Presenter, error)
 	SendJobSeekerContact(param entity.SendJobSeekerContactParam) (presenter.Presenter, error)
-	UpdateInterviewDateByJobSeekerID(param entity.UpdateJobSeekerInterviewDateFromGestPageParam) (presenter.Presenter, error)
+	UpdateInterviewDateByJobSeekerID(param entity.UpdateJobSeekerInterviewDateFromGuestPageParam) (presenter.Presenter, error)
 
 	// LP
 	CreateJobSeekerFromLP(param entity.CreateJobSeekerFromLPParam) (presenter.Presenter, error)
@@ -631,7 +631,7 @@ func (h *JobSeekerHandlerImpl) GetGuestJobSeekerForByUUID(jobSeekerUUID uuid.UUI
 		return nil, err
 	}
 
-	return presenter.NewGestJobSeekerUserSessionJSONPresenter(responses.NewGestJobSeekerUserSession(output.User)), nil
+	return presenter.NewGuestJobSeekerUserSessionJSONPresenter(responses.NewGuestJobSeekerUserSession(output.User)), nil
 }
 
 func (h *JobSeekerHandlerImpl) GetJobSeekerDesiredForGuestByUUID(jobSeekerUUID uuid.UUID) (presenter.Presenter, error) {
@@ -705,7 +705,7 @@ func (h *JobSeekerHandlerImpl) SendJobSeekerContact(param entity.SendJobSeekerCo
 	return presenter.NewOKJSONPresenter(responses.NewOK(output.OK)), nil
 }
 
-func (h *JobSeekerHandlerImpl) UpdateInterviewDateByJobSeekerID(param entity.UpdateJobSeekerInterviewDateFromGestPageParam) (presenter.Presenter, error) {
+func (h *JobSeekerHandlerImpl) UpdateInterviewDateByJobSeekerID(param entity.UpdateJobSeekerInterviewDateFromGuestPageParam) (presenter.Presenter, error) {
 	output, err := h.jobSeekerInteractor.UpdateInterviewDateByJobSeekerID(interactor.UpdateInterviewDateByJobSeekerIDInput{
 		Param: param,
 	})
@@ -713,7 +713,7 @@ func (h *JobSeekerHandlerImpl) UpdateInterviewDateByJobSeekerID(param entity.Upd
 	if err != nil {
 		return nil, err
 	}
-	return presenter.NewGestJobSeekerUserSessionJSONPresenter(responses.NewGestJobSeekerUserSession(output.User)), nil
+	return presenter.NewGuestJobSeekerUserSessionJSONPresenter(responses.NewGuestJobSeekerUserSession(output.User)), nil
 }
 
 /****************************************************************************************/

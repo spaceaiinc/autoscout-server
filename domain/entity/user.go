@@ -60,22 +60,22 @@ func NewUser(
 	}
 }
 
-type GestEnterpriseUser struct {
+type GuestEnterpriseUser struct {
 	JobInformationUUID uuid.UUID `db:"job_information_uuid" json:"job_information_uuid"`
 	CompanyName        string    `db:"company_name" json:"company_name"`
 }
 
-func NewGestEnterpriseUser(
+func NewGuestEnterpriseUser(
 	jobInformationUUID uuid.UUID,
 	companyName string,
-) *GestEnterpriseUser {
-	return &GestEnterpriseUser{
+) *GuestEnterpriseUser {
+	return &GuestEnterpriseUser{
 		JobInformationUUID: jobInformationUUID,
 		CompanyName:        companyName,
 	}
 }
 
-type GestJobSeekerUser struct {
+type GuestJobSeekerUser struct {
 	ID                 uint      `db:"id" json:"id"`
 	JobSeekerUUID      uuid.UUID `db:"job_seeker_uuid" json:"job_seeker_uuid"`
 	LastName           string    `db:"last_name" json:"last_name"`
@@ -86,7 +86,7 @@ type GestJobSeekerUser struct {
 	CanViewMatchingJob bool      `db:"can_view_matching_job" json:"can_view_matching_job"`
 }
 
-func NewGestJobSeekerUser(
+func NewGuestJobSeekerUser(
 	id uint,
 	jobSeekerUUID uuid.UUID,
 	lastName string,
@@ -95,8 +95,8 @@ func NewGestJobSeekerUser(
 	agentID uint,
 	phase null.Int,
 	canViewMatchingJob bool,
-) *GestJobSeekerUser {
-	return &GestJobSeekerUser{
+) *GuestJobSeekerUser {
+	return &GuestJobSeekerUser{
 		ID:                 id,
 		JobSeekerUUID:      jobSeekerUUID,
 		LastName:           lastName,

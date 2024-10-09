@@ -148,7 +148,7 @@ func (b *Batch) SetUp() *Batch {
 		// initialEnterpriseImporterJob.Tag("batchInitialEnterpriseImporter")
 
 		// Pub/Subで取得したエントリーユーザーを媒体ごとに取り込む処理（15分に一度実行する）
-		// AMBI&マイナビ転職スカウト
+		// AMBI&マイナビスカウティング
 		batchEntryUser, err := b.scheduler.
 			Every(1).
 			Day().
@@ -203,7 +203,7 @@ func (b *Batch) SetUp() *Batch {
 
 	} else if b.cfg.App.Env == "local" {
 		// // Pub/Subで取得したエントリーユーザーを媒体ごとに取り込む処理（15分に一度実行する）
-		// // AMBI&マイナビ転職スカウト
+		// // AMBI&マイナビスカウティング
 		// batchEntryUser, err := b.scheduler.
 		// 	Every(1).
 		// 	Day().
@@ -258,14 +258,14 @@ func (b *Batch) SetUp() *Batch {
 		// 関数名をタグ付け
 		batchScoutJob.Tag("batchScout")
 
-		// now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
-		// log.Println("BatchScout開始 現在時刻(JST):", now)
-		// err = b.batchScout(now)
-		// // slack通知
-		// if err != nil && b.cfg.App.BatchType == "scout" {
-		// 	b.notifyError(err)
-		// }
-		// log.Println("BatchScout処理終了")
+		now := time.Now().In(time.FixedZone("Asia/Tokyo", 9*60*60))
+		log.Println("BatchScout開始 現在時刻(JST):", now)
+		err = b.batchScout(now)
+		// slack通知
+		if err != nil && b.cfg.App.BatchType == "scout" {
+			b.notifyError(err)
+		}
+		log.Println("BatchScout処理終了")
 
 		// /*
 		// 	求人一括インポート処理 テスト用
@@ -319,7 +319,7 @@ func (b *Batch) SetUp() *Batch {
 
 	} else if b.cfg.App.Env == "dev" {
 		// Pub/Subで取得したエントリーユーザーを媒体ごとに取り込む処理（15分に一度実行する）
-		// AMBI&マイナビ転職スカウト
+		// AMBI&マイナビスカウティング
 		batchEntryUser, err := b.scheduler.
 			Every(1).
 			Day().

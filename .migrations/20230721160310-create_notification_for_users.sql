@@ -1,4 +1,4 @@
--- Motoyuiからのお知らせを管理するテーブル
+-- Systemからのお知らせを管理するテーブル
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS notification_for_users (
     id INT AUTO_INCREMENT NOT NULL UNIQUE, -- 重複しないカラム毎のid

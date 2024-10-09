@@ -175,7 +175,7 @@ func (i *SendingJobSeekerInteractorImpl) CreateSendingJobSeeker(input CreateSend
 	/************ 1. 重複チェック **************/
 
 	// ①求職者の重複はできない。名前、電話番号が一致している場合に、重複で送客できないようにする。
-	duplicatedJobSeeker, err := i.jobSeekerRepository.FindByNameAndPhoneNumberByMotoyuiAgent(
+	duplicatedJobSeeker, err := i.jobSeekerRepository.FindByNameAndPhoneNumberBySystemAgent(
 		input.CreateParam.FirstName, input.CreateParam.LastName,
 		input.CreateParam.FirstFurigana, input.CreateParam.LastFurigana,
 		input.CreateParam.PhoneNumber,
@@ -206,8 +206,8 @@ func (i *SendingJobSeekerInteractorImpl) CreateSendingJobSeeker(input CreateSend
 	if duplicatedJobSeeker != nil &&
 		duplicatedJobSeeker.CreatedAt.AddDate(0, 6, 0).After(time.Now()) &&
 		duplicatedJobSeeker.Phase.Int64 != int64(entity.QuitedAfterInterview) {
-		fmt.Println("既にMotoyuiに登録済みのため送客できません")
-		return output, errors.New("既にMotoyuiに登録済みのため送客できません")
+		fmt.Println("既にSystemに登録済みのため送客できません")
+		return output, errors.New("既にSystemに登録済みのため送客できません")
 	}
 
 	// ※上の条件を満たしていても、送客管理に入っていれば対象外。

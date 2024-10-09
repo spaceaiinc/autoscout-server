@@ -33,7 +33,7 @@ func (repo *SendingSaleRepositoryImpl) Create(sendingSale *entity.SendingSale) e
 		`INSERT INTO sending_sales (
 			sending_job_seeker_id,
 			sending_enterprise_id,
-			motoyui_sales,
+			system_sales,
 			kickback,
 			created_at,
 			updated_at
@@ -42,7 +42,7 @@ func (repo *SendingSaleRepositoryImpl) Create(sendingSale *entity.SendingSale) e
 			)`,
 		sendingSale.SendingJobSeekerID,
 		sendingSale.SendingEnterpriseID,
-		sendingSale.MotoyuiSales,
+		sendingSale.SystemSales,
 		sendingSale.Kickback,
 		now,
 		now,
@@ -63,13 +63,13 @@ func (repo *SendingSaleRepositoryImpl) Update(sendingSaleID uint, sendingSale *e
 		`
 		UPDATE sending_sales
 		SET
-			motoyui_sales = ?,
+			system_sales = ?,
 			kickback = ?,
 			updated_at = ?
 		WHERE 
 			id = ?
 		`,
-		sendingSale.MotoyuiSales,
+		sendingSale.SystemSales,
 		sendingSale.Kickback,
 		time.Now().In(time.UTC),
 		sendingSaleID,

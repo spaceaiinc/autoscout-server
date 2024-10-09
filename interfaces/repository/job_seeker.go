@@ -822,14 +822,14 @@ func (repo *JobSeekerRepositoryImpl) FindByAgentIDAndLineID(agentID uint, lineID
 	return &jobSeeker, nil
 }
 
-// 送客の重複登録判定（Motoyui管理の求職者内で重複チェックするため）
-func (repo *JobSeekerRepositoryImpl) FindByNameAndPhoneNumberByMotoyuiAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber string) (*entity.JobSeeker, error) {
+// 送客の重複登録判定（System管理の求職者内で重複チェックするため）
+func (repo *JobSeekerRepositoryImpl) FindByNameAndPhoneNumberBySystemAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber string) (*entity.JobSeeker, error) {
 	var (
 		jobSeeker entity.JobSeeker
 	)
 
 	err := repo.executer.Get(
-		repo.Name+".FindByNameAndPhoneNumberByMotoyuiAgent",
+		repo.Name+".FindByNameAndPhoneNumberBySystemAgent",
 		&jobSeeker, `
 		SELECT 
 			seeker.*

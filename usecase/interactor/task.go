@@ -6262,7 +6262,7 @@ func (i *TaskInteractorImpl) BatchNotifyUnwatched(input BatchNotifyUnwatchedInpu
 
 		// メール送信
 		mailBody := fmt.Sprintf(
-			"%s株式会社\n%s様\n\n平素よりautoscoutをご利用いただきありがとうございます。\nautoscout事務局でございます。\n\nチャットの未読と期限切れのタスクについてお知らせいたします。\n\n\nエージェントチャットの未読 %d件\nhttps://autoscouts.web.app/chat/agent/\n\t%s\n\n求職者とのLINEの未読 %d件\nhttps://autoscouts.web.app/\n\t%s\n\n期限切れのタスク %d件\nhttps://autoscouts.web.app/\n\t%s\n\n以上でございます。\n入れ違いで処理済みでしたら申し訳ございません。\n\n引き続きどうぞよろしくお願い申し上げます。\n\n未処理・未読の通知設定は、autoscout内の「アカウント設定 / 基本情報」より変更できます。\nhttps://autoscouts.web.app/account/?panel=basic_information",
+			"%s株式会社\n%s様\n\n平素よりautoscoutをご利用いただきありがとうございます。\nautoscout事務局でございます。\n\nチャットの未読と期限切れのタスクについてお知らせいたします。\n\n\nエージェントチャットの未読 %d件\nhttps://autoscout.spaceai.jp/chat/agent/\n\t%s\n\n求職者とのLINEの未読 %d件\nhttps://autoscout.spaceai.jp/\n\t%s\n\n期限切れのタスク %d件\nhttps://autoscout.spaceai.jp/\n\t%s\n\n以上でございます。\n入れ違いで処理済みでしたら申し訳ございません。\n\n引き続きどうぞよろしくお願い申し上げます。\n\n未処理・未読の通知設定は、autoscout内の「設定 / 基本情報」より変更できます。\nhttps://autoscout.spaceai.jp/account/?panel=basic_information",
 			agentStaff.AgentName,
 			agentStaff.StaffName,
 			unwatchedDetail.AllAgentChatCount,
