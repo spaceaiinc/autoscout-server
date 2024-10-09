@@ -11,13 +11,13 @@ import (
 
 type NotificationForUserInteractor interface {
 	// 汎用系
-	// Motoyuiからのお知らせを作成
+	// Systemからのお知らせを作成
 	CreateNotificationForUser(input CreateNotificationForUserInput) (CreateNotificationForUserOutput, error)
 	// 全てのお知らせを取得
 	GetNotificationForUserListByPageAndTargetList(input GetNotificationForUserListByPageAndTargetListInput) (GetNotificationForUserListByPageAndTargetListOutput, error)
 
 	// 既読判定系
-	// Motoyuiからのお知らせを確認したユーザーを作成
+	// Systemからのお知らせを確認したユーザーを作成
 	CreateUserNotificationView(input CreateUserNotificationViewInput) (CreateUserNotificationViewOutput, error)
 	// 担当者IDからお知らせの未読件数を取得
 	GetUnwatchedNotificationForUserCountByAgentStaffID(input GetUnwatchedNotificationForUserCountByAgentStaffIDInput) (GetUnwatchedNotificationForUserCountByAgentStaffIDOutput, error)
@@ -54,7 +54,7 @@ func NewNotificationForUserInteractorImpl(
 /****************************************************************************************/
 /// 汎用系
 //
-// Motoyuiからのお知らせを作成
+// Systemからのお知らせを作成
 type CreateNotificationForUserInput struct {
 	CreateParam entity.NotificationForUser
 }
@@ -154,7 +154,7 @@ func (i *NotificationForUserInteractorImpl) GetNotificationForUserListByPageAndT
 /****************************************************************************************/
 /// 既読判定系
 //
-// Motoyuiからのお知らせを確認したユーザーを作成
+// Systemからのお知らせを確認したユーザーを作成
 type CreateUserNotificationViewInput struct {
 	AgentStaffID uint
 }

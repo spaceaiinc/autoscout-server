@@ -485,11 +485,11 @@ type LoginGestJobSeekerForLPOutput struct {
 func (i *SessionInteractorImpl) LoginGestJobSeekerForLP(input LoginGestJobSeekerForLPInput) (LoginGestJobSeekerForLPOutput, error) {
 	var (
 		output              = LoginGestJobSeekerForLPOutput{}
-		MotoyuiAgentID uint = 1
+		SystemAgentID uint = 1
 	)
 
 	// 求職者のメールアドレスが合致するか確認
-	jobSeeker, err := i.jobSeekerRepository.FindByEmailForLP(input.Email, MotoyuiAgentID)
+	jobSeeker, err := i.jobSeekerRepository.FindByEmailForLP(input.Email, SystemAgentID)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
 			wrapped := fmt.Errorf("%w:%s", entity.ErrRequestError, "メールアドレスまたはパスワードが一致しません。")

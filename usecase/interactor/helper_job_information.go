@@ -137,7 +137,7 @@ func excludeDuplicateJobInformation(
 	// 自社と他社エージェントで同一社名の求人がある場合は他社の同一社名の求人を除外する
 	if len(jobInformationListBeforeDuplicate) > 0 {
 		for _, jobInformation := range jobInformationListBeforeDuplicate {
-			//この形式にする→「株式会社Motoyui_614-0014」（社名にスペースが入る事も考慮してスペース削除の処理も実行）
+			//この形式にする→「株式会社Space AI_614-0014」（社名にスペースが入る事も考慮してスペース削除の処理も実行）
 			cp := strings.Join(strings.Fields(jobInformation.CompanyName+"_"+jobInformation.PostCode), "")
 			cpa := cp + "_" + strconv.Itoa(int(jobInformation.AgentID))
 
@@ -150,7 +150,7 @@ func excludeDuplicateJobInformation(
 		}
 
 		for _, jobInformation := range jobInformationListBeforeDuplicate {
-			//この形式にする→「株式会社Motoyui_614-0014」（社名にスペースが入る事も考慮してスペース削除の処理も実行）
+			//この形式にする→「株式会社Space AI_614-0014」（社名にスペースが入る事も考慮してスペース削除の処理も実行）
 			cp := strings.Join(strings.Fields(jobInformation.CompanyName+"_"+jobInformation.PostCode), "")
 
 			if jobInformation.AgentID == agentID {
@@ -166,7 +166,7 @@ func excludeDuplicateJobInformation(
 	// 他社同士の重複チェック
 	if len(jobInformationList) > 0 {
 		for _, jobInformation := range jobInformationList {
-			//この形式にする→「株式会社Motoyui_614-0014」（社名にスペースが入る事も考慮してスペース削除の処理も実行）
+			//この形式にする→「株式会社Space AI_614-0014」（社名にスペースが入る事も考慮してスペース削除の処理も実行）
 			cp := strings.Join(strings.Fields(jobInformation.CompanyName+"_"+jobInformation.PostCode), "")
 			cpa := cp + "_" + strconv.Itoa(int(jobInformation.AgentID))
 
@@ -227,7 +227,7 @@ func filterAllianceJobInformationExcludedTemporaryWorker(i *JobInformationIntera
 	return allianceJobInformationList, nil
 }
 
-// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」を除外して他社エージェントに非表示にするための関数
+// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」を除外して他社エージェントに非表示にするための関数
 func excludeTestJobInformation(
 	jobInformationList []*entity.JobInformation,
 	agentID uint,
@@ -237,17 +237,17 @@ func excludeTestJobInformation(
 	/**
 	 * 条件
 	 *
-	 * ユーザーが「1: 株式会社Motoyui」と「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」以外で
-	 * 求人の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」の場合
+	 * ユーザーが「1: 株式会社Space AI」と「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」以外で
+	 * 求人の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」の場合
 	 * スライスから除外する
 	**/
 
 	if env == "prd" {
 		for i := 0; i < len(jobInformationList); i++ {
 
-			// ユーザーが「1: 株式会社Motoyui」と「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」以外の場合
+			// ユーザーが「1: 株式会社Space AI」と「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」以外の場合
 			if agentID != 1 && agentID != 2 && agentID != 3 {
-				// 求人の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」の場合
+				// 求人の担当エージェントが「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」の場合
 				if jobInformationList[i].AgentID == 2 || jobInformationList[i].AgentID == 3 {
 					// 除外する
 					jobInformationList = append(jobInformationList[:i], jobInformationList[i+1:]...)

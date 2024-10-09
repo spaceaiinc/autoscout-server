@@ -47,7 +47,7 @@ var EmploymentStatus Type = []string{
 }
 
 // 業界 (2023/11/01更新)
-// https://motoyui.slack.com/archives/C04MGLZSH8Q/p1695795981546999?thread_ts=1695782675.478629&cid=C04MGLZSH8Q
+// https://system.slack.com/archives/C04MGLZSH8Q/p1695795981546999?thread_ts=1695782675.478629&cid=C04MGLZSH8Q
 var Industry map[string]map[uint]string = map[string]map[uint]string{
 	"IT": {
 		100: "IT",
@@ -152,7 +152,7 @@ var Industry map[string]map[uint]string = map[string]map[uint]string{
 }
 
 // 職種 (2023/11/01更新)
-// https://motoyui.slack.com/archives/C04MGLZSH8Q/p1695795981546999?thread_ts=1695782675.478629&cid=C04MGLZSH8Q
+// https://system.slack.com/archives/C04MGLZSH8Q/p1695795981546999?thread_ts=1695782675.478629&cid=C04MGLZSH8Q
 var Occupation map[string]map[uint]string = map[string]map[uint]string{
 	"エグゼクティブ系": {
 		100: "役員・経営幹部",
@@ -593,16 +593,16 @@ var ExperienceYear = map[uint]string{
 	3: "3年以上",
 	4: "4年以上",
 	5: "5年以上",
-}  
+}
 
 // 従業員数（LPで入力）
 var EmployeeNumber = map[uint]string{
-	0: "10人未満", // 5で登録
-	1: "10〜49人", // 10で登録
-	2: "50〜99人", // 50で登録
-	3: "100〜299人", // 100で登録
-	4: "300〜999人", // 300で登録
+	0: "10人未満",      // 5で登録
+	1: "10〜49人",     // 10で登録
+	2: "50〜99人",     // 50で登録
+	3: "100〜299人",   // 100で登録
+	4: "300〜999人",   // 300で登録
 	5: "1000〜2999人", // 1000で登録
 	6: "3000〜4999人", // 3000で登録
-	7: "5000人以上", // 5000で登録
+	7: "5000人以上",    // 5000で登録
 }

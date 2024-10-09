@@ -4502,7 +4502,7 @@ func (i *JobSeekerInteractorImpl) CreateJobSeekerFromLP(input CreateJobSeekerFro
 		retireYear        string
 		retireLastStatus  null.Int
 		nationality       null.Int
-		motoyuiAgentID    uint = 1
+		systemAgentID     uint = 1
 		defaultCAStaffID  uint = 2 // 本番環境のIDをデフォルトCAとして設定
 	)
 
@@ -4548,7 +4548,7 @@ func (i *JobSeekerInteractorImpl) CreateJobSeekerFromLP(input CreateJobSeekerFro
 	}
 
 	jobSeeker := entity.NewJobSeeker(
-		motoyuiAgentID, // Motoyuiで登録
+		systemAgentID, // Systemで登録
 		null.NewInt(int64(defaultCAStaffID), true),
 		NullInt,
 		param.LastName,
@@ -4793,7 +4793,7 @@ func (i *JobSeekerInteractorImpl) CreateJobSeekerFromLP(input CreateJobSeekerFro
 
 	// チャットグループ
 	chatGroup := entity.NewChatGroupWithJobSeeker(
-		jobSeeker.AgentID, // Motoyui
+		jobSeeker.AgentID, // System
 		jobSeeker.ID,
 		false, // 初めはLINE連携してないから false
 	)
@@ -4868,9 +4868,9 @@ type UpdateJobSeekerPhoneFromLPOutput struct {
 
 func (i *JobSeekerInteractorImpl) UpdateJobSeekerPhoneFromLP(input UpdateJobSeekerPhoneFromLPInput) (UpdateJobSeekerPhoneFromLPOutput, error) {
 	var (
-		output         UpdateJobSeekerPhoneFromLPOutput
-		param               = input.Param
-		MotoyuiAgentID uint = 1
+		output        UpdateJobSeekerPhoneFromLPOutput
+		param              = input.Param
+		SystemAgentID uint = 1
 	)
 
 	// uuidで求職者情報を取得
@@ -4910,7 +4910,7 @@ func (i *JobSeekerInteractorImpl) UpdateJobSeekerPhoneFromLP(input UpdateJobSeek
 	}
 
 	// 電話番号が登録済みの場合はエラー
-	_, err = i.jobSeekerRepository.FindByPhoneNumberForLP(param.PhoneNumber, MotoyuiAgentID)
+	_, err = i.jobSeekerRepository.FindByPhoneNumberForLP(param.PhoneNumber, SystemAgentID)
 	if err == nil {
 		wrapped := fmt.Errorf("%w:%s", entity.ErrDuplicateEntry, "既に登録済みの電話番号です。")
 		return output, wrapped
@@ -5155,13 +5155,13 @@ type SendJobSeekerResetPasswordEmailForLPOutput struct {
 
 func (i *JobSeekerInteractorImpl) SendJobSeekerResetPasswordEmailForLP(input SendJobSeekerResetPasswordEmailForLPInput) (SendJobSeekerResetPasswordEmailForLPOutput, error) {
 	var (
-		output         SendJobSeekerResetPasswordEmailForLPOutput
-		err            error
-		MotoyuiAgentID uint = 1
+		output        SendJobSeekerResetPasswordEmailForLPOutput
+		err           error
+		SystemAgentID uint = 1
 	)
 
 	// 求職者のメールアドレスが合致するか確認
-	jobSeeker, err := i.jobSeekerRepository.FindByEmailForLP(input.Param.Email, MotoyuiAgentID)
+	jobSeeker, err := i.jobSeekerRepository.FindByEmailForLP(input.Param.Email, SystemAgentID)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
 			wrapped := fmt.Errorf("%w:%s", entity.ErrRequestError, "メールアドレスが存在しません。")
@@ -5222,12 +5222,12 @@ type ResetPasswordForLPOutput struct {
 
 func (i *JobSeekerInteractorImpl) ResetPasswordForLP(input ResetPasswordForLPInput) (ResetPasswordForLPOutput, error) {
 	var (
-		output              = ResetPasswordForLPOutput{}
-		MotoyuiAgentID uint = 1
+		output             = ResetPasswordForLPOutput{}
+		SystemAgentID uint = 1
 	)
 
 	// ResetPasswordTokenが一致するか確認
-	jobSeeker, err := i.jobSeekerRepository.FindByResetPasswordTokenForLP(input.Param.ResetPasswordToken, MotoyuiAgentID)
+	jobSeeker, err := i.jobSeekerRepository.FindByResetPasswordTokenForLP(input.Param.ResetPasswordToken, SystemAgentID)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
 			wrapped := fmt.Errorf("%w:%s", entity.ErrRequestError, "不正なURLです。")
@@ -5276,12 +5276,12 @@ type CheckResetPasswordTokenOutput struct {
 
 func (i *JobSeekerInteractorImpl) CheckResetPasswordToken(input CheckResetPasswordTokenInput) (CheckResetPasswordTokenOutput, error) {
 	var (
-		output              = CheckResetPasswordTokenOutput{}
-		MotoyuiAgentID uint = 1
+		output             = CheckResetPasswordTokenOutput{}
+		SystemAgentID uint = 1
 	)
 
 	// ResetPasswordTokenが一致するか確認
-	_, err := i.jobSeekerRepository.FindByResetPasswordTokenForLP(input.ResetPasswordToken, MotoyuiAgentID)
+	_, err := i.jobSeekerRepository.FindByResetPasswordTokenForLP(input.ResetPasswordToken, SystemAgentID)
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
 			wrapped := fmt.Errorf("%w:%s", entity.ErrRequestError, "不正なURLです。")

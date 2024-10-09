@@ -161,7 +161,7 @@ func (i *DeploymentReflectionInteractorImpl) UpdateDeploymentInformation(input U
 	return output, nil
 }
 
-// Motoyuiからのお知らせを確認したユーザーを作成P
+// Systemからのお知らせを確認したユーザーを作成P
 type UpdateDeployMenConfirmStatusByStaffIDInput struct {
 	AgentStaffID uint
 }

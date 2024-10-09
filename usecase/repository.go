@@ -1231,7 +1231,7 @@ type JobSeekerRepository interface {
 	CountByEmail(email string) (float64, error)
 
 	// 送客の重複登録判定
-	FindByNameAndPhoneNumberByMotoyuiAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber string) (*entity.JobSeeker, error)
+	FindByNameAndPhoneNumberBySystemAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber string) (*entity.JobSeeker, error)
 
 	/** 複数取得 */
 	GetByAgentID(agentID uint) ([]*entity.JobSeeker, error)

@@ -16,7 +16,7 @@ import (
 /****************************************************************************************/
 /// 汎用系 API
 //
-// Motoyuiからのお知らせを作成
+// Systemからのお知らせを作成
 func CreateNotificationForUser(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
@@ -98,7 +98,7 @@ func GetNotificationForUserListByPageAndTargetList(db *database.DB, firebase use
 /****************************************************************************************/
 /// 既読判定系 API
 //
-// Motoyuiからのお知らせを確認したユーザーを作成
+// Systemからのお知らせを確認したユーザーを作成
 func CreateUserNotificationView(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (

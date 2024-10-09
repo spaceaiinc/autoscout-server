@@ -6,7 +6,7 @@ import (
 	"gopkg.in/guregu/null.v4"
 )
 
-// Motoyuiからのお知らせを管理するテーブル
+// Systemからのお知らせを管理するテーブル
 type NotificationForUser struct {
 	ID        uint      `db:"id" json:"id"`
 	Title     string    `db:"title" json:"title"`   // お知らせのタイトル
