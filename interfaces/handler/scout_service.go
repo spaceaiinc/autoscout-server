@@ -2,8 +2,11 @@ package handler
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
+	"github.com/labstack/echo/v4"
 	"github.com/spaceaiinc/autoscout-server/domain/entity"
 	"github.com/spaceaiinc/autoscout-server/domain/entity/responses"
 	"github.com/spaceaiinc/autoscout-server/interfaces/presenter"
@@ -15,9 +18,9 @@ type ScoutServiceHandler interface {
 	CreateScoutService(param entity.CreateOrUpdateScoutServiceParam) (presenter.Presenter, error)
 	UpdateScoutService(param entity.CreateOrUpdateScoutServiceParam, scoutServiceID uint) (presenter.Presenter, error)
 	UpdateScoutServicePassword(param entity.UpdateScoutServicePasswordParam) (presenter.Presenter, error)
-	DeleteScoutService(id uint) (presenter.Presenter, error)
-	GetScoutServiceByID(id uint) (presenter.Presenter, error)
-	GetScoutServiceListByAgentID(agentID uint) (presenter.Presenter, error)
+	Delete(id uint) (presenter.Presenter, error)
+	GetByID(id uint) (presenter.Presenter, error)
+	GetListByAgentID() func(c echo.Context) error
 
 	// Batch処理 API
 	BatchScout(now time.Time, agentRobotID uint) (presenter.Presenter, error)
@@ -81,8 +84,8 @@ func (h *ScoutServiceHandlerImpl) UpdateScoutServicePassword(param entity.Update
 }
 
 // スカウトサービスを削除
-func (h *ScoutServiceHandlerImpl) DeleteScoutService(scoutServiceID uint) (presenter.Presenter, error) {
-	output, err := h.scoutServiceInteractor.DeleteScoutService(interactor.DeleteScoutServiceInput{
+func (h *ScoutServiceHandlerImpl) Delete(scoutServiceID uint) (presenter.Presenter, error) {
+	output, err := h.scoutServiceInteractor.Delete(interactor.ScoutServiceDeleteInput{
 		ScoutServiceID: scoutServiceID,
 	})
 
@@ -94,8 +97,8 @@ func (h *ScoutServiceHandlerImpl) DeleteScoutService(scoutServiceID uint) (prese
 }
 
 // スカウトサービスを取得
-func (h *ScoutServiceHandlerImpl) GetScoutServiceByID(scoutServiceID uint) (presenter.Presenter, error) {
-	output, err := h.scoutServiceInteractor.GetScoutServiceByID(interactor.GetScoutServiceByIDInput{
+func (h *ScoutServiceHandlerImpl) GetByID(scoutServiceID uint) (presenter.Presenter, error) {
+	output, err := h.scoutServiceInteractor.GetByID(interactor.ScoutServiceGetByIDInput{
 		ScoutServiceID: scoutServiceID,
 	})
 
@@ -107,16 +110,28 @@ func (h *ScoutServiceHandlerImpl) GetScoutServiceByID(scoutServiceID uint) (pres
 }
 
 // エージェントIDからスカウトサービスを取得
-func (h *ScoutServiceHandlerImpl) GetScoutServiceListByAgentID(agentID uint) (presenter.Presenter, error) {
-	output, err := h.scoutServiceInteractor.GetScoutServiceListByAgentID(interactor.GetScoutServiceListByAgentIDInput{
-		AgentID: agentID,
-	})
+func (h *ScoutServiceHandlerImpl) GetListByAgentID() func(c echo.Context) error {
+	return func(c echo.Context) error {
+		agentIDStr := c.Param("agent_id")
 
-	if err != nil {
-		return nil, err
+		agentIDInt, err := strconv.Atoi(agentIDStr)
+		if err != nil {
+			wrapped := fmt.Errorf("%s:%w", err.Error(), entity.ErrRequestError)
+			renderJSON(c, presenter.NewErrorJSONPresenter(wrapped))
+			return wrapped
+		}
+
+		output, err := h.scoutServiceInteractor.GetListByAgentID(interactor.GetListByAgentIDInput{
+			AgentID: uint(agentIDInt),
+		})
+		if err != nil {
+			renderJSON(c, presenter.NewErrorJSONPresenter(err))
+			return err
+		}
+
+		renderJSON(c, presenter.NewScoutServiceListJSONPresenter(responses.NewScoutServiceList(output.ScoutServiceList)))
+		return nil
 	}
-
-	return presenter.NewScoutServiceListJSONPresenter(responses.NewScoutServiceList(output.ScoutServiceList)), nil
 }
 
 /****************************************************************************************/

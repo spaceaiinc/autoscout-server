@@ -54,19 +54,19 @@ func (mr *MockSessionInteractorMockRecorder) GetSignInUser(input any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSignInUser", reflect.TypeOf((*MockSessionInteractor)(nil).GetSignInUser), input)
 }
 
-// LoginGestJobSeekerForLP mocks base method.
-func (m *MockSessionInteractor) LoginGestJobSeekerForLP(input interactor.LoginGestJobSeekerForLPInput) (interactor.LoginGestJobSeekerForLPOutput, error) {
+// LoginGuestJobSeekerForLP mocks base method.
+func (m *MockSessionInteractor) LoginGuestJobSeekerForLP(input interactor.LoginGuestJobSeekerForLPInput) (interactor.LoginGuestJobSeekerForLPOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LoginGestJobSeekerForLP", input)
-	ret0, _ := ret[0].(interactor.LoginGestJobSeekerForLPOutput)
+	ret := m.ctrl.Call(m, "LoginGuestJobSeekerForLP", input)
+	ret0, _ := ret[0].(interactor.LoginGuestJobSeekerForLPOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// LoginGestJobSeekerForLP indicates an expected call of LoginGestJobSeekerForLP.
-func (mr *MockSessionInteractorMockRecorder) LoginGestJobSeekerForLP(input any) *gomock.Call {
+// LoginGuestJobSeekerForLP indicates an expected call of LoginGuestJobSeekerForLP.
+func (mr *MockSessionInteractorMockRecorder) LoginGuestJobSeekerForLP(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoginGestJobSeekerForLP", reflect.TypeOf((*MockSessionInteractor)(nil).LoginGestJobSeekerForLP), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoginGuestJobSeekerForLP", reflect.TypeOf((*MockSessionInteractor)(nil).LoginGuestJobSeekerForLP), input)
 }
 
 // SignIn mocks base method.
@@ -84,79 +84,79 @@ func (mr *MockSessionInteractorMockRecorder) SignIn(input any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockSessionInteractor)(nil).SignIn), input)
 }
 
-// SignInForGestEnterprise mocks base method.
-func (m *MockSessionInteractor) SignInForGestEnterprise(input interactor.SessionSignInForGestEnterpriseInput) (interactor.SessionSignInForGestEnterpriseOutput, error) {
+// SignInForGuestEnterprise mocks base method.
+func (m *MockSessionInteractor) SignInForGuestEnterprise(input interactor.SessionSignInForGuestEnterpriseInput) (interactor.SessionSignInForGuestEnterpriseOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignInForGestEnterprise", input)
-	ret0, _ := ret[0].(interactor.SessionSignInForGestEnterpriseOutput)
+	ret := m.ctrl.Call(m, "SignInForGuestEnterprise", input)
+	ret0, _ := ret[0].(interactor.SessionSignInForGuestEnterpriseOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SignInForGestEnterprise indicates an expected call of SignInForGestEnterprise.
-func (mr *MockSessionInteractorMockRecorder) SignInForGestEnterprise(input any) *gomock.Call {
+// SignInForGuestEnterprise indicates an expected call of SignInForGuestEnterprise.
+func (mr *MockSessionInteractorMockRecorder) SignInForGuestEnterprise(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGestEnterprise", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGestEnterprise), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGuestEnterprise", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGuestEnterprise), input)
 }
 
-// SignInForGestEnterpriseByTaskGroupUUID mocks base method.
-func (m *MockSessionInteractor) SignInForGestEnterpriseByTaskGroupUUID(input interactor.SessionSignInForGestEnterpriseByTaskGroupUUIDInput) (interactor.SessionSignInForGestEnterpriseByTaskGroupUUIDOutput, error) {
+// SignInForGuestEnterpriseByTaskGroupUUID mocks base method.
+func (m *MockSessionInteractor) SignInForGuestEnterpriseByTaskGroupUUID(input interactor.SessionSignInForGuestEnterpriseByTaskGroupUUIDInput) (interactor.SessionSignInForGuestEnterpriseByTaskGroupUUIDOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignInForGestEnterpriseByTaskGroupUUID", input)
-	ret0, _ := ret[0].(interactor.SessionSignInForGestEnterpriseByTaskGroupUUIDOutput)
+	ret := m.ctrl.Call(m, "SignInForGuestEnterpriseByTaskGroupUUID", input)
+	ret0, _ := ret[0].(interactor.SessionSignInForGuestEnterpriseByTaskGroupUUIDOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SignInForGestEnterpriseByTaskGroupUUID indicates an expected call of SignInForGestEnterpriseByTaskGroupUUID.
-func (mr *MockSessionInteractorMockRecorder) SignInForGestEnterpriseByTaskGroupUUID(input any) *gomock.Call {
+// SignInForGuestEnterpriseByTaskGroupUUID indicates an expected call of SignInForGuestEnterpriseByTaskGroupUUID.
+func (mr *MockSessionInteractorMockRecorder) SignInForGuestEnterpriseByTaskGroupUUID(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGestEnterpriseByTaskGroupUUID", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGestEnterpriseByTaskGroupUUID), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGuestEnterpriseByTaskGroupUUID", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGuestEnterpriseByTaskGroupUUID), input)
 }
 
-// SignInForGestJobSeeker mocks base method.
-func (m *MockSessionInteractor) SignInForGestJobSeeker(input interactor.SessionSignInForGestJobSeekerInput) (interactor.SessionSignInForGestJobSeekerOutput, error) {
+// SignInForGuestJobSeeker mocks base method.
+func (m *MockSessionInteractor) SignInForGuestJobSeeker(input interactor.SessionSignInForGuestJobSeekerInput) (interactor.SessionSignInForGuestJobSeekerOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignInForGestJobSeeker", input)
-	ret0, _ := ret[0].(interactor.SessionSignInForGestJobSeekerOutput)
+	ret := m.ctrl.Call(m, "SignInForGuestJobSeeker", input)
+	ret0, _ := ret[0].(interactor.SessionSignInForGuestJobSeekerOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SignInForGestJobSeeker indicates an expected call of SignInForGestJobSeeker.
-func (mr *MockSessionInteractorMockRecorder) SignInForGestJobSeeker(input any) *gomock.Call {
+// SignInForGuestJobSeeker indicates an expected call of SignInForGuestJobSeeker.
+func (mr *MockSessionInteractorMockRecorder) SignInForGuestJobSeeker(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGestJobSeeker", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGestJobSeeker), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGuestJobSeeker", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGuestJobSeeker), input)
 }
 
-// SignInForGestJobSeekerFromLP mocks base method.
-func (m *MockSessionInteractor) SignInForGestJobSeekerFromLP(input interactor.SessionSignInForGestJobSeekerFromLPInput) (interactor.SessionSignInForGestJobSeekerFromLPOutput, error) {
+// SignInForGuestJobSeekerFromLP mocks base method.
+func (m *MockSessionInteractor) SignInForGuestJobSeekerFromLP(input interactor.SessionSignInForGuestJobSeekerFromLPInput) (interactor.SessionSignInForGuestJobSeekerFromLPOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignInForGestJobSeekerFromLP", input)
-	ret0, _ := ret[0].(interactor.SessionSignInForGestJobSeekerFromLPOutput)
+	ret := m.ctrl.Call(m, "SignInForGuestJobSeekerFromLP", input)
+	ret0, _ := ret[0].(interactor.SessionSignInForGuestJobSeekerFromLPOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SignInForGestJobSeekerFromLP indicates an expected call of SignInForGestJobSeekerFromLP.
-func (mr *MockSessionInteractorMockRecorder) SignInForGestJobSeekerFromLP(input any) *gomock.Call {
+// SignInForGuestJobSeekerFromLP indicates an expected call of SignInForGuestJobSeekerFromLP.
+func (mr *MockSessionInteractorMockRecorder) SignInForGuestJobSeekerFromLP(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGestJobSeekerFromLP", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGestJobSeekerFromLP), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGuestJobSeekerFromLP", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGuestJobSeekerFromLP), input)
 }
 
-// SignInForGestSendingJobSeeker mocks base method.
-func (m *MockSessionInteractor) SignInForGestSendingJobSeeker(input interactor.SessionSignInForGestSendingJobSeekerInput) (interactor.SessionSignInForGestSendingJobSeekerOutput, error) {
+// SignInForGuestSendingJobSeeker mocks base method.
+func (m *MockSessionInteractor) SignInForGuestSendingJobSeeker(input interactor.SessionSignInForGuestSendingJobSeekerInput) (interactor.SessionSignInForGuestSendingJobSeekerOutput, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SignInForGestSendingJobSeeker", input)
-	ret0, _ := ret[0].(interactor.SessionSignInForGestSendingJobSeekerOutput)
+	ret := m.ctrl.Call(m, "SignInForGuestSendingJobSeeker", input)
+	ret0, _ := ret[0].(interactor.SessionSignInForGuestSendingJobSeekerOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// SignInForGestSendingJobSeeker indicates an expected call of SignInForGestSendingJobSeeker.
-func (mr *MockSessionInteractorMockRecorder) SignInForGestSendingJobSeeker(input any) *gomock.Call {
+// SignInForGuestSendingJobSeeker indicates an expected call of SignInForGuestSendingJobSeeker.
+func (mr *MockSessionInteractorMockRecorder) SignInForGuestSendingJobSeeker(input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGestSendingJobSeeker", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGestSendingJobSeeker), input)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignInForGuestSendingJobSeeker", reflect.TypeOf((*MockSessionInteractor)(nil).SignInForGuestSendingJobSeeker), input)
 }
 
 // SignOut mocks base method.

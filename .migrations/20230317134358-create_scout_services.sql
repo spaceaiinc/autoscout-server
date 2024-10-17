@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS scout_services (
     agent_staff_id INT NOT NULL,                        -- エージェントスタッフID
     login_id VARCHAR(255) NOT NULL,	                    -- ログインID
     password VARCHAR(255) NOT NULL,	                    -- パスワード
-    service_type INT,	                                -- サービスタイプ(0: RAN, 1: マイナビ転職スカウト, 2:AMBI)
+    service_type INT,	                                -- サービスタイプ(0: RAN, 1: マイナビスカウティング, 2:AMBI)
     is_active BOOLEAN NOT NULL DEFAULT FALSE,	        -- アクティブかどうか/false:走らせない true:走る(共通)
     memo TEXT NOT NULL,	                                -- メモ
     created_at DATETIME,                                -- 作成日時

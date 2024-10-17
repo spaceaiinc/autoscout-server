@@ -69,7 +69,7 @@ func (h *DeploymentReflectionHandlerImpl) GetAllDeploymentInformations(pageNumbe
 	return presenter.NewDeploymentInformationListAndMaxPageJSONPresenter(responses.NewDeploymentInformationListAndMaxPage(output.MaxPageNumber, output.DeploymentInformationList)), nil
 }
 
-// Motoyuiからのお知らせを確認したユーザーを作成
+// Systemからのお知らせを確認したユーザーを作成
 func (h *DeploymentReflectionHandlerImpl) UpdateDeployMenConfirmStatusByStaffID(agentStaffID uint) (presenter.Presenter, error) {
 	output, err := h.notificationForUserInteractor.UpdateDeployMenConfirmStatusByStaffID(interactor.UpdateDeployMenConfirmStatusByStaffIDInput{
 		AgentStaffID: agentStaffID,

@@ -1499,7 +1499,7 @@ func SendJobSeekerContact(db *database.DB, firebase usecase.Firebase, sendgrid c
 func UpdateInterviewDateByJobSeekerID(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid, oneSignal config.OneSignal, slack config.Slack) func(c echo.Context) error {
 	return func(c echo.Context) error {
 		var (
-			param entity.UpdateJobSeekerInterviewDateFromGestPageParam
+			param entity.UpdateJobSeekerInterviewDateFromGuestPageParam
 		)
 
 		if err := bindAndValidate(c, &param); err != nil {

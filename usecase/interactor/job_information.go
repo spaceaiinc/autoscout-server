@@ -3967,7 +3967,7 @@ func (i *JobInformationInteractorImpl) GetJobInformationListByAgentIDAndType(inp
 		return output, err
 	}
 
-	// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Motoyui（非公開求人管理用）」を除外して他社エージェントに非表示にする
+	// 特別仕様: 本番環境のみ「2: 株式会社テスト」と「3: 株式会社Space AI（非公開求人管理用）」を除外して他社エージェントに非表示にする
 	jobInformationListBeforeDuplicate = excludeTestJobInformation(jobInformationListBeforeDuplicate, input.AgentID)
 
 	/************ 2. 同一求人と非公開先の除外 **************/

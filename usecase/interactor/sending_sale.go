@@ -77,7 +77,7 @@ func (i *SendingSaleInteractorImpl) CreateSendingSale(input CreateSendingSaleInp
 	sale := entity.NewSendingSale(
 		input.CreateParam.SendingJobSeekerID,
 		input.CreateParam.SendingEnterpriseID,
-		input.CreateParam.MotoyuiSales,
+		input.CreateParam.SystemSales,
 		input.CreateParam.Kickback,
 	)
 
@@ -150,7 +150,7 @@ func (i *SendingSaleInteractorImpl) UpdateSendingSale(input UpdateSendingSaleInp
 	)
 
 	sale := &entity.SendingSale{
-		MotoyuiSales: input.UpdateParam.MotoyuiSales,
+		SystemSales: input.UpdateParam.SystemSales,
 		Kickback:     input.UpdateParam.Kickback,
 	}
 

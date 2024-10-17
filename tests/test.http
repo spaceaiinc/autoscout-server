@@ -3659,8 +3659,8 @@ FirebaseAuthorization: {{token}}
   "staff_description": "content test"
 }
 
-###################################### Motoyuiからのお知らせ #######################################
-### Motoyuiからのお知らせを作成 
+###################################### Systemからのお知らせ #######################################
+### Systemからのお知らせを作成 
 POST {{baseURL}}/api/notification_for_user/create HTTP/1.1
 Content-Type: application/json
 FirebaseAuthorization: {{token}}
@@ -3670,14 +3670,14 @@ FirebaseAuthorization: {{token}}
   "body": "subject test"
 }
 
-### Motoyuiからのお知らせを確認したユーザーを作成 
+### Systemからのお知らせを確認したユーザーを作成 
 # notificationForUserAPI.POST("/create/view/:notification_id/:agent_staff_id", routes.CreateUserNotificationView(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal))
 #
 POST {{baseURL}}/api/notification_for_user/create/view/1/1 HTTP/1.1
 Content-Type: application/json
 FirebaseAuthorization: {{token}}
 
-### 全てのMotoyuiからのお知らせを取得
+### 全てのSystemからのお知らせを取得
 #
 GET {{baseURL}}/api/notification_for_user/all  HTTP/1.1
 Content-Type: application/json

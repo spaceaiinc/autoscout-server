@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spaceaiinc/autoscout-server/domain/config"
 	"github.com/spaceaiinc/autoscout-server/infrastructure/database"
+	"github.com/spaceaiinc/autoscout-server/infrastructure/di"
 	"github.com/spaceaiinc/autoscout-server/infrastructure/driver"
 	"github.com/spaceaiinc/autoscout-server/infrastructure/router/routes"
 )
@@ -183,24 +184,24 @@ func (r *Router) SetUp() *Router {
 	/****************************************************************************************/
 	/// AgentStaff API
 	//
-	gestAPI := noAuthAPI.Group("/gest")
+	guestAPI := noAuthAPI.Group("/guest")
 	{
 		// ゲストユーザーのログイン
 		{
 			// ゲスト企業
-			gestAPI.PUT("/signin/for/enterprise/:job_information_uuid", routes.SignInForGestEnterprise(db, firebase, r.cfg.Sendgrid))
+			guestAPI.PUT("/signin/for/enterprise/:job_information_uuid", routes.SignInForGuestEnterprise(db, firebase, r.cfg.Sendgrid))
 
 			// タスクグループのuuidでゲスト企業のログイン
-			gestAPI.PUT("/signin/for/enterprise/task_group/:task_group_uuid", routes.SignInForGestEnterpriseByTaskGroupUUID(db, firebase, r.cfg.Sendgrid))
+			guestAPI.PUT("/signin/for/enterprise/task_group/:task_group_uuid", routes.SignInForGuestEnterpriseByTaskGroupUUID(db, firebase, r.cfg.Sendgrid))
 
 			// ゲスト求職者
-			gestAPI.PUT("/signin/for/job_seeker/:job_seeker_uuid", routes.SignInForGestJobSeeker(db, firebase, r.cfg.Sendgrid))
+			guestAPI.PUT("/signin/for/job_seeker/:job_seeker_uuid", routes.SignInForGuestJobSeeker(db, firebase, r.cfg.Sendgrid))
 
 			// マイページログイン（LPからログイントークンを使ってログイン）
-			gestAPI.PUT("/signin/from_lp/for/job_seeker/:job_seeker_uuid", routes.SignInForGestJobSeekerFromLP(db, firebase, r.cfg.Sendgrid))
+			guestAPI.PUT("/signin/from_lp/for/job_seeker/:job_seeker_uuid", routes.SignInForGuestJobSeekerFromLP(db, firebase, r.cfg.Sendgrid))
 
 			// ゲスト送客求職者
-			gestAPI.PUT("/signin/for/sending_job_seeker/:sending_job_seeker_uuid", routes.SignInForGestSendingJobSeeker(db, firebase, r.cfg.Sendgrid))
+			guestAPI.PUT("/signin/for/sending_job_seeker/:sending_job_seeker_uuid", routes.SignInForGuestSendingJobSeeker(db, firebase, r.cfg.Sendgrid))
 		}
 	}
 	/****************************************************************************************/
@@ -1236,7 +1237,9 @@ func (r *Router) SetUp() *Router {
 	/// スカウトサービス API
 	//
 	scoutServiceAPI := noAuthAPI.Group("/scout_service")
+
 	{
+		scoutServiceHandler := di.InitializeScoutServiceHandler(firebase, db, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack)
 		/************************************** POSTメソッド **************************************/
 		// スカウトサービス作成
 		scoutServiceAPI.POST("/create", routes.CreateScoutService(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
@@ -1250,11 +1253,10 @@ func (r *Router) SetUp() *Router {
 
 		/************************************** GETメソッド **************************************/
 		// IDからスカウトサービスを取得
-		scoutServiceAPI.GET("/:scout_service_id", routes.GetScoutServiceByID(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
+		scoutServiceAPI.GET("/:scout_service_id", routes.GetByID(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
 
 		// エージェントIDからスカウトサービスを取得
-		scoutServiceAPI.GET("/list/agent/:agent_id", routes.GetScoutServiceListByAgentID(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.App, r.cfg.GoogleAPI, r.cfg.Slack))
-
+		scoutServiceAPI.GET("/list/agent/:agent_id", scoutServiceHandler.GetListByAgentID())
 	}
 
 	/****************************************************************************************/
@@ -1793,7 +1795,7 @@ func (r *Router) SetUp() *Router {
 	{
 		/************************************** POSTメソッド **************************************/
 		// LPのログインフォームのログイン処理
-		lpAPI.POST("/job_seeker/login", routes.LoginGestJobSeekerForLP(db, firebase, r.cfg.Sendgrid))
+		lpAPI.POST("/job_seeker/login", routes.LoginGuestJobSeekerForLP(db, firebase, r.cfg.Sendgrid))
 
 		// パスワード再設定メールを送信する（LP）
 		lpAPI.POST("/job_seeker/send/reset_password_email", routes.SendJobSeekerResetPasswordEmailForLP(db, firebase, r.cfg.Sendgrid, r.cfg.OneSignal, r.cfg.Slack))

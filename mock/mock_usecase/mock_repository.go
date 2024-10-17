@@ -5464,19 +5464,19 @@ func (mr *MockJobSeekerRepositoryMockRecorder) FindByID(id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockJobSeekerRepository)(nil).FindByID), id)
 }
 
-// FindByNameAndPhoneNumberByMotoyuiAgent mocks base method.
-func (m *MockJobSeekerRepository) FindByNameAndPhoneNumberByMotoyuiAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber string) (*entity.JobSeeker, error) {
+// FindByNameAndPhoneNumberBySystemAgent mocks base method.
+func (m *MockJobSeekerRepository) FindByNameAndPhoneNumberBySystemAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber string) (*entity.JobSeeker, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByNameAndPhoneNumberByMotoyuiAgent", firstName, lastName, firstFurigana, lastFurigana, phoneNumber)
+	ret := m.ctrl.Call(m, "FindByNameAndPhoneNumberBySystemAgent", firstName, lastName, firstFurigana, lastFurigana, phoneNumber)
 	ret0, _ := ret[0].(*entity.JobSeeker)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// FindByNameAndPhoneNumberByMotoyuiAgent indicates an expected call of FindByNameAndPhoneNumberByMotoyuiAgent.
-func (mr *MockJobSeekerRepositoryMockRecorder) FindByNameAndPhoneNumberByMotoyuiAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber any) *gomock.Call {
+// FindByNameAndPhoneNumberBySystemAgent indicates an expected call of FindByNameAndPhoneNumberBySystemAgent.
+func (mr *MockJobSeekerRepositoryMockRecorder) FindByNameAndPhoneNumberBySystemAgent(firstName, lastName, firstFurigana, lastFurigana, phoneNumber any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByNameAndPhoneNumberByMotoyuiAgent", reflect.TypeOf((*MockJobSeekerRepository)(nil).FindByNameAndPhoneNumberByMotoyuiAgent), firstName, lastName, firstFurigana, lastFurigana, phoneNumber)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByNameAndPhoneNumberBySystemAgent", reflect.TypeOf((*MockJobSeekerRepository)(nil).FindByNameAndPhoneNumberBySystemAgent), firstName, lastName, firstFurigana, lastFurigana, phoneNumber)
 }
 
 // FindByPhoneNumberForLP mocks base method.

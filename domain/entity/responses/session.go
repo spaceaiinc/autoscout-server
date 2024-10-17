@@ -12,23 +12,23 @@ func NewUserSession(user *entity.User) UserSession {
 	}
 }
 
-type GestEnterpriseUserSession struct {
-	GestEnterpriseUser *entity.GestEnterpriseUser `json:"user"`
+type GuestEnterpriseUserSession struct {
+	GuestEnterpriseUser *entity.GuestEnterpriseUser `json:"user"`
 }
 
-func NewGestEnterpriseUserSession(gestEnterprise *entity.GestEnterpriseUser) GestEnterpriseUserSession {
-	return GestEnterpriseUserSession{
-		GestEnterpriseUser: gestEnterprise,
+func NewGuestEnterpriseUserSession(guestEnterprise *entity.GuestEnterpriseUser) GuestEnterpriseUserSession {
+	return GuestEnterpriseUserSession{
+		GuestEnterpriseUser: guestEnterprise,
 	}
 }
 
-type GestJobSeekerUserSession struct {
-	GestJobSeekerUser *entity.GestJobSeekerUser `json:"user"`
+type GuestJobSeekerUserSession struct {
+	GuestJobSeekerUser *entity.GuestJobSeekerUser `json:"user"`
 }
 
-func NewGestJobSeekerUserSession(gestEnterprise *entity.GestJobSeekerUser) GestJobSeekerUserSession {
-	return GestJobSeekerUserSession{
-		GestJobSeekerUser: gestEnterprise,
+func NewGuestJobSeekerUserSession(guestEnterprise *entity.GuestJobSeekerUser) GuestJobSeekerUserSession {
+	return GuestJobSeekerUserSession{
+		GuestJobSeekerUser: guestEnterprise,
 	}
 }
 

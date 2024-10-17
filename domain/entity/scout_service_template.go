@@ -36,7 +36,7 @@ type ScoutServiceTemplate struct {
 	// ScoutServiceテーブル
 	LoginID     string   `db:"login_id" json:"login_id"`
 	Password    string   `db:"password" json:"password"`
-	ServiceType null.Int `db:"service_type" json:"service_type"` // サービスタイプ(0: RAN, 1: マイナビ転職スカウト, 2:AMBI)
+	ServiceType null.Int `db:"service_type" json:"service_type"` // サービスタイプ(0: RAN, 1: マイナビスカウティング, 2:AMBI)
 }
 
 func NewScoutServiceTemplate(

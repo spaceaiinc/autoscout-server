@@ -10,7 +10,7 @@ type SendingSale struct {
 	ID                  uint      `db:"id" json:"id"`
 	SendingJobSeekerID  uint      `db:"sending_job_seeker_id" json:"sending_job_seeker_id"` // 送客求職者のID
 	SendingEnterpriseID uint      `db:"sending_enterprise_id" json:"sending_enterprise_id"` // 送客先エージェントのID
-	MotoyuiSales        null.Int  `db:"motoyui_sales" json:"motoyui_sales"`                 // Motoyuiの売上
+	SystemSales         null.Int  `db:"system_sales" json:"system_sales"`                   // Systemの売上
 	Kickback            null.Int  `db:"kickback" json:"kickback"`                           // キックバック（送客元の売上）
 	CreatedAt           time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt           time.Time `db:"updated_at" json:"updated_at"`
@@ -25,13 +25,13 @@ type SendingSale struct {
 func NewSendingSale(
 	sendingJobSeekerID uint,
 	sendingEnterpriseID uint,
-	motoyuiSales null.Int,
+	systemSales null.Int,
 	kickback null.Int,
 ) *SendingSale {
 	return &SendingSale{
 		SendingJobSeekerID:  sendingJobSeekerID,
 		SendingEnterpriseID: sendingEnterpriseID,
-		MotoyuiSales:        motoyuiSales,
+		SystemSales:         systemSales,
 		Kickback:            kickback,
 	}
 }
@@ -39,11 +39,11 @@ func NewSendingSale(
 type CreateSendingSaleParam struct {
 	SendingJobSeekerID  uint     `db:"sending_job_seeker_id" json:"sending_job_seeker_id" validate:"required"` // 送客求職者のID
 	SendingEnterpriseID uint     `db:"sending_enterprise_id" json:"sending_enterprise_id" validate:"required"` // 送客先エージェントのID
-	MotoyuiSales        null.Int `db:"motoyui_sales" json:"motoyui_sales"`                                     // Motoyuiの売上
+	SystemSales         null.Int `db:"system_sales" json:"system_sales"`                                       // Systemの売上
 	Kickback            null.Int `db:"kickback" json:"kickback"`                                               // キックバック（送客元の売上）
 }
 
 type UpdateSendingSaleParam struct {
-	MotoyuiSales null.Int `db:"motoyui_sales" json:"motoyui_sales"` // Motoyuiの売上
-	Kickback     null.Int `db:"kickback" json:"kickback"`           // キックバック（送客元の売上）
+	SystemSales null.Int `db:"system_sales" json:"system_sales"` // Systemの売上
+	Kickback    null.Int `db:"kickback" json:"kickback"`         // キックバック（送客元の売上）
 }
