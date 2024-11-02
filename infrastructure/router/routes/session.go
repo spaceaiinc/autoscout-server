@@ -237,38 +237,6 @@ func SignInForGuestJobSeekerFromLP(db *database.DB, firebase usecase.Firebase, s
 	}
 }
 
-// SignIn
-func SignInForGuestSendingJobSeeker(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
-	return func(c echo.Context) error {
-		var (
-			param   = new(SignInPasswordParam)
-			uuidStr = c.Param("sending_job_seeker_uuid")
-		)
-
-		if err := bindAndValidate(c, param); err != nil {
-			wrapped := fmt.Errorf("%s:%w", err.Error(), entity.ErrRequestError)
-			renderJSON(c, presenter.NewErrorJSONPresenter(wrapped))
-			return err
-		}
-
-		jobSeekerUUID, err := uuid.Parse(uuidStr)
-		if err != nil {
-			wrapped := fmt.Errorf("%s:%w", "uuidのフォーマットが不正です", entity.ErrRequestError)
-			renderJSON(c, presenter.NewErrorJSONPresenter(wrapped))
-			return nil
-		}
-
-		h := di.InitializeSessionHandler(firebase, db, sendgrid)
-		p, err := h.SignInForGuestSendingJobSeeker(param.Password, jobSeekerUUID)
-		if err != nil {
-			renderJSON(c, presenter.NewErrorJSONPresenter(err))
-			return err
-		}
-		renderJSON(c, p)
-		return nil
-	}
-}
-
 // LPのログインフォームのログイン処理
 func LoginGuestJobSeekerForLP(db *database.DB, firebase usecase.Firebase, sendgrid config.Sendgrid) func(c echo.Context) error {
 	return func(c echo.Context) error {

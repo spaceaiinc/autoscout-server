@@ -22,7 +22,6 @@ type SessionInteractor interface {
 	SignInForGuestEnterpriseByTaskGroupUUID(input SessionSignInForGuestEnterpriseByTaskGroupUUIDInput) (SessionSignInForGuestEnterpriseByTaskGroupUUIDOutput, error)
 	SignInForGuestJobSeeker(input SessionSignInForGuestJobSeekerInput) (SessionSignInForGuestJobSeekerOutput, error)
 	SignInForGuestJobSeekerFromLP(input SessionSignInForGuestJobSeekerFromLPInput) (SessionSignInForGuestJobSeekerFromLPOutput, error)
-	SignInForGuestSendingJobSeeker(input SessionSignInForGuestSendingJobSeekerInput) (SessionSignInForGuestSendingJobSeekerOutput, error)
 
 	// LP
 	LoginGuestJobSeekerForLP(input LoginGuestJobSeekerForLPInput) (LoginGuestJobSeekerForLPOutput, error)
@@ -38,7 +37,6 @@ type SessionInteractorImpl struct {
 	jobSeekerRepository             usecase.JobSeekerRepository
 	jobSeekerLPLoginTokenRepository usecase.JobSeekerLPLoginTokenRepository
 	agentAllianceRepository         usecase.AgentAllianceRepository
-	sendingJobSeekerRepository      usecase.SendingJobSeekerRepository
 }
 
 func NewSessionInteractorImpl(
@@ -51,7 +49,6 @@ func NewSessionInteractorImpl(
 	jsR usecase.JobSeekerRepository,
 	jlltR usecase.JobSeekerLPLoginTokenRepository,
 	aaR usecase.AgentAllianceRepository,
-	sjsR usecase.SendingJobSeekerRepository,
 ) SessionInteractor {
 	return &SessionInteractorImpl{
 		firebase:                        fb,
@@ -63,7 +60,6 @@ func NewSessionInteractorImpl(
 		jobSeekerRepository:             jsR,
 		jobSeekerLPLoginTokenRepository: jlltR,
 		agentAllianceRepository:         aaR,
-		sendingJobSeekerRepository:      sjsR,
 	}
 }
 
@@ -422,51 +418,6 @@ func (i *SessionInteractorImpl) SignInForGuestJobSeekerFromLP(input SessionSignI
 	)
 
 	output.User = guestJobSeeker
-
-	return output, nil
-}
-
-type SessionSignInForGuestSendingJobSeekerInput struct {
-	Password      string
-	JobSeekerUUID uuid.UUID
-}
-
-type SessionSignInForGuestSendingJobSeekerOutput struct {
-	User *entity.GuestJobSeekerUser
-}
-
-func (i *SessionInteractorImpl) SignInForGuestSendingJobSeeker(input SessionSignInForGuestSendingJobSeekerInput) (SessionSignInForGuestSendingJobSeekerOutput, error) {
-	var (
-		output = SessionSignInForGuestSendingJobSeekerOutput{}
-	)
-
-	// 求職者ログイン
-	sendingJobSeeker, err := i.sendingJobSeekerRepository.FindByUUID(input.JobSeekerUUID)
-	if err != nil {
-		fmt.Println(err)
-		return output, err
-	}
-
-	result := sendingJobSeeker.PhoneNumber[len(sendingJobSeeker.PhoneNumber)-4:]
-	fmt.Println("result", result, "Password", input.Password)
-
-	if result != input.Password {
-		return output, errors.New("パスワードが正しくありません。")
-	} else {
-		// エージェントアカウントのログインユーザー情報を作成
-		guestJobSeeker := entity.NewGuestJobSeekerUser(
-			sendingJobSeeker.ID,
-			input.JobSeekerUUID,
-			sendingJobSeeker.LastName,
-			sendingJobSeeker.FirstName,
-			sendingJobSeeker.Email,
-			sendingJobSeeker.AgentID,
-			sendingJobSeeker.Phase,
-			false,
-		)
-
-		output.User = guestJobSeeker
-	}
 
 	return output, nil
 }

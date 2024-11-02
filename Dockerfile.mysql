@@ -1,0 +1,6 @@
+FROM mysql:8.0
+
+# Create necessary directories and set permissions
+RUN mkdir -p /var/log/mysql \
+  && chown -R mysql:mysql /var/log/mysql /var/lib/mysql \
+  && chmod 755 /var/log/mysql
