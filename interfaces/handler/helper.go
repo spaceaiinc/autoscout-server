@@ -988,32 +988,6 @@ func parseSearchChatJobSeekerQueryParams(c echo.Context) (entity.SearchChatJobSe
 	return searchChatJobSeekerParamList, nil
 }
 
-// 送客のチャット求職者検索
-func parseSearchChatSendingJobSeekerQueryParams(c echo.Context) (entity.SearchChatSendingJobSeeker, error) {
-	var (
-		searchChatSendingJobSeekerParamList entity.SearchChatSendingJobSeeker
-
-		freeWordStr     = c.QueryParam("free_word")
-		agentStaffIDStr = c.QueryParam("agent_staff_id")
-		phaseStrList    = c.QueryParams()["phase_types[]"]
-	)
-
-	// フェーズ
-	phaseTypes, err := parseQueryParams(phaseStrList)
-	if err != nil {
-		wrapped := fmt.Errorf("%s:%w", err.Error(), entity.ErrRequestError)
-		renderJSON(c, presenter.NewErrorJSONPresenter(wrapped))
-		return searchChatSendingJobSeekerParamList, wrapped
-	}
-
-	searchChatSendingJobSeekerParamList = *entity.NewSearchChatSendingJobSeeker(
-		freeWordStr,
-		agentStaffIDStr,
-		phaseTypes,
-	)
-	return searchChatSendingJobSeekerParamList, nil
-}
-
 type IDList struct {
 	IDList []uint
 }

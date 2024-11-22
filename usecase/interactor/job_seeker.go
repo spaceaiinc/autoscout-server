@@ -158,25 +158,6 @@ type JobSeekerInteractorImpl struct {
 	taskRepository                                     usecase.TaskRepository
 	interviewTaskRepository                            usecase.InterviewTaskRepository
 	interviewTaskGroupRepository                       usecase.InterviewTaskGroupRepository
-	sendingJobSeekerRepository                         usecase.SendingJobSeekerRepository
-	sendingJobSeekerStudentHistoryRepository           usecase.SendingJobSeekerStudentHistoryRepository
-	sendingJobSeekerWorkHistoryRepository              usecase.SendingJobSeekerWorkHistoryRepository
-	sendingJobSeekerExperienceIndustryRepository       usecase.SendingJobSeekerExperienceIndustryRepository
-	sendingJobSeekerDepartmentHistoryRepository        usecase.SendingJobSeekerDepartmentHistoryRepository
-	sendingJobSeekerLicenseRepository                  usecase.SendingJobSeekerLicenseRepository
-	sendingJobSeekerSelfPromotionRepository            usecase.SendingJobSeekerSelfPromotionRepository
-	sendingJobSeekerDocumentRepository                 usecase.SendingJobSeekerDocumentRepository
-	sendingJobSeekerDesiredIndustryRepository          usecase.SendingJobSeekerDesiredIndustryRepository
-	sendingJobSeekerDesiredOccupationRepository        usecase.SendingJobSeekerDesiredOccupationRepository
-	sendingJobSeekerDesiredWorkLocationRepository      usecase.SendingJobSeekerDesiredWorkLocationRepository
-	sendingJobSeekerDesiredHolidayTypeRepository       usecase.SendingJobSeekerDesiredHolidayTypeRepository
-	sendingJobSeekerDevelopmentSkillRepository         usecase.SendingJobSeekerDevelopmentSkillRepository
-	sendingJobSeekerLanguageSkillRepository            usecase.SendingJobSeekerLanguageSkillRepository
-	sendingJobSeekerPCToolRepository                   usecase.SendingJobSeekerPCToolRepository
-	sendingJobSeekerExperienceOccupationRepository     usecase.SendingJobSeekerExperienceOccupationRepository
-	sendingJobSeekerDesiredCompanyScaleRepository      usecase.SendingJobSeekerDesiredCompanyScaleRepository
-	chatGroupWithSendingJobSeekerRepository            usecase.ChatGroupWithSendingJobSeekerRepository
-	chatMessageWithSendingJobSeekerRepository          usecase.ChatMessageWithSendingJobSeekerRepository
 }
 
 // JobSeekerInteractorImpl is an implementation of JobSeekerInteractor
@@ -242,25 +223,6 @@ func NewJobSeekerInteractorImpl(
 	tR usecase.TaskRepository,
 	itR usecase.InterviewTaskRepository,
 	itgR usecase.InterviewTaskGroupRepository,
-	sjsR usecase.SendingJobSeekerRepository,
-	sjsshR usecase.SendingJobSeekerStudentHistoryRepository,
-	sjswhR usecase.SendingJobSeekerWorkHistoryRepository,
-	sjseiR usecase.SendingJobSeekerExperienceIndustryRepository,
-	sjseoR usecase.SendingJobSeekerExperienceOccupationRepository,
-	sjslR usecase.SendingJobSeekerLicenseRepository,
-	sjsspR usecase.SendingJobSeekerSelfPromotionRepository,
-	sjsdR usecase.SendingJobSeekerDocumentRepository,
-	sjsdiR usecase.SendingJobSeekerDesiredIndustryRepository,
-	sjsdoR usecase.SendingJobSeekerDesiredOccupationRepository,
-	sjsdwlR usecase.SendingJobSeekerDesiredWorkLocationRepository,
-	sjsdhtR usecase.SendingJobSeekerDesiredHolidayTypeRepository,
-	sjsdsR usecase.SendingJobSeekerDevelopmentSkillRepository,
-	sjslsR usecase.SendingJobSeekerLanguageSkillRepository,
-	sjsptR usecase.SendingJobSeekerPCToolRepository,
-	sjsdhR usecase.SendingJobSeekerDepartmentHistoryRepository,
-	sjsdcsR usecase.SendingJobSeekerDesiredCompanyScaleRepository,
-	cgsR usecase.ChatGroupWithSendingJobSeekerRepository,
-	cmsR usecase.ChatMessageWithSendingJobSeekerRepository,
 ) JobSeekerInteractor {
 	return &JobSeekerInteractorImpl{
 		firebase:                                           fb,
@@ -324,25 +286,6 @@ func NewJobSeekerInteractorImpl(
 		taskRepository:                                     tR,
 		interviewTaskRepository:                            itR,
 		interviewTaskGroupRepository:                       itgR,
-		sendingJobSeekerRepository:                         sjsR,
-		sendingJobSeekerStudentHistoryRepository:           sjsshR,
-		sendingJobSeekerWorkHistoryRepository:              sjswhR,
-		sendingJobSeekerExperienceIndustryRepository:       sjseiR,
-		sendingJobSeekerExperienceOccupationRepository:     sjseoR,
-		sendingJobSeekerLicenseRepository:                  sjslR,
-		sendingJobSeekerSelfPromotionRepository:            sjsspR,
-		sendingJobSeekerDocumentRepository:                 sjsdR,
-		sendingJobSeekerDesiredIndustryRepository:          sjsdiR,
-		sendingJobSeekerDesiredOccupationRepository:        sjsdoR,
-		sendingJobSeekerDesiredWorkLocationRepository:      sjsdwlR,
-		sendingJobSeekerDesiredHolidayTypeRepository:       sjsdhtR,
-		sendingJobSeekerDevelopmentSkillRepository:         sjsdsR,
-		sendingJobSeekerLanguageSkillRepository:            sjslsR,
-		sendingJobSeekerPCToolRepository:                   sjsptR,
-		sendingJobSeekerDepartmentHistoryRepository:        sjsdhR,
-		sendingJobSeekerDesiredCompanyScaleRepository:      sjsdcsR,
-		chatGroupWithSendingJobSeekerRepository:            cgsR,
-		chatMessageWithSendingJobSeekerRepository:          cmsR,
 	}
 }
 
@@ -2723,25 +2666,8 @@ func (i *JobSeekerInteractorImpl) UpdateJobSeekerLineID(input UpdateJobSeekerLin
 	if err != nil {
 		if errors.Is(err, entity.ErrNotFound) {
 			// 求職者テーブルに該当のuuidが存在しない場合
-			sendingJobSeeker, err := i.sendingJobSeekerRepository.FindByUUID(input.Param.JobSeekerUUID)
-			if err != nil {
-				fmt.Println(err)
-				return output, err
-			}
-
-			// データベースにLINE_IDを保存する
-			err = i.sendingJobSeekerRepository.UpdateLineID(input.Param.JobSeekerUUID, profileJSON.UserID)
-			if err != nil {
-				fmt.Println(err)
-				return output, err
-			}
-
-			// LINEの利用状況を更新する（line_activeをtrueに変更）
-			err = i.chatGroupWithSendingJobSeekerRepository.UpdateSendingJobSeekerLineActive(true, sendingJobSeeker.ID)
-			if err != nil {
-				fmt.Println(err)
-				return output, err
-			}
+			output.OK = false
+			return output, nil
 
 		} else {
 			// 求職者テーブルでNotFound以外のエラーの場合はエラーを返す

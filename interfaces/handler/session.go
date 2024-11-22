@@ -20,7 +20,6 @@ type SessionHandler interface {
 	// ゲスト求職者ためのログイン
 	SignInForGuestJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error)
 	SignInForGuestJobSeekerFromLP(jobSeekerUUID, loginToken uuid.UUID) (presenter.Presenter, error)
-	SignInForGuestSendingJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error)
 
 	// LPのログインフォームのログイン処理
 	LoginGuestJobSeekerForLP(email, password string) (presenter.Presenter, error)
@@ -106,18 +105,6 @@ func (h *SessionHandlerImpl) SignInForGuestJobSeekerFromLP(jobSeekerUUID, loginT
 	output, err := h.sessionInteractor.SignInForGuestJobSeekerFromLP(interactor.SessionSignInForGuestJobSeekerFromLPInput{
 		JobSeekerUUID: jobSeekerUUID,
 		LoginToken:    loginToken,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return presenter.NewGuestJobSeekerUserSessionJSONPresenter(responses.NewGuestJobSeekerUserSession(output.User)), nil
-}
-
-func (h *SessionHandlerImpl) SignInForGuestSendingJobSeeker(password string, jobSeekerUUID uuid.UUID) (presenter.Presenter, error) {
-	output, err := h.sessionInteractor.SignInForGuestSendingJobSeeker(interactor.SessionSignInForGuestSendingJobSeekerInput{
-		Password:      password,
-		JobSeekerUUID: jobSeekerUUID,
 	})
 	if err != nil {
 		return nil, err

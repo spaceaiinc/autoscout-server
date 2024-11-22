@@ -206,12 +206,6 @@ type JobListingForSending struct {
 	CreatedAt              time.Time `db:"created_at" json:"created_at"`                             // 作成日時
 	UpdatedAt              time.Time `db:"updated_at" json:"updated_at"`                             // 更新日時
 
-	// 関連テーブル
-	Industries         []SendingJobInformationIndustry         `db:"industries" json:"industries"`
-	Prefectures        []SendingJobInformationPrefecture       `db:"prefectures" json:"prefectures"`
-	EmploymentStatuses []SendingJobInformationEmploymentStatus `db:"employment_statuses" json:"employment_statuses"`
-	WorkCharmPoints    []SendingJobInformationWorkCharmPoint   `db:"work_charm_points" json:"work_charm_points"`
-
 	// 求人企業のログインに使用
 	PhoneNumber string `db:"phone_number" json:"phone_number"` // 電話番号
 }

@@ -33,17 +33,14 @@ type ChatMessageWithJobSeekerInteractor interface {
 }
 
 type ChatMessageWithJobSeekerInteractorImpl struct {
-	firebase                                  usecase.Firebase
-	sendgrid                                  config.Sendgrid
-	oneSignal                                 config.OneSignal
-	chatMessageWithJobSeekerRepository        usecase.ChatMessageWithJobSeekerRepository
-	chatGroupWithJobSeekerRepository          usecase.ChatGroupWithJobSeekerRepository
-	jobSeekerRepository                       usecase.JobSeekerRepository
-	agentRepository                           usecase.AgentRepository
-	agentStaffRepository                      usecase.AgentStaffRepository
-	chatMessageWithSendingJobSeekerRepository usecase.ChatMessageWithSendingJobSeekerRepository // webhook用
-	chatGroupWithSendingJobSeekerRepository   usecase.ChatGroupWithSendingJobSeekerRepository
-	sendingJobSeekerRepository                usecase.SendingJobSeekerRepository
+	firebase                           usecase.Firebase
+	sendgrid                           config.Sendgrid
+	oneSignal                          config.OneSignal
+	chatMessageWithJobSeekerRepository usecase.ChatMessageWithJobSeekerRepository
+	chatGroupWithJobSeekerRepository   usecase.ChatGroupWithJobSeekerRepository
+	jobSeekerRepository                usecase.JobSeekerRepository
+	agentRepository                    usecase.AgentRepository
+	agentStaffRepository               usecase.AgentStaffRepository
 }
 
 // ChatMessageWithJobSeekerInteractorImpl is an implementation of ChatMessageWithJobSeekerInteractor
@@ -56,9 +53,6 @@ func NewChatMessageWithJobSeekerInteractorImpl(
 	jsR usecase.JobSeekerRepository,
 	aR usecase.AgentRepository,
 	asR usecase.AgentStaffRepository,
-	cmsR usecase.ChatMessageWithSendingJobSeekerRepository,
-	cgsR usecase.ChatGroupWithSendingJobSeekerRepository,
-	sjsR usecase.SendingJobSeekerRepository,
 ) ChatMessageWithJobSeekerInteractor {
 	return &ChatMessageWithJobSeekerInteractorImpl{
 		firebase:                           fb,
@@ -69,9 +63,6 @@ func NewChatMessageWithJobSeekerInteractorImpl(
 		jobSeekerRepository:                jsR,
 		agentRepository:                    aR,
 		agentStaffRepository:               asR,
-		chatMessageWithSendingJobSeekerRepository: cmsR,
-		chatGroupWithSendingJobSeekerRepository:   cgsR,
-		sendingJobSeekerRepository:                sjsR,
 	}
 }
 
@@ -400,30 +391,9 @@ func (i *ChatMessageWithJobSeekerInteractorImpl) LineWebHook(input LineWebHookIn
 			if errors.Is(err, entity.ErrNotFound) {
 
 				/*********************** job_seekersに該当の求職者が見つからない場合 ***********************/
+				output.OK = true
+				return output, nil
 
-				sendingJobSeeker, err := i.sendingJobSeekerRepository.FindByLineID(event.Source.UserID)
-				if err != nil {
-					if errors.Is(err, entity.ErrNotFound) {
-						// job_seekersテーブルとsending_job_seekersテーブルどちらにもLINE_idが存在しない場合
-						fmt.Println("LINE連携が済んでいない求職者です")
-						output.OK = true
-						return output, nil
-					} else {
-						// sending_job_seekersテーブルの「FindByLineID」の実行結果が「Not Found」以外の場合はエラーを返す
-						fmt.Println(err)
-						return output, err
-					}
-				} else {
-					// 送客求職者からのメッセージ処理
-					err := MessageForSendingJobSeeker(i, bot, event, sendingJobSeeker)
-					if err != nil {
-						fmt.Println(err)
-						return output, err
-					}
-
-					output.OK = true
-					return output, nil
-				}
 				/*********************** job_seekersに該当の求職者が見つからない場合 ここまで ***********************/
 			} else {
 				// job_seekersテーブルの「FindByLineID」の実行結果が「Not Found」以外の場合はエラーを返す
@@ -692,211 +662,6 @@ func MessageForJobSeeker(i *ChatMessageWithJobSeekerInteractorImpl, agentLineCha
 		// ブロック解除された場合 LINE Activeをtrueにする
 		// 友達新規追加の場合は上の「i.jobSeekerRepository.FindByLineID(event.Source.UserID)」の部分で処理してる
 		err = i.chatGroupWithJobSeekerRepository.UpdateJobSeekerLineActive(jobSeeker.ID, true)
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-	}
-
-	return nil
-}
-
-// 送客求職者からのメッセージを処理する関数
-func MessageForSendingJobSeeker(i *ChatMessageWithJobSeekerInteractorImpl, bot *linebot.Client, event *linebot.Event, sendingJobSeeker *entity.SendingJobSeeker) error {
-	var (
-		err                error
-		sendingChatGroup   *entity.ChatGroupWithSendingJobSeeker
-		sendingChatMessage *entity.ChatMessageWithSendingJobSeeker
-	)
-
-	// 求職者IDとエージェントIDからグループを取得
-	sendingChatGroup, err = i.chatGroupWithSendingJobSeekerRepository.FindBySendingJobSeekerID(sendingJobSeeker.ID)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-
-	if event.Type == linebot.EventTypeMessage {
-		// メッセージが送信された場合
-		switch message := event.Message.(type) {
-		// テキストメッセージの場合
-		case *linebot.TextMessage:
-			fmt.Println("message", message)
-
-			fmt.Println("TextMessage")
-			fmt.Println("----------------")
-			// if _, err := bot.ReplyMessage(
-			// 	event.ReplyToken,
-			// 	linebot.NewTextMessage(message.Text),
-			// ).Do(); err != nil {
-			// 	fmt.Println(err)
-			// 	fmt.Println("EventTypeMessageのReplyMessageでエラー")
-			// }
-			// DBにメッセージを保存する処理
-			sendingChatMessage = entity.NewChatMessageWithSendingJobSeeker(
-				sendingChatGroup.ID,  // chatGroup.IDを設定
-				null.NewInt(1, true), // 求職者
-				event.Message.(*linebot.TextMessage).Text,
-				"",
-				"",
-				"",
-				"",
-				null.NewInt(0, false),
-				message.ID,
-				null.NewInt(0, true),
-				event.Timestamp.In(time.UTC),
-			)
-
-		// スタンプの場合
-		case *linebot.StickerMessage:
-			fmt.Println("message", message)
-
-			fmt.Println("StickerMessage")
-			fmt.Println("----------------")
-
-			// DBにメッセージを保存する処理
-			sendingChatMessage = entity.NewChatMessageWithSendingJobSeeker(
-				sendingChatGroup.ID,  // chatGroup.IDを設定
-				null.NewInt(1, true), // 求職者
-				"スタンプが送信されましたがautoscoutでは表示できません。",
-				message.PackageID,
-				message.StickerID,
-				"",
-				"",
-				null.NewInt(0, false),
-				message.ID,
-				null.NewInt(1, true),
-				event.Timestamp.In(time.UTC),
-			)
-		// 画像データの場合
-		case *linebot.ImageMessage:
-			fmt.Println("message", message)
-			fmt.Println("ImageMessage")
-			fmt.Println("message.ContentProvider.Type", message.ContentProvider.Type)
-			fmt.Println("----------------")
-
-			// 画像のコンテンツを取得しにいく
-			content, err := bot.GetMessageContent(message.ID).Do()
-			if err != nil {
-				fmt.Println("コンテンツの取得に失敗しました。")
-			}
-			defer content.Content.Close()
-
-			url, err := i.firebase.UploadToStorageForJobSeekerLine(content.Content, message.ID)
-			if err != nil {
-				fmt.Println("URLの取得に失敗しました。")
-			}
-
-			// DBにメッセージを保存する処理
-			sendingChatMessage = entity.NewChatMessageWithSendingJobSeeker(
-				sendingChatGroup.ID,  // chatGroup.IDを設定
-				null.NewInt(1, true), // 求職者
-				"",
-				"",
-				"",
-				url,
-				url,
-				null.NewInt(0, false),
-				message.ID,
-				null.NewInt(2, true),
-				event.Timestamp.In(time.UTC),
-			)
-
-		// 動画データの場合
-		case *linebot.VideoMessage:
-			fmt.Println("message", message)
-
-			fmt.Println("VideoMessage")
-			fmt.Println("----------------")
-
-			// DBにメッセージを保存する処理
-			sendingChatMessage = entity.NewChatMessageWithSendingJobSeeker(
-				sendingChatGroup.ID,  // chatGroup.IDを設定
-				null.NewInt(1, true), // 求職者
-				"動画データが送信されましたがautoscoutでは表示できません。",
-				"",
-				"",
-				message.OriginalContentURL,
-				message.PreviewImageURL,
-				null.NewInt(0, false),
-				message.ID,
-				null.NewInt(3, true),
-				event.Timestamp.In(time.UTC),
-			)
-		// 音声データの場合
-		case *linebot.AudioMessage:
-			fmt.Println("message", message)
-
-			fmt.Println("AudioMessage")
-			fmt.Println("----------------")
-
-			// DBにメッセージを保存する処理
-			sendingChatMessage = entity.NewChatMessageWithSendingJobSeeker(
-				sendingChatGroup.ID,  // chatGroup.IDを設定
-				null.NewInt(1, true), // 求職者
-				"音声データが送信されましたがautoscoutでは表示できません。",
-				"",
-				"",
-				message.OriginalContentURL,
-				"",
-				null.NewInt(int64(message.Duration), true),
-				message.ID,
-				null.NewInt(4, true),
-				event.Timestamp.In(time.UTC),
-			)
-		}
-
-		if sendingChatMessage.GroupID != 0 && sendingChatMessage.UserType.Valid {
-			err = i.chatMessageWithSendingJobSeekerRepository.Create(sendingChatMessage)
-			if err != nil {
-				fmt.Println(err)
-				return err
-			}
-
-			// 送客求職者の送信時間と閲覧時間を更新する
-			err = i.chatGroupWithSendingJobSeekerRepository.UpdateSendingJobSeekerLastWatchedAtAndSendAt(sendingChatGroup.ID, event.Timestamp.In(time.UTC))
-			if err != nil {
-				fmt.Println(err)
-				return err
-			}
-
-			// プッシュ通知
-			redirectURL := os.Getenv("BASE_DOMAIN" + "/")
-			topic := "Chat"
-
-			if sendingJobSeeker.AgentStaffID.Int64 != 0 {
-				caStaff, err := i.agentStaffRepository.FindByID(uint(sendingJobSeeker.AgentStaffID.Int64))
-				if err != nil {
-					fmt.Println(err)
-					return err
-				}
-
-				err = utility.WebPush(
-					i.oneSignal.AppID,
-					i.oneSignal.APIKey,
-					caStaff.FirebaseID,
-					"チャット通知",
-					"新着メッセージがあります",
-					topic,
-					redirectURL,
-				)
-				if err != nil {
-					fmt.Println("WebPushの通知でエラー")
-					fmt.Println(err)
-				}
-			}
-		}
-	} else if event.Type == linebot.EventTypeUnfollow {
-		// ブロックされた場合 LINE Active
-		err = i.chatGroupWithSendingJobSeekerRepository.UpdateSendingJobSeekerLineActive(false, sendingJobSeeker.ID)
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-	} else if event.Type == linebot.EventTypeFollow {
-		// ブロック解除された場合 LINE Activeをtrueにする
-		// 友達新規追加の場合は上の「i.jobSeekerRepository.FindByLineID(event.Source.UserID)」の部分で処理してる
-		err = i.chatGroupWithSendingJobSeekerRepository.UpdateSendingJobSeekerLineActive(true, sendingJobSeeker.ID)
 		if err != nil {
 			fmt.Println(err)
 			return err
