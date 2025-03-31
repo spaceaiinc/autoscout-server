@@ -360,7 +360,9 @@ func (i *ScoutServiceInteractorImpl) ScoutOnRan(input ScoutOnRanInput) (ScoutOnR
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -370,7 +372,11 @@ func (i *ScoutServiceInteractorImpl) ScoutOnRan(input ScoutOnRanInput) (ScoutOnR
 	defer time.Sleep(10 * time.Second)
 	defer l.Cleanup() // remove launcher.FlagUserDataDir
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
@@ -1440,7 +1446,9 @@ func (i *ScoutServiceInteractorImpl) ScoutOnMynaviScouting(input ScoutOnMynaviSc
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -1450,7 +1458,11 @@ func (i *ScoutServiceInteractorImpl) ScoutOnMynaviScouting(input ScoutOnMynaviSc
 	defer time.Sleep(10 * time.Second)
 	defer l.Cleanup()
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
@@ -2023,14 +2035,20 @@ func (i *ScoutServiceInteractorImpl) ScoutOnAmbi(input ScoutOnAmbiInput) (ScoutO
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
 		l.Headless(false)
 	}
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
@@ -2081,10 +2099,17 @@ func (i *ScoutServiceInteractorImpl) ScoutOnAmbi(input ScoutOnAmbiInput) (ScoutO
 
 	loginPWEl.
 		MustInput(decryptedPassword).
-		MustType(rodInput.Enter)
+		MustType(rodInput.Enter).
+		WaitLoad()
 
-	page.WaitLoad()
 	time.Sleep(10 * time.Second)
+
+	// URLがログインページのままの場合はログインに失敗していると判断
+	if strings.Contains(page.MustInfo().URL, "login") {
+		errMessage = "ログインに失敗しました。"
+		log.Println(errMessage)
+		return output, errors.New(errMessage)
+	}
 
 	// AMBIでスカウト送信
 templateLoop:
@@ -2813,7 +2838,9 @@ func (i *ScoutServiceInteractorImpl) ScoutOnMynaviAgentScout(input ScoutOnMynavi
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -2822,7 +2849,11 @@ func (i *ScoutServiceInteractorImpl) ScoutOnMynaviAgentScout(input ScoutOnMynavi
 
 	defer time.Sleep(10 * time.Second)
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().

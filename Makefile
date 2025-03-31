@@ -17,7 +17,7 @@ wire:
 	wire ./infrastructure/di/wire.go
 
 run:
-	make wire
+	# make wire
 	air -c .conf/.air.toml
 
 up:

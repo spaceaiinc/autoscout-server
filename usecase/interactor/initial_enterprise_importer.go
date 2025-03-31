@@ -477,7 +477,9 @@ func (i *InitialEnterpriseImporterInteractorImpl) ImportEnterpriseFromCircus(inp
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if os.Getenv("APP_ENV") == "local" {
@@ -489,7 +491,11 @@ func (i *InitialEnterpriseImporterInteractorImpl) ImportEnterpriseFromCircus(inp
 	defer l.Cleanup()
 
 	// ブラウザを起動後、AMBIへ遷移
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 	browser = rod.New().
 		ControlURL(url).
 		Trace(true).                 // ログ出力
@@ -1206,7 +1212,9 @@ func (i *InitialEnterpriseImporterInteractorImpl) ImportEnterpriseFromAgentBank(
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if os.Getenv("APP_ENV") == "local" {
@@ -1218,7 +1226,11 @@ func (i *InitialEnterpriseImporterInteractorImpl) ImportEnterpriseFromAgentBank(
 	defer l.Cleanup()
 
 	// ブラウザを起動後、AMBIへ遷移
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 	browser = rod.New().
 		ControlURL(url).
 		Trace(true).                 // ログ出力
@@ -2669,7 +2681,9 @@ func (i *InitialEnterpriseImporterInteractorImpl) UpdateEnterpriseFromAgentBank(
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if os.Getenv("APP_ENV") == "local" {
@@ -2681,7 +2695,11 @@ func (i *InitialEnterpriseImporterInteractorImpl) UpdateEnterpriseFromAgentBank(
 	defer l.Cleanup()
 
 	// ブラウザを起動後、AMBIへ遷移
-	mustLaunch := l.MustLaunch()
+	mustLaunch, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 	browser = rod.New().
 		ControlURL(mustLaunch).
 		Trace(true).                 // ログ出力
