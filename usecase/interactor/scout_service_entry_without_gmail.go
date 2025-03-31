@@ -248,7 +248,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnRanWithoutGmail(input EntryOnRanWith
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -259,7 +261,11 @@ func (i *ScoutServiceInteractorImpl) EntryOnRanWithoutGmail(input EntryOnRanWith
 	// remove launcher.FlagUserDataDir
 	defer l.Cleanup()
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
 		ControlURL(url).
@@ -838,7 +844,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScoutingWithoutGmail(input Ent
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -850,7 +858,11 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScoutingWithoutGmail(input Ent
 	defer time.Sleep(10 * time.Second)
 	defer l.Cleanup()
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
@@ -2699,7 +2711,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnAmbiWithoutGmail(input EntryOnAmbiWi
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -2711,7 +2725,11 @@ func (i *ScoutServiceInteractorImpl) EntryOnAmbiWithoutGmail(input EntryOnAmbiWi
 	defer l.Cleanup()
 
 	// ブラウザを起動後、AMBIへ遷移
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 	browser = rod.New().
 		ControlURL(url).
 		Trace(true).                 // ログ出力
@@ -3873,7 +3891,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnWithoutGmailMynaviAgentScout(input E
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -3884,7 +3904,15 @@ func (i *ScoutServiceInteractorImpl) EntryOnWithoutGmailMynaviAgentScout(input E
 	// remove launcher.FlagUserDataDir
 	defer l.Cleanup()
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().

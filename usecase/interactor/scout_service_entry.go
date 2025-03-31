@@ -594,7 +594,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnRan(input EntryOnRanInput) (EntryOnR
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -605,7 +607,11 @@ func (i *ScoutServiceInteractorImpl) EntryOnRan(input EntryOnRanInput) (EntryOnR
 	// remove launcher.FlagUserDataDir
 	defer l.Cleanup()
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
 		ControlURL(url).
@@ -1184,7 +1190,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -1196,7 +1204,11 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviScouting(input EntryOnMynaviSc
 	defer time.Sleep(10 * time.Second)
 	defer l.Cleanup()
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
@@ -3002,7 +3014,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnAmbi(input EntryOnAmbiInput) (EntryO
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -3014,7 +3028,11 @@ func (i *ScoutServiceInteractorImpl) EntryOnAmbi(input EntryOnAmbiInput) (EntryO
 	defer l.Cleanup()
 
 	// ブラウザを起動後、AMBIへ遷移
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 	browser = rod.New().
 		ControlURL(url).
 		Trace(true).                 // ログ出力
@@ -3876,7 +3894,9 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviAgentScout(input EntryOnMynavi
 
 	// 取得したパスからchromeを起動
 	l := launcher.New().
-		Bin(path)
+		Bin(path).
+		Leakless(true).
+		NoSandbox(true)
 
 	// ローカル環境の場合は画面ありで起動
 	if i.app.Env == "local" {
@@ -3887,7 +3907,11 @@ func (i *ScoutServiceInteractorImpl) EntryOnMynaviAgentScout(input EntryOnMynavi
 	// remove launcher.FlagUserDataDir
 	defer l.Cleanup()
 
-	url := l.MustLaunch()
+	url, err := l.Launch()
+	if err != nil {
+		log.Println(err)
+		return output, err
+	}
 
 	// ブラウザを起動後、AMBIへ遷移
 	browser = rod.New().
